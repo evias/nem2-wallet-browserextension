@@ -1,13 +1,43 @@
 /* eslint-disable import/prefer-default-export */
 
-import {
-  TransactionType,
-} from 'nem2-sdk';
+import { TransactionType } from 'nem2-sdk';
 
 export const GET_TRANSACTIONS_MODES = {
   INIT: 'init',
   REFRESH: 'refresh',
   MORE: 'more',
+};
+
+// Based on https://nemtech.github.io/concepts/transaction.html#transaction-types
+export const txCategories = {
+  Transfer: [
+    TransactionType.TRANSFER,
+  ],
+  Namespace: [
+    TransactionType.REGISTER_NAMESPACE,
+    TransactionType.ADDRESS_ALIAS,
+    TransactionType.MOSAIC_ALIAS,
+  ],
+  Mosaic: [
+    TransactionType.MOSAIC_DEFINITION,
+    TransactionType.MOSAIC_SUPPLY_CHANGE,
+  ],
+  Multisignature: [
+    TransactionType.MODIFY_MULTISIG_ACCOUNT,
+    TransactionType.LOCK,
+  ],
+  'Cross-chain swap': [
+    TransactionType.SECRET_LOCK,
+    TransactionType.SECRET_PROOF,
+  ],
+  'Account filter': [
+    TransactionType.MODIFY_ACCOUNT_PROPERTY_ADDRESS,
+    TransactionType.MODIFY_ACCOUNT_PROPERTY_MOSAIC,
+    TransactionType.MODIFY_ACCOUNT_PROPERTY_ENTITY_TYPE,
+  ],
+  'Remote harvesting': [
+    TransactionType.LINK_ACCOUNT,
+  ],
 };
 
 export const txTypeNameFromTypeId = (typeId) => {

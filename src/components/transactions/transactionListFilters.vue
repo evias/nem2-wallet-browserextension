@@ -23,20 +23,27 @@
     <v-card>
       <v-card-title primary-title>
         <h3 class="headline mb-3">
-          Transactions filters
+          Transaction filters
         </h3>
       </v-card-title>
       <v-card-text>
-        <div
-          v-for="(val, prop) in transactions.transactionTypesFilters"
-          :key="prop"
+        <template
+          v-for="(val, key) in txCategories"
         >
-          <v-switch
-            v-model="transactions.transactionTypesFilters[prop]"
-            :label="prop.replace(/_/g, ' ').replace(/8/g, '.')"
-            @click.stop="updateTxFilterProp(prop)"
-          />
-        </div>
+          <h4 :key="`txFilterCategory_${key}`">
+            {{ key }}
+          </h4>
+          <div
+            v-for="typeid in txCategories[key]"
+            :key="typeid"
+          >
+            <v-switch
+              v-model="transactions.transactionTypesFilters[txFilterNameFromId(typeid)]"
+              :label="txTypeNameFromTypeId(typeid)"
+              @click.stop="updateTxFilterProp(txFilterNameFromId(typeid))"
+            />
+          </div>
+        </template>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -54,12 +61,19 @@
 <script>
 import { mapState } from 'vuex';
 import store from '../../store/index';
+import { txCategories, txTypeNameFromTypeId } from '../../infrastructure/transactions/transactions-types';
 
 export default {
   name: 'TransactionListFilters',
   store,
   props: {
     visible: Boolean,
+  },
+  data() {
+    return {
+      txCategories,
+      txTypeNameFromTypeId,
+    };
   },
   computed: {
     ...mapState([
@@ -82,6 +96,9 @@ export default {
       this.$store.dispatch(
         'transactions/UPDATE_TRANSACTION_TYPES_FILTERS', prop,
       );
+    },
+    txFilterNameFromId(typeid) {
+      return txTypeNameFromTypeId(typeid).replace(/ /g, '_').replace(/\./g, '8');
     },
   },
 };
