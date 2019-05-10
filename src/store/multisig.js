@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-param-reassign */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -17,29 +19,37 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Vue from 'vue';
-import Vuex from 'vuex';
-import wallet from './wallet';
-import accountInfo from './accountInfo';
-import application from './application';
-import transactions from './transactions';
-import namespaces from './namespaces';
-import assets from './assets';
-import multisig from './multisig';
+const state = {
+  multisigList: '123multisigList',
+  cosignatoryList: '321cosignatoryList',
+};
 
-Vue.use(Vuex);
-
-const debug = process.env.NODE_ENV !== 'production';
-
-export default new Vuex.Store({
-  modules: {
-    wallet,
-    application,
-    accountInfo,
-    transactions,
-    namespaces,
-    assets,
-    multisig,
+const getters = {
+  GET_MULTISIG() {
+    return state.multisigList;
   },
-  strict: debug,
-});
+  GET_COSIGNATORY() {
+    return state.cosignatoryList;
+  },
+};
+
+const mutations = {
+  SET_MULTISIGN(state, newMultisigList) {
+    state.multisigList = newMultisigList;
+  },
+  SET_COSIGNATORY(state, newCosignatoryList) {
+    state.cosignatoryList = newCosignatoryList;
+  },
+};
+
+const actions = {
+
+};
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
+};

@@ -17,76 +17,71 @@
 
 <template>
   <v-layout
-    row
-    pb-2
-    mt-4
+          row
+          pb-2
+          mt-4
   >
     <v-flex
-      xs12
+            xs12
     >
       <Errors />
       <v-card
-        style="height: auto;padding:0 !important"
-        class="card--flex-toolbar"
+              v-if="
+              wallet.wallets.length > 0 &&
+                wallet.activeWallet
+            "
+              style="height: auto;padding:0 !important"
+              class="card--flex-toolbar"
       >
         <v-toolbar
-          card
-          prominent
+                card
+                prominent
         />
         <v-spacer />
         <v-card-text>
-          <!--<v-btn
-            color="primary mx-0"
-            @click="reloadList"
-          >
-            Reload List
-          </v-btn>  
-          <v-btn
-            class="ml-3"
-            color="primary mx-0"
-            @click="addFilter = !addFilter"
-          >
-            Add Filter
-          </v-btn>-->
           <AddFilter
-            v-if="addFilter"
-            @closeFilter="addFilter=false"
+                  v-if="addFilter"
+                  @closeFilter="addFilter=false"
           />
         </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
-
-
-<!--        <div-->
-<!--                v-if="sharedState.wallets.length > 0-->
-<!--        && sharedState.activeWallet-->
-<!--        && !sharedState.error"-->
-<!--        >-->
-<!--            <NamespaceList-->
-<!--                    class="my-2"-->
-<!--            />-->
-<!--        </div>-->
 </template>
 
 <script>
-import AddFilter from './AddFilter.vue';
-import Errors from '../Errors.vue';
+  import { mapState } from 'vuex';
+  import AddFilter from './AddFilter.vue';
+  import Errors from '../Errors.vue';
 
-export default {
-  name: 'Filters',
-  components: {
-    AddFilter,
-    Errors,
-  },
-  data() {
-    return {
-      addFilter: true,
-    };
-  },
-  methods: {
-    reloadList() {
+  export default {
+    name: 'Filters',
+    components: {
+      AddFilter,
+      Errors,
     },
-  },
-};
+    data() {
+      return {
+        addFilter: true,
+      };
+    },
+    computed:{
+      ...mapState([
+        'wallet',
+        'accountInfo',
+        'application',
+        'transactions',
+        'assets',
+        'namespaces',
+      ], {
+        wallet: state => state.wallet,
+        assets: state => state.assets,
+        namespaces: state => state.namespaces,
+      }),
+    },
+    methods: {
+      reloadList() {
+      },
+    },
+  };
 </script>

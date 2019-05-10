@@ -31,6 +31,7 @@ import DeveloperMode from './components/developermode/DeveloperMode.vue';
 import About from './components/About.vue';
 import store from './store';
 import Filter from './components/filter/Filter.vue';
+import Multisig from './components/multisig/Multisig.vue';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -41,6 +42,7 @@ const routes = [
   { path: '/wallet', component: Wallet, name: 'Wallets' },
   { path: '/developer-mode', component: DeveloperMode, name: 'Developer mode' },
   { path: '/handler', component: Handler, name: 'URI Transaction Handler' },
+  { path: '/multisig', component: Multisig, name: 'Multisig' },
   { path: '/about', component: About, name: 'About' },
   { path: '/', component: Home, name: 'Home' },
   { path: '/filter', component: Filter, name: 'Filters' },
