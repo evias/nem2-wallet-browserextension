@@ -45,6 +45,14 @@
               prominent
             >
               <v-toolbar-title>{{ wallet.activeWallet.name }}</v-toolbar-title>
+              <v-spacer />
+
+              <v-btn
+                icon
+                @click.stop="reloadAccountInfo(wallet.activeWallet)"
+              >
+                <v-icon>refresh</v-icon>
+              </v-btn>
             </v-toolbar>
             <v-card-text>
               <v-container
@@ -298,6 +306,11 @@ export default {
       if (this.namespaces.namespaces[this.wallet.activeWallet.name].length === 0) return 'none';
       return this.namespaces.namespaces[this.wallet.activeWallet.name]
         .filter(x => x.active);
+    },
+  },
+  methods: {
+    reloadAccountInfo(wallet) {
+      this.$store.dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet);
     },
   },
 };
