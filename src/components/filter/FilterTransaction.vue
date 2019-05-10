@@ -251,7 +251,7 @@ export default {
         { label: 'Transfer', entityType: TransactionType.TRANSFER },
         { label: 'Namespace', entityType: TransactionType.REGISTER_NAMESPACE },
         { label: 'Mosaic Supply Change', entityType: TransactionType.MOSAIC_SUPPLY_CHANGE },
-        { label: 'Modify Multisig', entityType: TransactionType.MODIFY_MULTISIG_ACCOUNT },
+        { label: 'Modify multisig', entityType: TransactionType.MODIFY_MULTISIG_ACCOUNT },
         { label: 'Aggregate Complete', entityType: TransactionType.AGGREGATE_COMPLETE },
         { label: 'Aggregate Bonded', entityType: TransactionType.AGGREGATE_BONDED },
         { label: 'Lock Funds', entityType: TransactionType.LOCK },
