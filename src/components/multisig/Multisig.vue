@@ -15,97 +15,81 @@
 // You should have received a copy of the GNU General Public License
 
 <template>
-<v-layout
-        column
-        xs12
->
-<v-layout
-        row
-        mb-4
->
-<v-layout
-        row
-        fill-height
-        justify-start
-        pl-3
-        xs3
->
-<h5 class="headline pt-3">
-Multisig
-</h5>
-</v-layout>
-<v-layout
-        row
-        fill-height
-        justify-end
-        xs9
->
+  <v-layout
+          column
+          xs12
+  >
+    <v-flex
+            xs12
+    >
+    <v-card
+            v-if="wallet.wallets.length > 0
+          && wallet.activeWallet
+          && !application.error"
+            style="height: auto;padding:0 !important"
+            class="card--flex-toolbar"
+    >
+      <v-toolbar
+              card
+              prominent
+      >
+        <v-toolbar-title> Multisig actions</v-toolbar-title>
+      </v-toolbar>
 
-<v-btn
-        class="ml-3"
-        color="primary mx-0"
-        @click="reloadMultisignAccountInfo"
->
-reload
-</v-btn>
-<v-btn
-        class="ml-3"
-        color="primary mx-0"
-        @click="covertToMultisig"
-        :disabled="
-                                 !(typeof multisigAccountInfo.account == 'undefined'||
-                                !multisigAccountInfo.isMultisig())"
->
-convert to multisig
-</v-btn>
-<v-btn
-        class="ml-3"
-        color="primary mx-0"
-        @click="modifyMultisig"
->
-modify multisig
-</v-btn>
-<v-btn
-        class="ml-3"
-        color="primary mx-0"
-        @click="getMultisigTransactions"
->
-multisig TRANSACTIONS
-</v-btn>
-</v-layout>
-</v-layout>
+      <v-tabs fixed-tabs
+              v-model="active"
+              slider-color="primary"
+      >
+        <v-tab ripple>
+          Multisig Info
+        </v-tab>
+        <v-tab ripple  :disabled="!(typeof multisigAccountInfo.account == 'undefined'
+               ||!multisigAccountInfo.isMultisig())">
+          Covert To Multisig
+        </v-tab>
+        <v-tab ripple>Modify Multisig</v-tab>
+        <v-tab ripple>Cosign Multisign Transactions</v-tab>
+        <v-tab-item>
+          <v-card flat>
+            <v-card flat>
+              <MultisigAccountInfo :multisigAccountInfo="multisigAccountInfo"
+              />
+            </v-card >
+          </v-card>
+        </v-tab-item>
 
-<Errors />
-<div v-if="
-               wallet.wallets.length > 0
-              && wallet.activeWallet
-              && !application.error"
->
+        <v-tab-item
+        >
+          <v-card flat>
+            <MultisigConversion
+                    @closeComponent="multisigConversion = false"
+            />
+          </v-card>
+        </v-tab-item>
 
-<MultisigConversion
-        v-if="multisigConversion"
-        @closeComponent="multisigConversion = false"
-/>
-<div
-        v-if="wallet.wallets.length > 0
-              && wallet.activeWallet
-              && !application.error"
->
-<MultisigModification
-        v-if="multisigModification"
-        @closeComponent="multisigModification = false"
-        class="my-2"
-        :multisigAccountInfo="multisigAccountInfo"
-/>
-<MultisigAccountInfo
-        :multisigAccountInfo="multisigAccountInfo"
-/>
-<MultisigTransactions v-if="multisignTransactions"
-                      :multisigAccountInfo="multisigAccountInfo"
-/>
-</div>
-</div>
-</v-layout>
+        <v-tab-item>
+          <v-card flat>
+            <MultisigModification
+                    @closeComponent="multisigModification = false"
+                    class="my-2"
+                    :multisigAccountInfo="multisigAccountInfo"
+            />
+          </v-card>
+        </v-tab-item>
+
+        <v-tab-item
+        >
+          <v-card flat>
+            <MultisigTransactions :multisigAccountInfo="multisigAccountInfo"
+            />
+          </v-card>
+        </v-tab-item>
+      </v-tabs>
+
+    </v-card>
+    <Errors />
+    </v-flex>
+  </v-layout>
 
 
 </template>

@@ -59,6 +59,8 @@
               owned-assets
             />
           </v-tab-item>
+
+
           <v-tab
             :key="1"
           >

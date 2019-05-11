@@ -42,6 +42,7 @@
           <v-card-text>
             <v-flex xs12>
               <v-form lazy-validation>
+
                 <v-text-field
                   v-model="txRecipient"
                   required

@@ -36,7 +36,9 @@
         <v-toolbar
                 card
                 prominent
-        />
+        >
+          <v-toolbar-title>Manage filter</v-toolbar-title>
+        </v-toolbar>
         <v-spacer />
         <v-card-text>
           <AddFilter
@@ -50,38 +52,38 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex';
-  import AddFilter from './AddFilter.vue';
-  import Errors from '../Errors.vue';
+import { mapState } from 'vuex';
+import AddFilter from './AddFilter.vue';
+import Errors from '../Errors.vue';
 
-  export default {
-    name: 'Filters',
-    components: {
-      AddFilter,
-      Errors,
+export default {
+  name: 'Filters',
+  components: {
+    AddFilter,
+    Errors,
+  },
+  data() {
+    return {
+      addFilter: true,
+    };
+  },
+  computed:{
+    ...mapState([
+      'wallet',
+      'accountInfo',
+      'application',
+      'transactions',
+      'assets',
+      'namespaces',
+    ], {
+      wallet: state => state.wallet,
+      assets: state => state.assets,
+      namespaces: state => state.namespaces,
+    }),
+  },
+  methods: {
+    reloadList() {
     },
-    data() {
-      return {
-        addFilter: true,
-      };
-    },
-    computed:{
-      ...mapState([
-        'wallet',
-        'accountInfo',
-        'application',
-        'transactions',
-        'assets',
-        'namespaces',
-      ], {
-        wallet: state => state.wallet,
-        assets: state => state.assets,
-        namespaces: state => state.namespaces,
-      }),
-    },
-    methods: {
-      reloadList() {
-      },
-    },
-  };
+  },
+};
 </script>

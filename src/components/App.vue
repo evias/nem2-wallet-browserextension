@@ -104,6 +104,16 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
+                <v-list-tile to="/accountLink">
+                  <v-list-tile-action>
+                    <v-icon>record_voice_over</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>Account Link</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
               </v-list>
 
               <v-divider />
@@ -130,7 +140,6 @@
                     <v-list-tile-title>About</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
 
 
               </v-list>

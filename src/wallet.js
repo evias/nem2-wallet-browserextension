@@ -32,6 +32,7 @@ import About from './components/About.vue';
 import store from './store';
 import Filter from './components/filter/Filter.vue';
 import Multisig from './components/multisig/Multisig.vue';
+import AccountLink from './components/accountLink/AccountLink.vue';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -43,6 +44,7 @@ const routes = [
   { path: '/developer-mode', component: DeveloperMode, name: 'Developer mode' },
   { path: '/handler', component: Handler, name: 'URI Transaction Handler' },
   { path: '/multisig', component: Multisig, name: 'Multisig' },
+  { path: '/accountLink', component: AccountLink, name: 'AccountLink' },
   { path: '/about', component: About, name: 'About' },
   { path: '/', component: Home, name: 'Home' },
   { path: '/filter', component: Filter, name: 'Filters' },

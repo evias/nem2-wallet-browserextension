@@ -20,7 +20,7 @@
                 <v-flex xs3>
                     <v-subheader>Multisig Account Publickey</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-select
                             v-model="currentMultisigPublicKey"
                             :items="multisigAccountInfo.multisigAccounts"
@@ -34,7 +34,7 @@
                 <v-flex xs3>
                     <v-subheader>Approval Delta</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-text-field
                             v-model="approvalDelta"
                             class="ma-0 pa-0"
@@ -51,7 +51,7 @@
                 <v-flex xs3>
                     <v-subheader>Removal Delta</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-text-field
                             v-model="removalDelta"
                             class="ma-0 pa-0"
@@ -68,7 +68,7 @@
                 <v-flex xs3>
                     <v-subheader>Max Fee</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-text-field
                             v-model="maxFee"
                             class="ma-0 pa-0"
@@ -85,13 +85,7 @@
                 <v-flex xs3>
                     <v-subheader>Lock Funds Mosaic</v-subheader>
                 </v-flex>
-                <v-flex xs6>
-                    <!--                    <v-select-->
-                    <!--                            v-model="lockFundsMosaicType"-->
-                    <!--                            :items="sharedState.assets"-->
-                    <!--                            item-text="id"-->
-                    <!--                            solo-->
-                    <!--                    />-->
+                <v-flex xs4>
                     <v-text-field
                             v-model="lockFundsMosaicType"
                             class="ma-0 pa-0"
@@ -118,7 +112,7 @@
                 <v-flex xs3>
                     <v-subheader>Lock Funds Duration In Blocks</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-text-field
                             v-model="lockFundsDuration"
                             class="ma-0 pa-0"
@@ -134,7 +128,7 @@
                 <v-flex xs3>
                     <v-subheader>Lock Funds Max Fee</v-subheader>
                 </v-flex>
-                <v-flex xs9>
+                <v-flex xs7>
                     <v-text-field
                             v-model="lockFundsMaxFee"
                             class="ma-0 pa-0"
@@ -148,17 +142,19 @@
 
 
             <v-layout>
-                <v-flex
-                        sm
-                >
+                <v-flex sm>
                     <v-layout row>
-                        <v-flex>
-                            <v-btn color="primary" dark :color="isAdd?'primary':'red'" @click="isAdd = !isAdd">{{isAdd?'Add':'Remove'}}
+                        <v-flex  offset-xs1>
+                            <v-btn color="primary"
+                                   dark
+                                   :color="isAdd?'primary':'red'" @click="isAdd = !isAdd"
+                            >
+                                {{isAdd?'Add':'Remove'}}
                                 <v-icon dark right>{{isAdd ?'add_circle_outline':'remove_circle_outline'}}</v-icon>
                             </v-btn>
                         </v-flex>
 
-                        <v-flex xs10  >
+                        <v-flex xs6  >
                             <v-text-field
                                     v-model="currentCosignatoryPublicKey"
                                     placeholder="input cosignatory publickey"
@@ -166,7 +162,7 @@
                             />
                         </v-flex>
 
-                        <v-flex xs1>
+                        <v-flex xs3>
                             <v-btn
                                     :disabled="currentCosignatoryPublicKey === ''"
                                     color="primary"
@@ -210,18 +206,11 @@
             <v-layout>
                 <v-layout
                         row
-                        justify-end
+                        justify-center
                         align-center
                 >
                     <v-btn
-                            flat
-                            @click="$emit('closeComponent')"
-                    >
-                        Close
-                    </v-btn>
-                    <v-btn
                             :disabled="disabledSendLockFundsTransaction"
-                            color="primary mx-0"
                             @click="showDialog"
                     >
                         {{showLockFunds?'Send Transaction':'Send LockFunds Transaction'}}
@@ -435,28 +424,28 @@
                 console.log(mosaicId,"////")
 
                 const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
-                    Deadline.create(),
-                    minApprovalDelta,
-                    minRemovalDelta,
-                    cosignatories.map((co) => {
-                        return new MultisigCosignatoryModification(
-                            co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
-                            co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
-                            PublicAccount.createFromPublicKey(co.cosignatoryPublicKey, network)
-                        )
-                    }),
-                    network
+                        Deadline.create(),
+                        minApprovalDelta,
+                        minRemovalDelta,
+                        cosignatories.map((co) => {
+                            return new MultisigCosignatoryModification(
+                                    co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+                                    co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+                                    PublicAccount.createFromPublicKey(co.cosignatoryPublicKey, network)
+                            )
+                        }),
+                        network
                 )
 
                 const aggregateTx = new AggregateTransaction(
-                    network,
-                    TransactionType.AGGREGATE_BONDED,
-                    2,
-                    Deadline.create(23),
-                    UInt64.fromUint(this.maxFee),
-                    [
-                        modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
-                    ]
+                        network,
+                        TransactionType.AGGREGATE_BONDED,
+                        2,
+                        Deadline.create(23),
+                        UInt64.fromUint(this.maxFee),
+                        [
+                            modifyMultisigAccountTx.toAggregate(multisigPublicAccount)
+                        ]
                 )
 
                 const signedAggregateTx = account.sign(aggregateTx)
@@ -464,18 +453,18 @@
 
                 const lockFundsMosaicAmount = this.lockFundsMosaicAmount
                 let lockMosaic = new Mosaic(
-                    mosaicId,
-                    UInt64.fromUint(lockFundsMosaicAmount>=10000000?lockFundsMosaicAmount:10000000)
+                        mosaicId,
+                        UInt64.fromUint(lockFundsMosaicAmount>=10000000?lockFundsMosaicAmount:10000000)
                 )
 
                 const lockFundsTx = new LockFundsTransaction(
-                    network,
-                    1,
-                    Deadline.create(23),
-                    UInt64.fromUint(this.lockFundsMaxFee),
-                    lockMosaic,
-                    UInt64.fromUint(this.lockFundsDuration),
-                    signedAggregateTx
+                        network,
+                        1,
+                        Deadline.create(23),
+                        UInt64.fromUint(this.lockFundsMaxFee),
+                        lockMosaic,
+                        UInt64.fromUint(this.lockFundsDuration),
+                        signedAggregateTx
                 )
                 const signedLockFundsTx = activeWallet.account.sign(lockFundsTx);
                 console.log(activeWallet)
@@ -512,25 +501,25 @@
                 const cosignatories = this.cosignatoryList
 
                 const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
-                    Deadline.create(),
-                    minApprovalDelta,
-                    minRemovalDelta,
-                    cosignatories.map((co) => {
-                        return new MultisigCosignatoryModification(
-                            co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
-                            PublicAccount.createFromPublicKey(co.cosignatoryPublicKey, network)
-                        )
-                    }),
-                    network
+                        Deadline.create(),
+                        minApprovalDelta,
+                        minRemovalDelta,
+                        cosignatories.map((co) => {
+                            return new MultisigCosignatoryModification(
+                                    co.modificationType ? MultisigCosignatoryModificationType.Add : MultisigCosignatoryModificationType.Remove,
+                                    PublicAccount.createFromPublicKey(co.cosignatoryPublicKey, network)
+                            )
+                        }),
+                        network
                 )
                 console.log(cosignatories)
                 console.log(modifyMultisigAccountTx)
 
                 const aggregateTx = AggregateTransaction.createComplete(
-                    Deadline.create(),
-                    [modifyMultisigAccountTx.toAggregate(multisigPublicAccount)],
-                    NetworkType.MIJIN_TEST,
-                    []);
+                        Deadline.create(),
+                        [modifyMultisigAccountTx.toAggregate(multisigPublicAccount)],
+                        NetworkType.MIJIN_TEST,
+                        []);
 
                 this.txs = [aggregateTx];
 
