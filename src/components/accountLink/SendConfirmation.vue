@@ -13,31 +13,31 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-list
-          two-line
-          class="py-0"
+    two-line
+    class="py-0"
   >
     <v-slide-y-transition
-            group
-            tag="v-list"
-            class="py-0"
+      group
+      tag="v-list"
+      class="py-0"
     >
       <template v-for="(result) in results">
         <v-list-tile
-                :key="result.txHash"
-                avatar
-                ripple
+          :key="result.txHash"
+          avatar
+          ripple
         >
           <v-list-tile-content class="my-2">
             <v-list-tile-title>Transaction sent was a success! 🚀</v-list-tile-title>
             <v-list-tile-sub-title class="monospaced-bold">
               Hash:
               <a
-                      :href="result.txStatusUrl"
-                      target="_blank"
+                :href="result.txStatusUrl"
+                target="_blank"
               >
                 {{ result.txHash }}
               </a>
@@ -50,24 +50,24 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      txSendData: {
-        type: Array,
-        default() {
-          return [];
-        },
+export default {
+  props: {
+    txSendData: {
+      type: Array,
+      default() {
+        return [];
       },
     },
-    computed: {
-      results() {
-        return this.txSendData.map(result => ({
-          txHash: result.txHash,
-          txStatusUrl: `${result.nodeURL}/transaction/${result.txHash}/status`,
-        }));
-      },
+  },
+  computed: {
+    results() {
+      return this.txSendData.map(result => ({
+        txHash: result.txHash,
+        txStatusUrl: `${result.nodeURL}/transaction/${result.txHash}/status`,
+      }));
     },
-  };
+  },
+};
 </script>
 <style scoped>
 </style>
