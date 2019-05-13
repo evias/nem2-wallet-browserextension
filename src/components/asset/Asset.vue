@@ -24,7 +24,7 @@
     <v-flex
       xs12
     >
-      <Errors />
+      <Errors class="mb-4" />
       <v-card
         v-if="wallet.wallets.length > 0
           && wallet.activeWallet

@@ -33,7 +33,7 @@
       >
         <v-toolbar-title>Link or Unlink an account</v-toolbar-title>
       </v-toolbar>
-      <Errors />
+      <Errors class="mb-4" />
       <div
         v-if="wallet.wallets.length > 0
           && wallet.activeWallet

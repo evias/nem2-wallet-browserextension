@@ -26,7 +26,7 @@
       wrap
     >
       <v-flex xs12>
-        <Errors class="pb-4" />
+        <Errors class="mb-4" />
         <v-card
           v-if="wallet.wallets.length > 0
             && wallet.activeWallet"
@@ -42,7 +42,6 @@
           <v-card-text>
             <v-flex xs12>
               <v-form lazy-validation>
-
                 <v-text-field
                   v-model="txRecipient"
                   required
