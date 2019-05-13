@@ -51,7 +51,7 @@
             :disabled="!(typeof multisigAccountInfo.account == 'undefined'
               ||!multisigAccountInfo.isMultisig())"
           >
-            Covert To Multisig
+            Convert To Multisig
           </v-tab>
           <v-tab ripple>
             Modify Multisig

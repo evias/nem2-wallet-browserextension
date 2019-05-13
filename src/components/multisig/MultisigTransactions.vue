@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <v-layout row>
       <v-flex xs3>
@@ -7,38 +6,47 @@
       </v-flex>
       <v-flex xs9>
         <v-select
-                v-model="currentMultisigPublicKey"
-                :items="multisigAccountInfo.multisigAccounts"
-                item-text="publicKey"
-                solo
+          v-model="currentMultisigPublicKey"
+          :items="multisigAccountInfo.multisigAccounts"
+          item-text="publicKey"
+          solo
         />
       </v-flex>
     </v-layout>
-    <div v-if="aggregatedTx.length > 0" >
+    <div v-if="aggregatedTx.length > 0">
       <v-flex xs12>
         <v-card>
           <v-card-title primary-title>
             <div class="monospaced">
               <div class="clearfix homeLine">
-                <div v-for="(item,num) in aggregatedTx">
-                  <div  class="clearfix">transactionHash: <br> {{item.transactionInfo.hash}}</div>
-                  <div>deadline:<br>{{item.deadline.value}}</div>
-                  <div>networkType:<br>{{item.networkType}}</div>
-                  <div>signature:<br>{{item.signature}}</div>
-                  <div>signer:<br>{{item.signer.publicKey}}</div>
-                  <div v-for="(i,index) in item.innerTransactions">
-                    inner Transactions {{index+1}} :<br>
-                    <div>inner Transactions Id:<br>{{i.transactionInfo.id}}</div>
-                    <div>inner Transactions aggregateHash:
-                      <br />
-                      {{i.transactionInfo.aggregateHash}}
+                <div
+                  v-for="(item, num) in aggregatedTx"
+                  :key="num"
+                >
+                  <div class="clearfix">
+                    transactionHash: <br> {{ item.transactionInfo.hash }}
+                  </div>
+                  <div>deadline:<br>{{ item.deadline.value }}</div>
+                  <div>networkType:<br>{{ item.networkType }}</div>
+                  <div>signature:<br>{{ item.signature }}</div>
+                  <div>signer:<br>{{ item.signer.publicKey }}</div>
+                  <div
+                    v-for="(i,index) in item.innerTransactions"
+                    :key="index"
+                  >
+                    inner Transactions {{ index + 1 }} :<br>
+                    <div>inner Transactions Id:<br>{{ i.transactionInfo.id }}</div>
+                    <div>
+                      inner Transactions aggregateHash:
+                      <br>
+                      {{ i.transactionInfo.aggregateHash }}
                     </div>
                   </div>
-                  <v-btn @click="cosignTransaction(num)">cosign this transaction</v-btn>
+                  <v-btn @click="cosignTransaction(num)">
+                    cosign this transaction
+                  </v-btn>
                 </div>
               </div>
-
-
             </div>
           </v-card-title>
         </v-card>
@@ -50,7 +58,7 @@
         <v-card-title primary-title>
           <div class="monospaced">
             <div class="clearfix homeLine">
-      no transactions waiting to be cosign
+              no transactions waiting to be cosign
             </div>
           </div>
         </v-card-title>
@@ -66,11 +74,13 @@ import {
   AccountHttp,
   NetworkType,
   CosignatureTransaction,
-  TransactionHttp} from 'nem2-sdk';
+  TransactionHttp,
+} from 'nem2-sdk';
+
 export default {
-  name: "MultisigTransactions",
-  props:['multisigAccountInfo'],
-  computed:{
+  name: 'MultisigTransactions',
+  props: ['multisigAccountInfo'],
+  computed: {
     ...mapState([
       'wallet',
       'accountInfo',
@@ -85,40 +95,43 @@ export default {
     }),
 
   },
-  data:function(){
+  data() {
     return {
-      currentMultisigPublicKey:'',
-      activeWallet:this.$store.getters['wallet/GET_ACTIVE_WALLET'],
-      aggregatedTx:[]
-    }
+      currentMultisigPublicKey: '',
+      activeWallet: this.$store.getters['wallet/GET_ACTIVE_WALLET'],
+      aggregatedTx: [],
+    };
   },
   watch: {
-    currentMultisigPublicKey: async function () {
-      const activeWallet = this.activeWallet
-      const accountHttp = new AccountHttp(activeWallet.node)
-      const publicAccount = PublicAccount.createFromPublicKey(this.currentMultisigPublicKey,NetworkType.MIJIN_TEST)
-      this.aggregatedTx = await accountHttp.aggregateBondedTransactions(publicAccount).toPromise()
-      console.log(this.aggregatedTx)
-
-
-    }
+    async currentMultisigPublicKey() {
+      const { activeWallet } = this;
+      const accountHttp = new AccountHttp(activeWallet.node);
+      const publicAccount = PublicAccount
+        .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
+      this.aggregatedTx = await accountHttp.aggregateBondedTransactions(publicAccount).toPromise();
+      // eslint-disable-next-line no-console
+      console.log(this.aggregatedTx);
+    },
   },
-  methods:{
-    cosignTransaction: function (index) {
-      console.log(this.aggregatedTx[index])
+  methods: {
+    cosignTransaction(index) {
+      // eslint-disable-next-line no-console
+      console.log(this.aggregatedTx[index]);
       const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-      const account = activeWallet.account
+      const { account } = activeWallet;
       const transactionHttp = new TransactionHttp(activeWallet.node);
 
-      const cosignAggregateBondedTransaction = function (transaction, account){
+      const cosignAggregateBondedTransaction = (transaction) => {
         const cosignatureTransaction = CosignatureTransaction.create(transaction);
         return account.signCosignatureTransaction(cosignatureTransaction);
       };
-      const cosignatureSignedTransaction = cosignAggregateBondedTransaction(this.aggregatedTx[index],account)
-      transactionHttp.announceAggregateBondedCosignature(cosignatureSignedTransaction)
-    }
-  }
-}
+      const cosignatureSignedTransaction = cosignAggregateBondedTransaction(
+        this.aggregatedTx[index],
+      );
+      transactionHttp.announceAggregateBondedCosignature(cosignatureSignedTransaction);
+    },
+  },
+};
 </script>
 
 <style scoped>
