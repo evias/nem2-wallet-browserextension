@@ -24,7 +24,8 @@
     <v-flex
       xs12
     >
-      <Errors />
+      <Errors class="mb-4" />
+
       <v-card
         style="height: auto;padding:0 !important"
         class="card--flex-toolbar"

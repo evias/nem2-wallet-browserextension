@@ -40,6 +40,25 @@ export const txCategories = {
   ],
 };
 
+export const txTypeNames = [
+  'Transfer',
+  'Register namespace',
+  'Address alias',
+  'Mosaic alias',
+  'Mosaic definition',
+  'Mosaic supply change',
+  'Modify multisig account',
+  'Aggregate complete',
+  'Aggregate bonded',
+  'Lock',
+  'Secret lock',
+  'Secret proof',
+  'Mod. account address',
+  'Mod. account mosaic',
+  'Mod. account entity type',
+  'Link account',
+];
+
 export const txTypeNameFromTypeId = (typeId) => {
   switch (typeId) {
   case TransactionType.TRANSFER: return 'Transfer';
@@ -62,6 +81,11 @@ export const txTypeNameFromTypeId = (typeId) => {
   }
 };
 
+
+export const txFilterNameFromName = typeName => typeName
+  .replace(/ /g, '_').replace(/\./g, '8');
+
+
 export const transactionTypesFilters = () => {
   const filters = {};
   const typeNamesToExclude = [
@@ -74,7 +98,7 @@ export const transactionTypesFilters = () => {
     const typeName = txTypeNameFromTypeId(TransactionType[key]);
     if (typeNamesToExclude.indexOf(typeName) === -1) {
       // Hacky trick to preserve reactivity while keeping a simple object
-      const typeIndex = typeName.replace(/ /g, '_').replace(/\./g, '8');
+      const typeIndex = txFilterNameFromName(typeName);
       filters[typeIndex] = true;
     }
   });

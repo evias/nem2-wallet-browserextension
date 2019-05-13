@@ -45,13 +45,13 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
-                <v-list-tile to="/send">
+                <v-list-tile to="/transact">
                   <v-list-tile-action>
                     <v-icon>send</v-icon>
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Send</v-list-tile-title>
+                    <v-list-tile-title>Transactions</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -75,25 +75,6 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
-                <v-list-tile to="/filter">
-                  <v-list-tile-action>
-                    <v-icon>filter_list</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Filter</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-
-                <v-list-tile to="/Handler">
-                  <v-list-tile-action>
-                    <v-icon>http</v-icon>
-                  </v-list-tile-action>
-
-                  <v-list-tile-content>
-                    <v-list-tile-title>URI Scheme</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-
                 <v-list-tile to="/multisig">
                   <v-list-tile-action>
                     <v-icon>keyboard_tab</v-icon>
@@ -113,7 +94,6 @@
                     <v-list-tile-title>Account Link</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
               </v-list>
 
               <v-divider />
@@ -130,7 +110,6 @@
                 </v-list-tile>
 
 
-
                 <v-list-tile to="/about">
                   <v-list-tile-action>
                     <v-icon>info</v-icon>
@@ -140,8 +119,6 @@
                     <v-list-tile-title>About</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
-
               </v-list>
             </v-navigation-drawer>
             <v-toolbar

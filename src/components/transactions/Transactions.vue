@@ -26,7 +26,7 @@
           card
           prominent
         >
-          <v-toolbar-title>Recent transactions</v-toolbar-title>
+          <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-spacer />
           <v-btn
             icon
@@ -192,6 +192,7 @@
       <div v-if="transactions.activeTransaction">
         <TransactionListFilters
           :visible="showFilters"
+          preset-filter="presetFilter"
           @close="showFilters=false"
         />
       </div>
@@ -213,6 +214,20 @@ export default {
     TransactionModal,
     WoWalletCreationDialog,
     TransactionListFilters,
+  },
+  props: {
+    presetFilter: {
+      type: String,
+      default() {
+        return '';
+      },
+    },
+    title: {
+      type: String,
+      default() {
+        return 'Recent Transactions';
+      },
+    },
   },
   data() {
     return {
@@ -241,6 +256,17 @@ export default {
     tx() {
       return this.transactions.activeTransaction;
     },
+  },
+  mounted() {
+    if (this.presetFilter === false) return;
+    if (this.presetFilter === '') {
+      this.$store.dispatch('transactions/RESET_TRANSACTION_FILTERS');
+    } else {
+      this.$store.dispatch(
+        'transactions/UPDATE_TRANSACTION_TYPES_PRESET_FILTER',
+        [this.presetFilter],
+      );
+    }
   },
   methods: {
     refresh(wallet) {

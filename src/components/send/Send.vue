@@ -31,7 +31,6 @@
         wrap
       >
         <v-flex xs12>
-          <Errors />
           <v-card
             v-if="wallet.wallets.length > 0
               && wallet.activeWallet"
@@ -41,7 +40,20 @@
             <v-toolbar
               card
               prominent
-            />
+            >
+              <v-toolbar-title>Transfer Transaction</v-toolbar-title>
+
+              <v-spacer />
+              <v-btn
+                href="https://nemtech.github.io/concepts/transfer-transaction.html"
+                target="_new"
+                icon
+              >
+                <v-icon>local_library</v-icon>
+              </v-btn>
+            </v-toolbar>
+
+
             <v-card-text>
               <p class="mb-4 mt-4">
                 Current Node:
@@ -55,39 +67,24 @@
                 <v-form lazy-validation>
                   <v-text-field
                     v-model="txRecipient"
+                    label="Recipient's address"
                     placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
                     required
-                    solo
-                    reverse
-                  >
-                    <template slot="append">
-                      <v-subheader>Recipient</v-subheader>
-                    </template>
-                  </v-text-field>
+                  />
 
                   <v-text-field
                     v-model="txAmount"
+                    label="cat.currency amount"
                     placeholder="ex. 10"
                     type="number"
-                    reverse
-                    solo
-                  >
-                    <template slot="append">
-                      <v-subheader>Amount (Network Currency / XEM)</v-subheader>
-                    </template>
-                  </v-text-field>
+                  />
 
                   <v-text-field
                     v-model="txMaxFee"
+                    label="Max fee"
                     placeholder="ex. 10"
                     type="number"
-                    reverse
-                    solo
-                  >
-                    <template slot="append">
-                      <v-subheader>Max Fee (Network Currency / XEM)</v-subheader>
-                    </template>
-                  </v-text-field>
+                  />
 
                   <v-checkbox
                     v-model="checkbox"
@@ -98,12 +95,11 @@
                     sm
                     class="ma-4"
                   >
-                    <v-select
+                    <v-combobox
                       v-if="wallet.activeWallet && assets.assets[wallet.activeWallet.name].length>0"
                       v-model="currentMosaicName"
                       :items="assets.assets[wallet.activeWallet.name].map(({id})=>id)"
                       label="Chose an asset"
-                      solo
                     />
 
                     <v-text-field
@@ -111,7 +107,6 @@
                         || assets.assets[wallet.activeWallet.name].length===0"
                       v-model="currentMosaicName"
                       label="Enter a mosaic ID"
-                      solo
                     />
 
                     <v-layout row>
@@ -120,7 +115,6 @@
                           v-model="currentMosaicAmount"
                           label="Asset Amount"
                           placeholder="ex. 10"
-                          solo
                         />
                       </v-flex>
 
@@ -165,29 +159,19 @@
 
                   <v-text-field
                     v-model="txMessage"
+                    label="Message"
                     placeholder="Here is your XEM, Bob! - Alice"
-                    solo
-                    reverse
-                  >
-                    <template slot="append">
-                      <v-subheader>Message</v-subheader>
-                    </template>
-                  </v-text-field>
+                  />
 
                   <v-text-field
                     v-model="userPrivateKey"
-                    label=""
+                    label="Private Key"
                     class="mt-3 mb-3"
                     :counter="64"
                     required
-                    solo
-                    reverse
                   >
                     <template slot="append">
-                      <v-subheader>Private Key</v-subheader>
-                    </template>
-
-                    <template slot="prepend-inner">
+                      <v-spacer />
                       <v-btn
                         v-if="userPrivateKey == ''"
                         small
@@ -214,6 +198,7 @@
                 </v-form>
               </v-flex>
               <v-card-actions>
+                <v-spacer />
                 <v-btn
                   :disabled="txRecipient == '' || userPrivateKey == ''"
                   color="primary mx-0"
@@ -307,32 +292,6 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <v-layout
-        row
-        wrap
-        style="margin-top: 30px !important;"
-      >
-        <v-flex
-          xs12
-        >
-          <v-card
-            v-if="wallet.wallets.length > 0
-              && wallet.activeWallet
-              && !application.error"
-          >
-            <v-toolbar
-              card
-              prominent
-            >
-              <v-toolbar-title>My assets</v-toolbar-title>
-            </v-toolbar>
-            <v-spacer />
-            <v-card-text>
-              <AssetList class="my-2" />
-            </v-card-text>
-          </v-card>
-        </v-flex>
-      </v-layout>
     </v-container>
   </v-layout>
 </template>
@@ -354,14 +313,10 @@ import {
 import { mapState } from 'vuex';
 import store from '../../store/index';
 import SendConfirmation from './SendConfirmation.vue';
-import Errors from '../Errors.vue';
-import AssetList from '../asset/AssetList.vue';
 
 export default {
   components: {
     SendConfirmation,
-    Errors,
-    AssetList,
   },
   store,
   data() {
@@ -462,4 +417,5 @@ export default {
     },
   },
 };
+
 </script>

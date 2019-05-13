@@ -21,7 +21,13 @@
 import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber, formatTransactions } from '../infrastructure/transactions/formatTransactions';
-import { transactionTypesFilters } from '../infrastructure/transactions/transactions-types';
+import {
+  transactionTypesFilters,
+  txCategories,
+  txTypeNameFromTypeId,
+  txTypeNames,
+  txFilterNameFromName,
+} from '../infrastructure/transactions/transactions-types';
 
 
 const state = {
@@ -53,8 +59,14 @@ const mutations = {
   clearTransactons(state, wallet) {
     state.transactons[wallet.name] = false;
   },
-  updateTransactionTypesFilter(state, prop) {
-    state.transactionTypesFilters[prop] = state.transactionTypesFilters[prop] !== true;
+  resetTransactionFilters(state, defaultFilters) {
+    state.transactionTypesFilters = defaultFilters;
+  },
+  toggleTransactionTypesFilter(state, filter) {
+    state.transactionTypesFilters[filter] = !state.transactionTypesFilters[filter];
+  },
+  updateTransactionTypesFilter(state, { filter, bool }) {
+    state.transactionTypesFilters[filter] = bool;
   },
   updateActiveTransaction(state, transaction) {
     // eslint-disable-next-line prefer-destructuring
@@ -130,8 +142,33 @@ const actions = {
   },
 
 
-  UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
-    commit('updateTransactionTypesFilter', prop);
+  RESET_TRANSACTION_FILTERS({ commit }) {
+    commit('resetTransactionFilters', transactionTypesFilters());
+  },
+
+
+  TOGGLE_TRANSACTION_TYPES_FILTERS({ commit }, filter) {
+    commit('toggleTransactionTypesFilter', filter);
+  },
+
+
+  async UPDATE_TRANSACTION_TYPES_PRESET_FILTER({ commit }, txCategory) {
+    const txTypesFiltersToExclude = [];
+    Object.keys(txCategories)
+      .forEach((category) => {
+        if (txCategory.indexOf(category) > -1) {
+          txCategories[category].forEach(txType => txTypesFiltersToExclude
+            .push(txTypeNameFromTypeId(txType)));
+        }
+      });
+
+    txTypeNames.forEach((txFilter) => {
+      const bool = txTypesFiltersToExclude.indexOf(txFilter) !== -1;
+      commit('updateTransactionTypesFilter', {
+        filter: txFilterNameFromName(txFilter),
+        bool,
+      });
+    });
   },
 
 

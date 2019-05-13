@@ -13,37 +13,37 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout
-          row
-          pb-2
-          mt-4
+    row
+    pb-2
+    mt-4
   >
     <v-flex
-            xs12
+      xs12
     >
-      <Errors />
+      <Errors class="mb-4" />
       <v-card
-              v-if="
-              wallet.wallets.length > 0 &&
-                wallet.activeWallet
-            "
-              style="height: auto;padding:0 !important"
-              class="card--flex-toolbar"
+        v-if="
+          wallet.wallets.length > 0 &&
+            wallet.activeWallet
+        "
+        style="height: auto;padding:0 !important"
+        class="card--flex-toolbar"
       >
         <v-toolbar
-                card
-                prominent
+          card
+          prominent
         >
-          <v-toolbar-title>Manage filter</v-toolbar-title>
+          <v-toolbar-title>Manage filters</v-toolbar-title>
         </v-toolbar>
         <v-spacer />
         <v-card-text>
           <AddFilter
-                  v-if="addFilter"
-                  @closeFilter="addFilter=false"
+            v-if="addFilter"
+            @closeFilter="addFilter=false"
           />
         </v-card-text>
       </v-card>
@@ -67,7 +67,7 @@ export default {
       addFilter: true,
     };
   },
-  computed:{
+  computed: {
     ...mapState([
       'wallet',
       'accountInfo',
