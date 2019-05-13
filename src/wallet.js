@@ -23,7 +23,7 @@ import VueRouter from 'vue-router';
 import App from './components/App.vue';
 import Home from './components/Home.vue';
 import Handler from './components/uriHandler/Handler.vue';
-import Send from './components/send/Send.vue';
+import Transact from './components/transactions/Transact.vue';
 import Namespace from './components/namespace/Namespace.vue';
 import Asset from './components/asset/Asset.vue';
 import Wallet from './components/wallet/Wallet.vue';
@@ -37,7 +37,7 @@ import AccountLink from './components/accountLink/AccountLink.vue';
 import 'vuetify/dist/vuetify.min.css';
 
 const routes = [
-  { path: '/send', component: Send, name: 'Send a transaction' },
+  { path: '/transact', component: Transact, name: 'Transactions' },
   { path: '/namespace', component: Namespace, name: 'Namespaces' },
   { path: '/asset', component: Asset, name: 'Assets' },
   { path: '/wallet', component: Wallet, name: 'Wallets' },

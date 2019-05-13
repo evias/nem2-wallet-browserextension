@@ -171,7 +171,7 @@
                     required
                   >
                     <template slot="append">
-                      <v-separator />
+                      <v-spacer />
                       <v-btn
                         v-if="userPrivateKey == ''"
                         small
@@ -417,4 +417,5 @@ export default {
     },
   },
 };
+
 </script>
