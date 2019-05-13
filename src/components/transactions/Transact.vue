@@ -38,12 +38,14 @@
           <v-tabs
             v-model="tab"
             grow
+            icons-and-text
           >
             <v-tabs-slider color="yellow" />
 
 
             <v-tab key="1">
               Transfer
+              <v-icon>send</v-icon>
             </v-tab>
             <v-tab-item key="1">
               <Transfer />
@@ -52,17 +54,19 @@
 
             <v-tab key="2">
               URI
+              <v-icon>http</v-icon>
             </v-tab>
             <v-tab-item key="2">
-              <Transfer />
+              <URI />
             </v-tab-item>
 
 
             <v-tab key="3">
               filters
+              <v-icon>filter_list</v-icon>
             </v-tab>
             <v-tab-item key="3">
-              <Transfer />
+              <Filters />
             </v-tab-item>
           </v-tabs>
         </v-flex>
@@ -74,11 +78,48 @@
 <script>
 import Errors from '../Errors.vue';
 import Transfer from './tabs/Transfer.vue';
+import URI from './tabs/URI.vue';
+import Filters from './tabs/Filters.vue';
 
 export default {
   components: {
     Errors,
     Transfer,
+    URI,
+    Filters,
+  },
+  data() {
+    return {
+      tab: 0,
+      tabsWithTransactionFilter: [0, 1, 2],
+      tabsTransactionFilters: {
+        0: 'Transfer',
+        1: '',
+        2: 'Account filter',
+      },
+    };
+  },
+  watch: {
+    tab(tabNumber) {
+      this.updateTransactionFilters(tabNumber);
+    },
+  },
+  mounted() {
+    this.updateTransactionFilters(this.tab);
+  },
+  methods: {
+    updateTransactionFilters(tabNumber) {
+      if (this.tabsWithTransactionFilter.indexOf(tabNumber) === -1) return;
+
+      if (this.tabsTransactionFilters[tabNumber] === '') {
+        this.$store.dispatch('transactions/RESET_TRANSACTION_FILTERS');
+      } else {
+        this.$store.dispatch(
+          'transactions/UPDATE_TRANSACTION_TYPES_PRESET_FILTER',
+          [this.tabsTransactionFilters[tabNumber]],
+        );
+      }
+    },
   },
 };
 

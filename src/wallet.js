@@ -30,7 +30,7 @@ import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
 import About from './components/About.vue';
 import store from './store';
-import Filter from './components/filter/Filter.vue';
+import Filters from './components/filter/Filters.vue';
 import Multisig from './components/multisig/Multisig.vue';
 import AccountLink from './components/accountLink/AccountLink.vue';
 
@@ -47,7 +47,7 @@ const routes = [
   { path: '/accountLink', component: AccountLink, name: 'AccountLink' },
   { path: '/about', component: About, name: 'About' },
   { path: '/', component: Home, name: 'Home' },
-  { path: '/filter', component: Filter, name: 'Filters' },
+  { path: '/filters', component: Filters, name: 'Filters' },
 ];
 
 const router = new VueRouter({

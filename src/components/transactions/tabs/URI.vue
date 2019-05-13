@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Contributors as noted in the AUTHORS file
+é// Copyright (C) 2019 Contributors as noted in the AUTHORS file
 //
 // This file is part of nem2-wallet-browserextension.
 //
@@ -17,38 +17,19 @@
 
 <template>
   <div>
-    <Send class="mb-4" />
-
-    <v-card class="mb-4">
-      <v-toolbar
-        card
-        prominent
-      >
-        <v-toolbar-title>Holdings</v-toolbar-title>
-      </v-toolbar>
-      <v-card-text>
-        <AssetList />
-      </v-card-text>
-    </v-card>
-
-    <Transactions
-      preset-filter="false"
-      title="Recent transfers"
-      class="mb-4"
-    />
+    <Handler class="mb-4" />
+    <Transactions preset-filter="false" />
   </div>
 </template>
 
 <script>
 import Transactions from '../Transactions.vue';
-import AssetList from '../../asset/AssetList.vue';
-import Send from '../../send/Send.vue';
+import Handler from '../../uriHandler/Handler.vue';
 
 export default {
   components: {
-    AssetList,
+    Handler,
     Transactions,
-    Send,
   },
 };
 

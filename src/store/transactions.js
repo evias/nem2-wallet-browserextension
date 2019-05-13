@@ -21,7 +21,13 @@
 import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber, formatTransactions } from '../infrastructure/transactions/formatTransactions';
-import { transactionTypesFilters } from '../infrastructure/transactions/transactions-types';
+import {
+  transactionTypesFilters,
+  txCategories,
+  txTypeNameFromTypeId,
+  txTypeNames,
+  txFilterNameFromName,
+} from '../infrastructure/transactions/transactions-types';
 
 
 const state = {
@@ -146,12 +152,22 @@ const actions = {
   },
 
 
-  UPDATE_TRANSACTION_TYPES_PRESET_FILTER({ commit }, filters) {
-    const txTypesFilters = transactionTypesFilters();
+  async UPDATE_TRANSACTION_TYPES_PRESET_FILTER({ commit }, txCategory) {
+    const txTypesFiltersToExclude = [];
+    Object.keys(txCategories)
+      .forEach((category) => {
+        if (txCategory.indexOf(category) > -1) {
+          txCategories[category].forEach(txType => txTypesFiltersToExclude
+            .push(txTypeNameFromTypeId(txType)));
+        }
+      });
 
-    Object.keys(txTypesFilters).forEach((txFilter) => {
-      const bool = filters.indexOf(txFilter) !== -1;
-      commit('updateTransactionTypesFilter', { filter: txFilter, bool });
+    txTypeNames.forEach((txFilter) => {
+      const bool = txTypesFiltersToExclude.indexOf(txFilter) !== -1;
+      commit('updateTransactionTypesFilter', {
+        filter: txFilterNameFromName(txFilter),
+        bool,
+      });
     });
   },
 

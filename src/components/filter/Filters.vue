@@ -37,7 +37,7 @@
           card
           prominent
         >
-          <v-toolbar-title>Manage filter</v-toolbar-title>
+          <v-toolbar-title>Manage filters</v-toolbar-title>
         </v-toolbar>
         <v-spacer />
         <v-card-text>

@@ -17,23 +17,10 @@
 
 <template>
   <div>
-    <Send class="mb-4" />
-
-    <v-card class="mb-4">
-      <v-toolbar
-        card
-        prominent
-      >
-        <v-toolbar-title>Holdings</v-toolbar-title>
-      </v-toolbar>
-      <v-card-text>
-        <AssetList />
-      </v-card-text>
-    </v-card>
-
+    <Filters class="mb-4" />
     <Transactions
       preset-filter="false"
-      title="Recent transfers"
+      title="Recent filter transactions"
       class="mb-4"
     />
   </div>
@@ -41,14 +28,12 @@
 
 <script>
 import Transactions from '../Transactions.vue';
-import AssetList from '../../asset/AssetList.vue';
-import Send from '../../send/Send.vue';
+import Filters from '../../filter/Filters.vue';
 
 export default {
   components: {
-    AssetList,
+    Filters,
     Transactions,
-    Send,
   },
 };
 
