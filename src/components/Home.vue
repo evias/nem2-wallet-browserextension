@@ -82,6 +82,7 @@
                                 :wallet.activeWallet.account.address.pretty()"
                               class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
                               label="Address"
+                              color="white"
                               readonly
                             />
 
@@ -92,6 +93,7 @@
                                 : 'unknown'"
                               class="ma-0 pa-0 monospaced"
                               label="Public Key"
+                              color="white"
                               readonly
                             />
 
@@ -102,6 +104,7 @@
                                 :wallet.activeWallet.account.privateKey"
                               class="ma-0 pa-0 monospaced"
                               label="Private Key"
+                              color="white"
                               readonly
                             />
 
@@ -109,11 +112,13 @@
                               :value="wallet.activeWallet.node"
                               class="ma-0 pa-0 monospaced"
                               label="Node"
+                              color="white"
                               readonly
                             />
                             <div style="text-align: right">
                               <v-btn
                                 flat
+                                color="white"
                                 class="float:right !important"
                                 @click.stop="showPrivateKey = !showPrivateKey"
                               >
