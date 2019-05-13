@@ -1,49 +1,47 @@
 <template>
   <v-layout
-          column
-          xs12
+    column
+    xs12
   >
     <v-layout
-            row
-            mb-4
+      row
+      mb-4
     >
       <v-layout
-              row
-              fill-height
-              justify-start
-              pl-3
-              xs3
-      >
-
-      </v-layout>
+        row
+        fill-height
+        justify-start
+        pl-3
+        xs3
+      />
       <v-layout
-              row
-              fill-height
-              justify-end
-              xs9
-      >
-      </v-layout>
+        row
+        fill-height
+        justify-end
+        xs9
+      />
     </v-layout>
     <v-card
-            v-if="wallet.wallets.length > 0
-            && wallet.activeWallet"
-            style="height: auto;padding:0 !important"
-            class="card--flex-toolbar"
+      v-if="wallet.wallets.length > 0
+        && wallet.activeWallet"
+      style="height: auto;padding:0 !important"
+      class="card--flex-toolbar"
     >
       <v-toolbar
-              card
-              prominent
+        card
+        prominent
       >
         <v-toolbar-title>Link or Unlink an account</v-toolbar-title>
       </v-toolbar>
-    <Errors />
-    <div  v-if="wallet.wallets.length > 0
-      && wallet.activeWallet
-      && !application.error">
-      <LinkConfigure></LinkConfigure>
-    </div>
+      <Errors />
+      <div
+        v-if="wallet.wallets.length > 0
+          && wallet.activeWallet
+          && !application.error"
+      >
+        <LinkConfigure />
+      </div>
     </v-card>
-
   </v-layout>
 </template>
 
