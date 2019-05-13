@@ -53,8 +53,14 @@ const mutations = {
   clearTransactons(state, wallet) {
     state.transactons[wallet.name] = false;
   },
-  updateTransactionTypesFilter(state, prop) {
-    state.transactionTypesFilters[prop] = state.transactionTypesFilters[prop] !== true;
+  resetTransactionFilters(state, defaultFilters) {
+    state.transactionTypesFilters = defaultFilters;
+  },
+  toggleTransactionTypesFilter(state, filter) {
+    state.transactionTypesFilters[filter] = !state.transactionTypesFilters[filter];
+  },
+  updateTransactionTypesFilter(state, { filter, bool }) {
+    state.transactionTypesFilters[filter] = bool;
   },
   updateActiveTransaction(state, transaction) {
     // eslint-disable-next-line prefer-destructuring
@@ -130,8 +136,23 @@ const actions = {
   },
 
 
-  UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
-    commit('updateTransactionTypesFilter', prop);
+  RESET_TRANSACTION_FILTERS({ commit }) {
+    commit('resetTransactionFilters', transactionTypesFilters());
+  },
+
+
+  TOGGLE_TRANSACTION_TYPES_FILTERS({ commit }, filter) {
+    commit('toggleTransactionTypesFilter', filter);
+  },
+
+
+  UPDATE_TRANSACTION_TYPES_PRESET_FILTER({ commit }, filters) {
+    const txTypesFilters = transactionTypesFilters();
+
+    Object.keys(txTypesFilters).forEach((txFilter) => {
+      const bool = filters.indexOf(txFilter) !== -1;
+      commit('updateTransactionTypesFilter', { filter: txFilter, bool });
+    });
   },
 
 

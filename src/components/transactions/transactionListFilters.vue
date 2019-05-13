@@ -38,9 +38,11 @@
             :key="typeid"
           >
             <v-switch
-              v-model="transactions.transactionTypesFilters[txFilterNameFromId(typeid)]"
+              v-model="transactions.transactionTypesFilters[
+                txFilterNameFromName(txTypeNameFromTypeId(typeid))]"
               :label="txTypeNameFromTypeId(typeid)"
-              @click.stop="updateTxFilterProp(txFilterNameFromId(typeid))"
+              @click.stop="updateTxFilterProp(
+                txFilterNameFromName(txTypeNameFromTypeId(typeid)))"
             />
           </div>
         </template>
@@ -61,7 +63,7 @@
 <script>
 import { mapState } from 'vuex';
 import store from '../../store/index';
-import { txCategories, txTypeNameFromTypeId } from '../../infrastructure/transactions/transactions-types';
+import { txCategories, txTypeNameFromTypeId, txFilterNameFromName } from '../../infrastructure/transactions/transactions-types';
 
 export default {
   name: 'TransactionListFilters',
@@ -73,6 +75,7 @@ export default {
     return {
       txCategories,
       txTypeNameFromTypeId,
+      txFilterNameFromName,
     };
   },
   computed: {
@@ -94,11 +97,8 @@ export default {
   methods: {
     updateTxFilterProp(prop) {
       this.$store.dispatch(
-        'transactions/UPDATE_TRANSACTION_TYPES_FILTERS', prop,
+        'transactions/TOGGLE_TRANSACTION_TYPES_FILTERS', prop,
       );
-    },
-    txFilterNameFromId(typeid) {
-      return txTypeNameFromTypeId(typeid).replace(/ /g, '_').replace(/\./g, '8');
     },
   },
 };

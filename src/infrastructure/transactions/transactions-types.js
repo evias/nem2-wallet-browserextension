@@ -62,6 +62,11 @@ export const txTypeNameFromTypeId = (typeId) => {
   }
 };
 
+
+export const txFilterNameFromName = typeName => typeName
+  .replace(/ /g, '_').replace(/\./g, '8');
+
+
 export const transactionTypesFilters = () => {
   const filters = {};
   const typeNamesToExclude = [
@@ -74,7 +79,7 @@ export const transactionTypesFilters = () => {
     const typeName = txTypeNameFromTypeId(TransactionType[key]);
     if (typeNamesToExclude.indexOf(typeName) === -1) {
       // Hacky trick to preserve reactivity while keeping a simple object
-      const typeIndex = typeName.replace(/ /g, '_').replace(/\./g, '8');
+      const typeIndex = txFilterNameFromName(typeName);
       filters[typeIndex] = true;
     }
   });
