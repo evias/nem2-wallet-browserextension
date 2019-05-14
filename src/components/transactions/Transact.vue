@@ -43,30 +43,39 @@
             <v-tabs-slider color="yellow" />
 
 
-            <v-tab key="1">
+            <v-tab key="0">
               Transfer
               <v-icon>send</v-icon>
             </v-tab>
-            <v-tab-item key="1">
+            <v-tab-item key="0">
               <Transfer />
             </v-tab-item>
 
 
-            <v-tab key="2">
+            <v-tab key="1">
               URI
               <v-icon>http</v-icon>
             </v-tab>
-            <v-tab-item key="2">
+            <v-tab-item key="1">
               <URI />
             </v-tab-item>
 
 
-            <v-tab key="3">
+            <v-tab key="2">
               filters
               <v-icon>filter_list</v-icon>
             </v-tab>
-            <v-tab-item key="3">
+            <v-tab-item key="2">
               <Filters />
+            </v-tab-item>
+
+
+            <v-tab key="3">
+              Account Link
+              <v-icon>record_voice_over</v-icon>
+            </v-tab>
+            <v-tab-item key="3">
+              <AccountLink />
             </v-tab-item>
           </v-tabs>
         </v-flex>
@@ -80,6 +89,7 @@ import Errors from '../Errors.vue';
 import Transfer from './tabs/Transfer.vue';
 import URI from './tabs/URI.vue';
 import Filters from './tabs/Filters.vue';
+import AccountLink from './tabs/AccountLink.vue';
 
 export default {
   components: {
@@ -87,15 +97,17 @@ export default {
     Transfer,
     URI,
     Filters,
+    AccountLink,
   },
   data() {
     return {
       tab: 0,
-      tabsWithTransactionFilter: [0, 1, 2],
+      tabsWithTransactionFilter: [0, 1, 2, 3],
       tabsTransactionFilters: {
         0: 'Transfer',
         1: '',
         2: 'Account filter',
+        3: 'Link account',
       },
     };
   },
