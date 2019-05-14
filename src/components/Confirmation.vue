@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import request from 'request';
 import { mapState } from 'vuex';
 import { filter, timeout } from 'rxjs/operators';
 import {
@@ -76,7 +77,7 @@ function signTransactions(transactions, account) {
   });
 }
 
-function sendSequential(transactions, endpoint, address, emitter) {
+function sendSequential(transactions, endpoint, address, emitter, webhook) {
   const wsEndpoint = endpoint.replace('http', 'ws');
   const listener = new Listener(wsEndpoint, WebSocket);
   const txHttp = new TransactionHttp(endpoint);
@@ -118,6 +119,28 @@ function sendSequential(transactions, endpoint, address, emitter) {
     });
     const firstSignedTx = transactions[0];
     txHttp.announce(firstSignedTx).subscribe((x) => {
+      if (webhook) {
+        const options = {
+          uri: webhook,
+          method: 'POST',
+          body: {
+              action: 'AnnounceTransaction',
+              data: {
+                  hash: firstSignedTx.hash,
+                  signer: firstSignedTx.signer,
+              }
+          },
+          json: true,
+        };
+
+        request(options, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            console.log(body.id) // Print the shortened url.
+          } else {
+            console.error(error);
+          }
+        });
+      }
       emitter('sent', {
         message: x,
         txHash: firstSignedTx.hash,
@@ -167,6 +190,9 @@ export default {
         return 500;
       },
     },
+    webhook: {
+      type: String,
+    }
   },
   computed: mapState(['wallet']),
   watch: {
@@ -184,7 +210,7 @@ export default {
       const emitter = (type, value) => {
         this.$emit(type, value);
       };
-      sendSequential(transactions, endpoint, address, emitter);
+      sendSequential(transactions, endpoint, address, emitter, this.webhook);
       this.toggleDialog();
     },
   },

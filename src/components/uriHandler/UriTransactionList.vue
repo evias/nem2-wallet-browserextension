@@ -87,7 +87,11 @@
                 </span>
 
                 <span class="clearfix">
-                  Endpoint: <a :href="uriTx.endpoint">{{ uriTx.endpoint }}</a>
+                  Endpoint: <a :href="uriTx.endpoint" target="_blank">{{ uriTx.endpoint }}</a>
+                </span>
+
+                <span class="clearfix">
+                  Webhook: <a :href="uriTx.webhook" target="_blank">{{ uriTx.webhook }}</a>
                 </span>
 
                 <span
@@ -128,6 +132,7 @@
       :transactions="transactions.map(({transaction})=>transaction)"
       :title="confirmationTitle"
       :body="body"
+      :webhook="transactions[0].webhook"
       :max-width="600"
     >
       <template
