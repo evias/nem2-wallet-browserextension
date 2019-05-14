@@ -19,32 +19,68 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue';
+import { AccountHttp } from 'nem2-sdk';
+// @TODO: rationalize get modes, make generic ones
+import { GET_MULTISIG_MODES } from '../infrastructure/multisig/multisig-types';
+
 const state = {
-  multisigList: '123multisigList',
-  cosignatoryList: '321cosignatoryList',
+  multisigInfo: false,
+  multisigList: false,
+  cosignatoryList: false,
+  loading_getMultisigInfo: false,
 };
 
 const getters = {
-  GET_MULTISIG() {
-    return state.multisigList;
+  GET_MULTISIG_INFO(state, getters, rootState) {
+    return state.multisigInfo[rootState.wallet.activeWallet.name];
   },
-  GET_COSIGNATORY() {
-    return state.cosignatoryList;
+  GET_MULTISIG(state, getters, rootState) {
+    return state.multisigInfo[rootState.wallet.activeWallet.name].multisigAccounts;
+  },
+  GET_COSIGNATORIES(state, getters, rootState) {
+    return state.multisigInfo[rootState.wallet.activeWallet.name].cosignatories;
   },
 };
 
 const mutations = {
-  SET_MULTISIGN(state, newMultisigList) {
-    state.multisigList = newMultisigList;
+  setAccountMultisigInfo(state, { wallet, multisigInfo }) {
+    if (!state.multisigInfo) state.multisigInfo = {};
+    Vue.set(state.multisigInfo, wallet.name, multisigInfo);
   },
-  SET_COSIGNATORY(state, newCosignatoryList) {
-    state.cosignatoryList = newCosignatoryList;
+  setLoading_getMultisigInfo(state, bool) {
+    state.loading_getMultisigInfo = bool;
   },
 };
+
 
 const actions = {
+  async CLEAR_MULTISIG_INFO({ commit }, wallet) {
+    commit('setAccountMultisigInfo', { wallet, multisigInfo: false });
+  },
+  async GET_MULTISIG_INFO({ commit, dispatch, getters }, { wallet, mode }) {
+    if (mode === GET_MULTISIG_MODES.ON_WALLET_CHANGE && getters.GET_MULTISIG_INFO) {
+      commit('setLoading_getMultisigInfo', false);
+      return;
+    }
 
+    await commit('setLoading_getMultisigInfo', true);
+
+    try {
+      const accountHttp = new AccountHttp(wallet.node);
+      const address = wallet.isWatchOnly
+        ? wallet.publicAccount.address : wallet.account.address;
+      const multisigInfo = await accountHttp.getMultisigAccountInfo(address).toPromise();
+      commit('setAccountMultisigInfo', { wallet, multisigInfo });
+    } catch (error) {
+      dispatch('application/SET_ERROR', error, { root: true });
+      // eslint-disable-next-line no-console
+      console.error(error, 'GET_MULTISIG_INFO');
+    }
+    commit('setLoading_getMultisigInfo', false);
+  },
 };
+
 
 export default {
   namespaced: true,

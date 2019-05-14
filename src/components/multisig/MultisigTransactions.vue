@@ -58,7 +58,7 @@
         <v-card-title primary-title>
           <div class="monospaced">
             <div class="clearfix homeLine">
-              no transactions waiting to be cosign
+              no transactions waiting to be cosigned
             </div>
           </div>
         </v-card-title>
@@ -79,7 +79,21 @@ import {
 
 export default {
   name: 'MultisigTransactions',
-  props: ['multisigAccountInfo'],
+  props: {
+    multisigAccountInfo: {
+      type: Object,
+      default() {
+        return undefined;
+      },
+    },
+  },
+  data() {
+    return {
+      currentMultisigPublicKey: '',
+      activeWallet: this.$store.getters['wallet/GET_ACTIVE_WALLET'],
+      aggregatedTx: [],
+    };
+  },
   computed: {
     ...mapState([
       'wallet',
@@ -93,14 +107,6 @@ export default {
       assets: state => state.assets,
       namespaces: state => state.namespaces,
     }),
-
-  },
-  data() {
-    return {
-      currentMultisigPublicKey: '',
-      activeWallet: this.$store.getters['wallet/GET_ACTIVE_WALLET'],
-      aggregatedTx: [],
-    };
   },
   watch: {
     async currentMultisigPublicKey() {
