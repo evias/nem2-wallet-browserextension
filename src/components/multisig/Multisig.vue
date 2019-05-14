@@ -35,6 +35,7 @@
           <Errors class="mb-4" />
 
           <MultisigAccountInfo
+            v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
             :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
             :loading-get-multisig-info="multisig.loading_getMultisigInfo"
             class="mb-4"
@@ -59,19 +60,14 @@
               fixed-tabs
               slider-color="primary"
             >
-              <v-tab
-                ripple
-                :disabled="!(typeof multisig
-                  .multisigInfo[wallet.activeWallet.name].account === 'undefined'
-                  || !multisig.multisigInfo[wallet.activeWallet.name].isMultisig())"
-              >
+              <v-tab>
                 Convert To Multisig
               </v-tab>
-              <v-tab ripple>
+              <v-tab>
                 Modify Multisig
               </v-tab>
-              <v-tab ripple>
-                Cosign Multisign Transactions
+              <v-tab>
+                Cosign Multisig Transactions
               </v-tab>
 
               <v-tab-item>
@@ -86,7 +82,6 @@
                 <v-card flat>
                   <MultisigModification
                     class="my-2"
-                    :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
                     @closeComponent="multisigModification = false"
                   />
                 </v-card>
@@ -95,7 +90,7 @@
               <v-tab-item>
                 <v-card flat>
                   <MultisigTransactions
-                    :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
+                    :loading-get-multisig-info="multisig.loading_getMultisigInfo"
                   />
                 </v-card>
               </v-tab-item>

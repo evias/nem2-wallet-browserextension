@@ -1,70 +1,85 @@
 <template>
-  <div>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>Multisig Account Publickey</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-select
-          v-model="currentMultisigPublicKey"
-          :items="multisigAccountInfo.multisigAccounts"
-          item-text="publicKey"
-          solo
-        />
-      </v-flex>
-    </v-layout>
-    <div v-if="aggregatedTx.length > 0">
-      <v-flex xs12>
+  <v-layout
+    column
+    class="mt-2 mb-3"
+  >
+    <v-container>
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          v-if="multisig.loading_getMultisigInfo"
+          xs12
+        >
+          <v-progress-linear
+            :indeterminate="true"
+          />
+        </v-flex>
+      </v-layout>
+      <v-layout row>
+        <v-flex xs12>
+          <v-select
+            v-model="currentMultisigPublicKey"
+            label="Multisig Account Publickey"
+            :items="multisig.multisigInfo.multisigAccounts"
+            item-text="publicKey"
+          />
+        </v-flex>
+      </v-layout>
+      <div v-if="aggregatedTx.length > 0">
+        <v-flex xs12>
+          <v-card>
+            <v-card-title primary-title>
+              <div class="monospaced">
+                <div class="clearfix homeLine">
+                  <div
+                    v-for="(item, num) in aggregatedTx"
+                    :key="num"
+                  >
+                    <div class="clearfix">
+                      transactionHash: <br> {{ item.transactionInfo.hash }}
+                    </div>
+                    <div>deadline:<br>{{ item.deadline.value }}</div>
+                    <div>networkType:<br>{{ item.networkType }}</div>
+                    <div>signature:<br>{{ item.signature }}</div>
+                    <div>signer:<br>{{ item.signer.publicKey }}</div>
+                    <div
+                      v-for="(i,index) in item.innerTransactions"
+                      :key="index"
+                    >
+                      inner Transactions {{ index + 1 }} :<br>
+                      <div>inner Transactions Id:<br>{{ i.transactionInfo.id }}</div>
+                      <div>
+                        inner Transactions aggregateHash:
+                        <br>
+                        {{ i.transactionInfo.aggregateHash }}
+                      </div>
+                    </div>
+                    <v-btn @click="cosignTransaction(num)">
+                      cosign this transaction
+                    </v-btn>
+                  </div>
+                </div>
+              </div>
+            </v-card-title>
+          </v-card>
+        </v-flex>
+      </div>
+
+      <div v-else>
         <v-card>
           <v-card-title primary-title>
             <div class="monospaced">
               <div class="clearfix homeLine">
-                <div
-                  v-for="(item, num) in aggregatedTx"
-                  :key="num"
-                >
-                  <div class="clearfix">
-                    transactionHash: <br> {{ item.transactionInfo.hash }}
-                  </div>
-                  <div>deadline:<br>{{ item.deadline.value }}</div>
-                  <div>networkType:<br>{{ item.networkType }}</div>
-                  <div>signature:<br>{{ item.signature }}</div>
-                  <div>signer:<br>{{ item.signer.publicKey }}</div>
-                  <div
-                    v-for="(i,index) in item.innerTransactions"
-                    :key="index"
-                  >
-                    inner Transactions {{ index + 1 }} :<br>
-                    <div>inner Transactions Id:<br>{{ i.transactionInfo.id }}</div>
-                    <div>
-                      inner Transactions aggregateHash:
-                      <br>
-                      {{ i.transactionInfo.aggregateHash }}
-                    </div>
-                  </div>
-                  <v-btn @click="cosignTransaction(num)">
-                    cosign this transaction
-                  </v-btn>
-                </div>
+                no transactions waiting to be cosigned
               </div>
             </div>
           </v-card-title>
         </v-card>
-      </v-flex>
-    </div>
-
-    <div v-else>
-      <v-card>
-        <v-card-title primary-title>
-          <div class="monospaced">
-            <div class="clearfix homeLine">
-              no transactions waiting to be cosigned
-            </div>
-          </div>
-        </v-card-title>
-      </v-card>
-    </div>
-  </div>
+      </div>
+    </v-container>
+  </v-layout>
 </template>
 
 <script>
@@ -79,14 +94,6 @@ import {
 
 export default {
   name: 'MultisigTransactions',
-  props: {
-    multisigAccountInfo: {
-      type: Object,
-      default() {
-        return undefined;
-      },
-    },
-  },
   data() {
     return {
       currentMultisigPublicKey: '',
@@ -102,6 +109,7 @@ export default {
       'transactions',
       'assets',
       'namespaces',
+      'multisig',
     ], {
       wallet: state => state.wallet,
       assets: state => state.assets,
@@ -139,7 +147,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>

@@ -26,20 +26,12 @@ import { GET_MULTISIG_MODES } from '../infrastructure/multisig/multisig-types';
 
 const state = {
   multisigInfo: false,
-  multisigList: false,
-  cosignatoryList: false,
   loading_getMultisigInfo: false,
 };
 
 const getters = {
   GET_MULTISIG_INFO(state, getters, rootState) {
     return state.multisigInfo[rootState.wallet.activeWallet.name];
-  },
-  GET_MULTISIG(state, getters, rootState) {
-    return state.multisigInfo[rootState.wallet.activeWallet.name].multisigAccounts;
-  },
-  GET_COSIGNATORIES(state, getters, rootState) {
-    return state.multisigInfo[rootState.wallet.activeWallet.name].cosignatories;
   },
 };
 

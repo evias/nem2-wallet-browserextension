@@ -1,27 +1,32 @@
 <template>
-  <v-scale-transition>
-    <v-layout
-      column
-      class="mb-3"
-    >
-      <v-layout row>
-        <v-flex xs12>
-          <v-subheader
-            class="mb-3"
-          >
-            <h3>Modify Multisig</h3>
-          </v-subheader>
+  <v-layout
+    column
+    class="mt-2 mb-3"
+  >
+    <v-container>
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          v-if="multisig.loading_getMultisigInfo"
+          xs12
+        >
+          <v-progress-linear
+            :indeterminate="true"
+          />
         </v-flex>
       </v-layout>
-
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Multisig Account Publickey</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+      <v-layout
+        v-if="!multisig.loading_getMultisigInfo
+          && multisig.multisigInfo[wallet.activeWallet.name]"
+        row
+      >
+        <v-flex xs12>
           <v-select
             v-model="currentMultisigPublicKey"
-            :items="multisigAccountInfo.multisigAccounts"
+            label="Multisig Account Publickey"
+            :items="multisig.multisigInfo[wallet.activeWallet.name].multisigAccounts"
             item-text="publicKey"
             solo
           />
@@ -29,50 +34,38 @@
       </v-layout>
 
       <v-layout>
-        <v-flex xs3>
-          <v-subheader>Approval Delta</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
             v-model="approvalDelta"
-            class="ma-0 pa-0"
-            label="Integer in the range of 0 and 10"
+            label="Approval Delta"
             type="number"
-            solo
             required
             number
+            class="ma-0 pa-0"
           />
         </v-flex>
       </v-layout>
 
       <v-layout>
-        <v-flex xs3>
-          <v-subheader>Removal Delta</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
             v-model="removalDelta"
-            class="ma-0 pa-0"
-            label="Integer in the range of 0 and 10"
+            label="Removal Delta"
             type="number"
-            solo
             required
             number
+            class="ma-0 pa-0"
           />
         </v-flex>
       </v-layout>
 
       <v-layout>
-        <v-flex xs3>
-          <v-subheader>Max Fee</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
             v-model="maxFee"
             class="ma-0 pa-0"
-            label="max fee"
+            label="Max Fee"
             type="number"
-            solo
             required
             number
           />
@@ -83,25 +76,29 @@
         v-if="showLockFunds"
         row
       >
-        <v-flex xs3>
-          <v-subheader>Lock Funds Mosaic</v-subheader>
+        <v-flex xs12>
+          <v-subheader>Lock Funds Transacion</v-subheader>
         </v-flex>
-        <v-flex xs4>
+      </v-layout>
+      <v-layout
+        v-if="showLockFunds"
+        row
+      >
+        <v-flex xs6>
           <v-text-field
             v-model="lockFundsMosaicType"
             class="ma-0 pa-0"
-            solo
             required
             disabled
           />
         </v-flex>
-        <v-flex xs3>
+        <v-flex xs6>
           <v-text-field
             v-model="lockFundsMosaicAmount"
             class="ma-0 pa-0"
             type="number"
-            solo
             required
+            disabled
             number
           />
         </v-flex>
@@ -109,15 +106,12 @@
 
 
       <v-layout v-if="showLockFunds">
-        <v-flex xs3>
-          <v-subheader>Lock Funds Duration In Blocks</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
             v-model="lockFundsDuration"
+            label="Lock Funds Duration In Blocks"
             class="ma-0 pa-0"
             type="number"
-            solo
             required
             number
           />
@@ -125,15 +119,12 @@
       </v-layout>
 
       <v-layout v-if="showLockFunds">
-        <v-flex xs3>
-          <v-subheader>Lock Funds Max Fee</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
             v-model="lockFundsMaxFee"
+            label="Lock Funds Max Fee"
             class="ma-0 pa-0"
             type="number"
-            solo
             required
             number
           />
@@ -146,9 +137,8 @@
           <v-layout row>
             <v-flex offset-xs1>
               <v-btn
-                color="primary"
                 dark
-                :color="isAdd?'primary':'red'"
+                :color="isAdd ? 'primary' : 'red'"
                 @click="isAdd = !isAdd"
               >
                 {{ isAdd?'Add':'Remove' }}
@@ -276,11 +266,12 @@
           :tx-send-data="txSendResults"
         />
       </v-layout>
-    </v-layout>
-  </v-scale-transition>
+    </v-container>
+  </v-layout>
 </template>
 
 <script>
+
 import { mapState } from 'vuex';
 import {
   ModifyMultisigAccountTransaction,
@@ -310,7 +301,6 @@ export default {
     Confirmation,
     SendConfirmation,
   },
-  props: ['multisigAccountInfo'],
   data() {
     return {
       showLockFunds: true,
@@ -322,7 +312,7 @@ export default {
       currentCosignatoryPublicKey: '',
       cosignatoryList: [],
       maxFee: 0,
-      lockFundsMosaicType: '@cat.currenct',
+      lockFundsMosaicType: '@cat.currency',
       lockFundsMosaicAmount: 10000000,
       lockFundsDuration: 480,
       lockFundsMaxFee: 0,
@@ -339,17 +329,10 @@ export default {
   computed: {
     ...mapState([
       'wallet',
-      'accountInfo',
-      'application',
-      'transactions',
-      'assets',
-      'namespaces',
+      'multisig',
     ], {
       wallet: state => state.wallet,
-      assets: state => state.assets,
-      namespaces: state => state.namespaces,
     }),
-
   },
   watch: {
     async currentMultisigPublicKey() {
@@ -549,7 +532,3 @@ export default {
 
 };
 </script>
-
-<style scoped>
-
-</style>

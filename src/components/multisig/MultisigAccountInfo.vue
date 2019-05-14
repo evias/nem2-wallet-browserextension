@@ -4,24 +4,7 @@
       row
       wrap
     >
-      <v-flex
-        v-if="multisig.loading_getMultisigInfo"
-        xs12
-      >
-        <v-progress-linear
-          :indeterminate="true"
-        />
-      </v-flex>
-    </v-layout>
-    <v-layout
-      row
-      wrap
-    >
-      <v-flex
-        v-if="typeof multisigAccountInfo.account === 'undefined'
-          && !multisig.loading_getMultisigInfo"
-        xs12
-      >
+      <v-flex xs12>
         <v-card>
           <v-toolbar
             card
@@ -37,38 +20,35 @@
               <v-icon>refresh</v-icon>
             </v-btn>
           </v-toolbar>
-          <v-card-title primary-title>
+          <v-layout
+            row
+            wrap
+          >
+            <v-flex
+              v-if="multisig.loading_getMultisigInfo"
+              xs12
+            >
+              <v-progress-linear
+                :indeterminate="true"
+              />
+            </v-flex>
+          </v-layout>
+          <v-card-title
+            v-if="typeof multisigAccountInfo.account === 'undefined'
+              && !multisig.loading_getMultisigInfo"
+            primary-title
+          >
             <div class="monospaced">
               <div class="clearfix homeLine">
                 this account is not a multisig nor a cosignatory
               </div>
             </div>
           </v-card-title>
-        </v-card>
-      </v-flex>
-
-
-      <v-flex
-        v-if="typeof multisigAccountInfo.account !== 'undefined'
-          && !multisig.loading_getMultisigInfo"
-        xs12
-      >
-        <v-card>
-          <v-toolbar
-            card
-            prominent
+          <v-card-title
+            v-if="typeof multisigAccountInfo.account !== 'undefined'
+              && !multisig.loading_getMultisigInfo"
+            primary-title
           >
-            <v-toolbar-title>{{ wallet.activeWallet.name }}: Multisig Information</v-toolbar-title>
-            <v-spacer />
-
-            <v-btn
-              icon
-              @click.stop="reloadMultisigInfo(wallet.activeWallet)"
-            >
-              <v-icon>refresh</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-title primary-title>
             <div class="monospaced">
               <div class="clearfix homeLine">
                 <div class="clearfix">
@@ -146,12 +126,6 @@ export default {
       type: Object,
       default() {
         return undefined;
-      },
-    },
-    loadingGetMultisigInfo: {
-      type: Boolean,
-      default() {
-        return true;
       },
     },
   },
