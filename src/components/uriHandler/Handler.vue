@@ -69,6 +69,9 @@ export default {
   computed: mapState(['transactions']),
   created() {
     try {
+      if (!this.$route.query.transaction) {
+        return;
+      }
       const transactionQuery = this.$route.query.transaction;
       const transactionURI = TransactionURI.fromURI(transactionQuery);
       const transaction = transactionURI.toTransaction();
@@ -88,6 +91,7 @@ export default {
           txType: txTypeNameFromTypeId(transaction.type),
           chainId: transactionURI.chainId,
           endpoint: transactionURI.endpoint,
+          webhook: transactionURI.webhook,
         },
       });
     } catch (error) {
