@@ -50,7 +50,10 @@ const actions = {
   async FETCH_ACCOUNT_INFO({ commit, dispatch, getters }, wallet) {
     dispatch('application/RESET_ERRORS', null, { root: true });
 
-    if (getters.GET_ACCOUNT_INFO) return;
+    if (getters.GET_ACCOUNT_INFO) {
+      commit('setLoading_getAccountInfo', false);
+      return;
+    }
 
     commit('setLoading_getAccountInfo', true);
 

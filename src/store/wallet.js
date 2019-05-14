@@ -24,6 +24,7 @@ import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
 import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
 import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
+import { GET_MULTISIG_MODES } from '../infrastructure/multisig/multisig-types';
 
 const state = {
   activeWallet: false,
@@ -148,7 +149,19 @@ const actions = {
 
 
   async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
-    dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true });
+    await Promise.all([
+      dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true }),
+      commit(
+        'accountInfo/setLoading_getAccountInfo',
+        true,
+        { root: true },
+      ),
+      commit(
+        'multisig/setLoading_getMultisigInfo',
+        true,
+        { root: true },
+      ),
+    ]);
 
     if (argWallet === false) return;
 
@@ -197,6 +210,11 @@ const actions = {
       dispatch(
         'assets/GET_ASSETS_BY_ADDRESS',
         { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE },
+        { root: true },
+      ),
+      dispatch(
+        'multisig/GET_MULTISIG_INFO',
+        { wallet, mode: GET_MULTISIG_MODES.ON_WALLET_CHANGE },
         { root: true },
       ),
     ]);
