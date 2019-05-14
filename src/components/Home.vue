@@ -261,11 +261,13 @@
   </v-layout>
 </template>
 <script>
+
 import { mapState } from 'vuex';
 import { NetworkType } from 'nem2-sdk';
 import { QRCodeGenerator } from 'nem2-qr-library';
 import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
+import { GET_ACCOUNT_INFO_MODES } from '../infrastructure/accountInfo/accountInfo-types';
 
 export default {
   name: 'Home',
@@ -315,8 +317,12 @@ export default {
   },
   methods: {
     reloadAccountInfo(wallet) {
-      this.$store.dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet);
+      this.$store.dispatch('accountInfo/FETCH_ACCOUNT_INFO', {
+        wallet,
+        mode: GET_ACCOUNT_INFO_MODES.RELOAD,
+      });
     },
   },
 };
+
 </script>
