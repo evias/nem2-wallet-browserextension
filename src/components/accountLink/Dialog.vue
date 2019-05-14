@@ -1,8 +1,8 @@
 <template>
   <v-dialog
-          :value="value"
-          :max-width="maxWidth"
-          @input="toggleDialog"
+    :value="value"
+    :max-width="maxWidth"
+    @input="toggleDialog"
   >
     <v-card>
       <v-card-title primary-title>
@@ -19,14 +19,14 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-                color="secondary"
-                @click="toggleDialog"
+          color="secondary"
+          @click="toggleDialog"
         >
           Cancel
         </v-btn>
         <v-btn
-                color="info"
-                @click="signAndAnnounce"
+          color="info"
+          @click="signAndAnnounce"
         >
           Yes, send it!
         </v-btn>
@@ -36,7 +36,9 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex';
+import { mapState } from 'vuex';
+import request from 'request';
+
 export default {
   name: 'Dialog',
   props: {
@@ -71,38 +73,39 @@ export default {
       },
     },
   },
+  computed: {
+    ...mapState([
+      'wallet',
+    ], {
+      wallet: state => state.wallet,
+    }),
+  },
   methods: {
     toggleDialog() {
       this.$emit('input', !this.value);
     },
     signAndAnnounce() {
-      const sharedState = StateRepository.state ;
-      const activeWallet = sharedState.activeWallet ;
+      const { activeWallet } = this.wallet;
       const endpoint = activeWallet.node;
       const { account } = activeWallet;
-      const signedTx = account.sign(this.transaction)
-      const preSignedTxPayload = signedTx.payload
-      const signedTxPayload = '99000000' + preSignedTxPayload.substr(8)
-      const request = require('request')
+      const signedTx = account.sign(this.transaction);
+      const preSignedTxPayload = signedTx.payload;
+      const signedTxPayload = `99000000${preSignedTxPayload.substr(8)}`;
       request({
         url: `${endpoint}/transaction`,
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        json: { 'payload': signedTxPayload }
-      })
-      console.log( `${endpoint}/transaction/${signedTx.hash}/status`)
+        json: { payload: signedTxPayload },
+      });
       this.toggleDialog();
       this.$emit('sent', {
-        message: "success",
+        message: 'success',
         txHash: signedTx.hash,
         nodeURL: endpoint,
       });
-    }
+    },
   },
 };
 </script>
-
-<style scoped>
-</style>

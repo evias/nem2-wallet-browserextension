@@ -1,67 +1,65 @@
 <template>
-  <v-scale-transition>
-    <v-layout column>
-
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Link Action</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+  <v-layout
+    column
+    class="mt-2 mb-3"
+  >
+    <v-container>
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex xs12>
           <v-radio-group
-                  v-model="linkAction"
-                  row
+            v-model="linkAction"
+            row
           >
+            <template v-slot:label>
+              <div>Link action: </div>
+            </template>
             <v-radio
-                    v-for="l in linkActions"
-                    :key="l.type"
-                    :label="l.label"
-                    :value="l.type"
+              v-for="l in linkActions"
+              :key="l.type"
+              :label="l.label"
+              :value="l.type"
             />
           </v-radio-group>
         </v-flex>
       </v-layout>
 
       <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Remote Account Public Key</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
-                  class="ma-0 pa-0"
-                  label="Account Public Key"
-                  solo
-                  v-model="remoteAccountKey"
-                  required
+            v-model="remoteAccountKey"
+            class="ma-0 pa-0"
+            label="Remote Account Public Key"
+            required
           />
         </v-flex>
       </v-layout>
 
       <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Max Fee</v-subheader>
-        </v-flex>
-        <v-flex xs7>
+        <v-flex xs12>
           <v-text-field
-                  class="ma-0 pa-0"
-                  label="Account Public Key"
-                  solo
-                  v-model="maxFee"
-                  required
+            v-model="maxFee"
+            class="ma-0 pa-0"
+            label="Max Fee"
+            number
+            required
           />
         </v-flex>
       </v-layout>
 
       <v-layout
-              row
-              justify-center
-              align-center
+        row
+        justify-center
+        align-center
       >
         <v-btn
-                style="margin-bottom: 20px"
-                color="gray"
-                :disabled="disabledSendTransaction"
-                depressed
-                @click="showDialog"
+          style="margin-bottom: 20px"
+          color="gray"
+          :disabled="disabledSendTransaction"
+          depressed
+          @click="showDialog"
         >
           Send Transaction
         </v-btn>
@@ -69,19 +67,19 @@
 
       <v-layout column>
         <SendConfirmation
-                :tx-send-data="txSendResults"
+          :tx-send-data="txSendResults"
         />
       </v-layout>
 
       <Dialog
-              v-model="isDialogShow"
-              :transaction="transaction"
-              @sent="txSent"
+        v-model="isDialogShow"
+        :transaction="transaction"
+        @sent="txSent"
       >
         <v-list>
           <v-list-tile
-                  v-for="detail in dialogDetails"
-                  :key="detail.key"
+            v-for="detail in dialogDetails"
+            :key="detail.key"
           >
             <v-list-tile-action>
               <v-icon>{{ detail.icon }}</v-icon>
@@ -94,9 +92,8 @@
           </v-list-tile>
         </v-list>
       </Dialog>
-    </v-layout>
-
-  </v-scale-transition>
+    </v-container>
+  </v-layout>
 </template>
 <script>
 import {
