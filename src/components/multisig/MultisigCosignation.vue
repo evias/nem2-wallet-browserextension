@@ -130,7 +130,6 @@ export default {
   methods: {
     cosignTransaction(index) {
       // eslint-disable-next-line no-console
-      console.log(this.aggregatedTx[index]);
       const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
       const { account } = activeWallet;
       const transactionHttp = new TransactionHttp(activeWallet.node);
