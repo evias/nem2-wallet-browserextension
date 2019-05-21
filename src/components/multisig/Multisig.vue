@@ -69,7 +69,9 @@
               <v-tab>
                 Cosign Multisig Transactions
               </v-tab>
-
+              <v-tab>
+                Send Multisig Transactions
+              </v-tab>
               <v-tab-item>
                 <v-card flat>
                   <MultisigConversion
@@ -89,11 +91,21 @@
 
               <v-tab-item>
                 <v-card flat>
-                  <MultisigTransactions
+                  <MultisigCosignation
                     :loading-get-multisig-info="multisig.loading_getMultisigInfo"
                   />
                 </v-card>
               </v-tab-item>
+
+              <v-tab-item>
+                <v-card flat>
+                  <OtherMultisigTransactions
+                          :loading-get-multisig-info="multisig.loading_getMultisigInfo"
+                  />
+                </v-card>
+              </v-tab-item>
+
+
             </v-tabs>
           </v-card>
         </v-flex>
@@ -108,15 +120,17 @@ import Errors from '../Errors.vue';
 import MultisigConversion from './MultisigConversion.vue';
 import MultisigModification from './MultisigModification.vue';
 import MultisigAccountInfo from './MultisigAccountInfo.vue';
-import MultisigTransactions from './MultisigTransactions.vue';
+import MultisigCosignation from './MultisigCosignation.vue';
+import OtherMultisigTransactions from './OtherMultisigTransactions.vue';
 
 export default {
   components: {
     Errors,
     MultisigConversion,
     MultisigModification,
-    MultisigTransactions,
+    MultisigCosignation,
     MultisigAccountInfo,
+    OtherMultisigTransactions
   },
   data() {
     return {

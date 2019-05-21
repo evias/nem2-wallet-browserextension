@@ -54,21 +54,21 @@
         <v-text-field
           :value="account ? account.address.pretty() : ''"
           class="mt-4 pt-4 monospaced"
-          label="Main wallet"
+          label="address"
           readonly
         />
 
         <v-text-field
           :value="account ? account.publicKey : ''"
           class="ma-0 pa-0 monospaced"
-          label="Main wallet"
+          label="public key"
           readonly
         />
 
         <v-text-field
           :value="account ? account.privateKey : ''"
           class="ma-0 pa-0 monospaced"
-          label="Main wallet"
+          label="private key"
           readonly
         />
 
