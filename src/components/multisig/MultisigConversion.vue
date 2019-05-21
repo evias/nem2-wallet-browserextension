@@ -15,118 +15,104 @@
 // You should have received a copy of the GNU General Public License
 
 <template>
-  <v-scale-transition>
-
-    <v-layout
-            column
-            class="mb-3"
-    >
-      <v-layout row>
-        <v-flex xs12>
-          <v-subheader
-                  class="mb-3"
-          >
-            <h3>convert to multisig</h3>
-          </v-subheader>
+  <v-layout
+    column
+    class="mt-2 mb-3"
+  >
+    <v-container>
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          v-if="multisig.loading_getMultisigInfo"
+          xs12
+        >
+          <v-progress-linear
+            :indeterminate="true"
+          />
         </v-flex>
       </v-layout>
-
       <v-layout row>
-        <v-flex xs3>
-          <v-subheader>min approval</v-subheader>
-        </v-flex>
-        <v-flex xs9>
+        <v-flex xs12>
           <v-text-field
-                  v-model="minApprovalDelta"
-                  error-count=1
-                  class="ma-0 pa-0"
-                  label="Integer in the range of 0 and 10"
-                  type="number"
-                  solo
-                  required
-                  number
+            v-model="minApprovalDelta"
+            error-count="1"
+            label="Min approval"
+            type="number"
+            required
+            number
           />
         </v-flex>
       </v-layout>
 
       <v-layout>
-        <v-flex xs3>
-          <v-subheader>min removal</v-subheader>
-        </v-flex>
-        <v-flex xs9>
+        <v-flex xs12>
           <v-text-field
-                  v-model="minRemovalDelta"
-                  class="ma-0 pa-0"
-                  label="Integer in the range of 0 and 10"
-                  type="number"
-                  solo
-                  required
-                  number
+            v-model="minRemovalDelta"
+            class="ma-0 pa-0"
+            label="Min removal"
+            type="number"
+            required
+            number
           />
         </v-flex>
       </v-layout>
       <v-layout row>
-        <v-flex xs3>
-          <v-subheader>max fee</v-subheader>
-        </v-flex>
-        <v-flex xs9>
+        <v-flex xs12>
           <v-text-field
-                  v-model="maxFee"
-                  class="ma-0 pa-0"
-                  label="Max Fee"
-                  solo
-                  required
+            v-model="maxFee"
+            class="ma-0 pa-0"
+            label="Max Fee"
+            required
           />
         </v-flex>
       </v-layout>
 
       <v-layout>
         <v-flex
-                sm
+          sm
         >
-          <v-layout  row>
-            <v-flex xs3>
-              <v-subheader>add cosignatory</v-subheader>
-            </v-flex>
-
-            <v-flex xs8  >
+          <v-layout row>
+            <v-flex xs10>
               <v-text-field
-                      v-model="currentPublicKey"
-                      placeholder="input the public key of cosignatory"
-                      solo
+                v-model="currentPublicKey"
+                label="New consignatory's public key"
+                solo
               />
             </v-flex>
 
-            <v-flex xs1>
+            <v-flex xs2>
               <v-btn
-                      :disabled="currentPublicKey == ''"
-                      color="primary"
-                      @click="addPublicKey"
+                :disabled="currentPublicKey == ''"
+                color="primary"
+                @click="addPublicKey"
               >
                 <v-icon>add</v-icon>
               </v-btn>
             </v-flex>
           </v-layout>
 
+
           <template v-for="(publicKey, index) in publicKeyList">
             <v-list
-                    :key="index"
-                    two-line
+              :key="index"
+              two-line
             >
               <v-list-tile>
                 <v-list-tile-action>
                   <v-icon>style</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
-                  Cosignator Publickey:{{index + 1}}
+                  Cosignatory Publickey:{{ index + 1 }}
                   <br>
-                  {{ publicKey}}
+                  {{ publicKey }}
                 </v-list-tile-content>
                 <v-btn
-                        fab
-                        small
-                        color="error"
-                        @click="removeCosignatory(index)"
+                  fab
+                  small
+                  color="error"
+                  @click="removeCosignatory(index)"
                 >
                   <v-icon>remove</v-icon>
                 </v-btn>
@@ -138,35 +124,32 @@
 
       <v-layout>
         <v-layout
-                row
-                justify-end
-                align-center
+          v-if="!multisig.loading_getMultisigInfo
+            && multisig.multisigInfo[wallet.activeWallet.name]"
+          row
+          justify-space-around
+          align-center
         >
           <v-btn
-                  flat
-                  @click="$emit('closeComponent')"
-          >
-            Close
-          </v-btn>
-          <v-btn
-                  :disabled="disabledSendTransaction"
-                  color="primary mx-0"
-                  @click="showDialog"
+            :disabled="!(typeof multisig
+              .multisigInfo[wallet.activeWallet.name].account === 'undefined'
+              || !multisig.multisigInfo[wallet.activeWallet.name].isMultisig())"
+            @click="showDialog"
           >
             Send Transaction
           </v-btn>
         </v-layout>
 
         <Confirmation
-                v-model="isDialogShow"
-                :transactions="transactions"
-                @sent="txSent"
-                @error="txError"
+          v-model="isDialogShow"
+          :transactions="transactions"
+          @sent="txSent"
+          @error="txError"
         >
           <v-list>
             <v-list-tile
-                    v-for="detail in dialogDetails"
-                    :key="detail.key"
+              v-for="detail in dialogDetails"
+              :key="detail.key"
             >
               <v-list-tile-action>
                 <v-icon>{{ detail.icon }}</v-icon>
@@ -179,33 +162,34 @@
             </v-list-tile>
 
             <v-list-tile
-                    v-for="(publicKey,index) in publicKeyList"
-                    :key="index"
+              v-for="(publicKey,index) in publicKeyList"
+              :key="index"
             >
               <v-list-tile-action>
-                <v-icon></v-icon>
+                <v-icon />
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title>
-                  {{publicKey}}
+                  {{ publicKey }}
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-
           </v-list>
         </Confirmation>
       </v-layout>
 
       <v-layout column>
         <SendConfirmation
-                :tx-send-data="txSendResults"
+          :tx-send-data="txSendResults"
         />
       </v-layout>
-    </v-layout>
-  </v-scale-transition>
+    </v-container>
+  </v-layout>
 </template>
 
 <script>
+
+import { mapState } from 'vuex';
 import {
   ModifyMultisigAccountTransaction,
   MultisigCosignatoryModification,
@@ -234,16 +218,16 @@ export default {
       minApprovalDelta: 1,
       minRemovalDelta: 1,
       maxFee: 0,
-      disabledSendTransaction: false,
-      multisigInfo: 'sdfsfsdfsdfsd',
     };
   },
+  computed: mapState(['multisig', 'wallet']),
   methods: {
     addPublicKey() {
       if (this.publicKeyList.length <= 10) {
         this.publicKeyList.push(this.currentPublicKey);
         this.currentPublicKey = '';
       } else {
+        // eslint-disable-next-line no-console
         console.log('multisig accounts can have up to 10 cosignatories.');
       }
     },
@@ -255,17 +239,16 @@ export default {
         Deadline.create(),
         minApprovalDelta,
         minRemovalDelta,
-        publicKeyList.map((co) => {
-          return new MultisigCosignatoryModification(
-            MultisigCosignatoryModificationType.Add,
-            PublicAccount.createFromPublicKey(co, networkType),
-          );
-        }),
+        publicKeyList.map(co => new MultisigCosignatoryModification(
+          MultisigCosignatoryModificationType.Add,
+          PublicAccount.createFromPublicKey(co, networkType),
+        )),
         networkType,
-      )
+      );
       this.transactions = [modifyMultisigAccountTransaction];
-      this.dialogDetails = this.dialogDetails = [
-        {
+      this.dialogDetails = [
+        this.dialogDetails,
+        ...{
           icon: 'add',
           key: 'Min Approval',
           value: this.minApprovalDelta,
@@ -285,7 +268,7 @@ export default {
           key: 'Cosignatory List',
           value: '',
         },
-      ]
+      ];
       this.isDialogShow = true;
     },
     removeCosignatory(index) {
@@ -298,12 +281,10 @@ export default {
       });
     },
     txError(error) {
+      // eslint-disable-next-line no-console
       console.error(error);
     },
   },
 };
 
 </script>
-
-<style scoped>
-</style>

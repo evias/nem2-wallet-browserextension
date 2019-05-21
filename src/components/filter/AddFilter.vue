@@ -64,7 +64,7 @@
         <v-flex xs3>
           <v-subheader>Max Fee</v-subheader>
         </v-flex>
-        <v-flex xs9>
+        <v-flex xs7>
           <v-text-field
             v-model="maxFee"
             class="ma-0 pa-0"

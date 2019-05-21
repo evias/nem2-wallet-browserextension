@@ -49,10 +49,8 @@
   </v-list>
 </template>
 
-
 <script>
 export default {
-  name: 'SendConfirmation',
   props: {
     txSendData: {
       type: Array,

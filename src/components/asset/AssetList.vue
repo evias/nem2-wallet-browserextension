@@ -44,6 +44,16 @@
           fixed-tabs
         >
           <v-tab
+            :key="1"
+          >
+            Assets Balance
+          </v-tab>
+
+          <v-tab-item :key="1">
+            <AssetTab :assets="filterZeros(assets.assets[wallet.activeWallet.name])" />
+          </v-tab-item>
+
+          <v-tab
             :key="2"
           >
             My Assets
@@ -58,15 +68,6 @@
               )"
               owned-assets
             />
-          </v-tab-item>
-          <v-tab
-            :key="1"
-          >
-            Assets Balance
-          </v-tab>
-
-          <v-tab-item :key="1">
-            <AssetTab :assets="filterZeros(assets.assets[wallet.activeWallet.name])" />
           </v-tab-item>
         </v-tabs>
       </div>

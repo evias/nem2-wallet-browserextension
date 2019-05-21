@@ -26,9 +26,10 @@
     >
       <Errors class="mb-4" />
       <v-card
-        v-if="wallet.wallets.length > 0
-          && wallet.activeWallet
-          && !application.error"
+        v-if="
+          wallet.wallets.length > 0 &&
+            wallet.activeWallet
+        "
         style="height: auto;padding:0 !important"
         class="card--flex-toolbar"
       >
@@ -36,67 +37,53 @@
           card
           prominent
         >
-          <v-spacer />
-
-          <v-btn
-            icon
-            @click.stop="reloadList(wallet.activeWallet)"
-          >
-            <v-icon>refresh</v-icon>
-          </v-btn>
-
-          <v-btn
-            icon
-            @click.stop="createAsset = !createAsset"
-          >
-            <v-icon>add_box</v-icon>
-          </v-btn>
+          <v-toolbar-title>Manage filters</v-toolbar-title>
         </v-toolbar>
-
         <v-spacer />
         <v-card-text>
-          <AssetCreation
-            v-show="createAsset"
-            @closeComponent="createAsset = false"
+          <AddFilter
+            v-if="addFilter"
+            @closeFilter="addFilter=false"
           />
-          <AssetList />
         </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
 </template>
+
 <script>
 import { mapState } from 'vuex';
-import store from '../../store/index';
+import AddFilter from './AddFilter.vue';
 import Errors from '../Errors.vue';
-import AssetCreation from './AssetCreation.vue';
-import AssetList from './AssetList.vue';
 
 export default {
-  name: 'Assets',
-  store,
+  name: 'Filters',
   components: {
+    AddFilter,
     Errors,
-    AssetCreation,
-    AssetList,
   },
   data() {
     return {
-      createAsset: false,
-      reloadAssetNotifier: 0,
+      addFilter: true,
     };
   },
-  computed: mapState([
-    'wallet',
-    'application',
-    'assets',
-  ]),
+  computed: {
+    ...mapState([
+      'wallet',
+      'accountInfo',
+      'application',
+      'transactions',
+      'assets',
+      'namespaces',
+    ], {
+      wallet: state => state.wallet,
+      assets: state => state.assets,
+      namespaces: state => state.namespaces,
+    }),
+  },
   methods: {
-    reloadList(wallet) {
-      this.$store.dispatch('assets/GET_ASSETS_BY_ADDRESS', { wallet });
+    reloadList() {
     },
   },
 };
 </script>
-<style scoped>
-</style>
