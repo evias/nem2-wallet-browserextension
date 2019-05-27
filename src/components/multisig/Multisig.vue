@@ -33,14 +33,6 @@
           xs12
         >
           <Errors class="mb-4" />
-
-          <MultisigAccountInfo
-            v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
-            :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
-            :loading-get-multisig-info="multisig.loading_getMultisigInfo"
-            class="mb-4"
-          />
-
           <v-card
             v-if="wallet.wallets.length > 0
               && wallet.activeWallet
@@ -106,6 +98,13 @@
               </v-tab-item>
             </v-tabs>
           </v-card>
+
+          <MultisigAccountInfo
+                  v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
+                  :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
+                  :loading-get-multisig-info="multisig.loading_getMultisigInfo"
+                  class="mb-4"
+          />
         </v-flex>
       </v-layout>
     </v-container>

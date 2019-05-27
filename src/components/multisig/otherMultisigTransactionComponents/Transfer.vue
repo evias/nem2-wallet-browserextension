@@ -358,7 +358,7 @@ export default {
         this.aggregeteCompleteTx(transactionHttp, innerTx);
       } else {
         // bonded
-        console.log('bonded');
+        this.aggregeteBondedTx(transactionHttp, innerTx);
       }
     },
     aggregeteCompleteTx(transactionHttp, innerTx) {
@@ -375,6 +375,9 @@ export default {
         .subscribe(x => console.log(x), err => console.error(err));
     },
 
+    aggregeteBondedTx(transactionHttp, innerTx) {
+      console.log('bonded tx')
+    },
     addMosaic() {
       const mosaicHex = this.currentMosaicName.toUpperCase();
       const mosaic = new Mosaic(
