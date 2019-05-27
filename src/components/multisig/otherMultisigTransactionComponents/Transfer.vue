@@ -334,12 +334,8 @@ export default {
   methods: {
     sendTx() {
       let mosaics = [];
-      mosaics = this.mosaics.map((mosaic) => {
-        return mosaic;
-      });
-      mosaics.push(
-        new Mosaic(new MosaicId(this.currentXEM.id.toHex()), UInt64.fromUint(this.txAmount))
-      );
+      mosaics = this.mosaics.map(mosaic => mosaic);
+      mosaics.push(new Mosaic(new MosaicId(this.currentXEM.id.toHex()), UInt64.fromUint(this.txAmount)));
       this.dialogMosaics = mosaics
       this.dialog = true;
     },
@@ -376,7 +372,7 @@ export default {
     },
 
     aggregeteBondedTx(transactionHttp, innerTx) {
-      console.log('bonded tx')
+      console.log('bonded tx');
     },
     addMosaic() {
       const mosaicHex = this.currentMosaicName.toUpperCase();
@@ -414,6 +410,6 @@ export default {
     const currentXEM = await namespaceHttp.getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACE_ID).toPromise();
     this.currentXEM = currentXEM
   },
-}
+};
 
 </script>

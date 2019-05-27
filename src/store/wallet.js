@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { Listener, NamespaceHttp, NetworkCurrencyMosaic } from 'nem2-sdk';
+import { Listener } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
