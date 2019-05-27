@@ -20,18 +20,19 @@
         />
       </v-flex>
     </v-layout>
-    <Transfer></Transfer>
+    <Transfer :currentMultisigPublicKey="currentMultisigPublicKey"></Transfer>
 
   </v-container>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import Transfer from './otherMultisigTransactionComponents/Transfer'
+import Transfer from './otherMultisigTransactionComponents/Transfer.vue';
+
 export default {
   name: 'OtherMultisigTransactions',
-  components:{
-    Transfer
+  components: {
+    Transfer,
   },
   data() {
     return {
@@ -39,6 +40,11 @@ export default {
       transactionType: '',
       currentMultisigPublicKey: '',
     };
+  },
+  watch: {
+    transactionType() {
+      console.log('change tx panel');
+    },
   },
   computed: {
     ...mapState([
@@ -55,7 +61,7 @@ export default {
       namespaces: state => state.namespaces,
     }),
   },
-}
+};
 </script>
 
 <style scoped>

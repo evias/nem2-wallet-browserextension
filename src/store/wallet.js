@@ -74,8 +74,6 @@ const actions = {
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
-
-
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
 
@@ -146,7 +144,6 @@ const actions = {
     ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-
 
   async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
     await Promise.all([
