@@ -20,7 +20,7 @@
         />
       </v-flex>
     </v-layout>
-    <Transfer></Transfer>
+    <Transfer :currentMultisigPublicKey="currentMultisigPublicKey"></Transfer>
 
   </v-container>
 </template>

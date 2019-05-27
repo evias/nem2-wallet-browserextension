@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { Listener } from 'nem2-sdk';
+import { Listener, NamespaceHttp, NetworkCurrencyMosaic } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
@@ -74,8 +74,6 @@ const actions = {
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
-
-
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
 
@@ -146,7 +144,6 @@ const actions = {
     ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-
 
   async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
     await Promise.all([
