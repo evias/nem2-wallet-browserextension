@@ -28,11 +28,6 @@
       </v-flex>
     </div>
     <div v-if="assets.length > 0">
-      <AssetModification
-        v-show="modifyAsset"
-        :active-asset="activeAsset"
-        @closeComponent="modifyAsset = false"
-      />
       <v-list
         three-line
       >
@@ -66,14 +61,14 @@
                       </div>
                       <div class="asset-list-header asset-list-header-right">
                         <div v-if="ownedAssets">
-                          <v-btn
+                          <!-- <v-btn
                             small
                             color="primary"
                             :disabled="!a.active"
                             @click.stop
                           >
                             Link a namespace
-                          </v-btn>
+                          </v-btn>-->
                           <v-btn
                             small
                             color="primary"
@@ -82,8 +77,8 @@
                                 && a.supplyMutable)
                             "
                             @click.stop="
-                              modifyAsset = !modifyAsset;
                               activeAsset = a.id;
+                              modifyAsset = true;
                             "
                           >
                             Modify supply
@@ -114,6 +109,11 @@
         </template>
       </v-list>
     </div>
+    <AssetModification
+      :visible="modifyAsset"
+      :active-asset="activeAsset"
+      @close="modifyAsset = false"
+    />
   </div>
 </template>
 
