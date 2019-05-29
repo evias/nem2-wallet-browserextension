@@ -369,8 +369,6 @@ export default {
       } else {
         this.createComplete();
       }
-
-      /* 优化 */
       this.dialogDetails = [
         {
           icon: 'add',
@@ -388,7 +386,6 @@ export default {
           value: this.duration,
         },
       ];
-      // this.isDialogShow = true;
     },
     async createBonded() {
       const multisigPublicAccount = PublicAccount
@@ -399,18 +396,12 @@ export default {
       const network = NetworkType.MIJIN_TEST;
       const endpoint = activeWallet.node;
       const transactionHttp = new TransactionHttp(endpoint);
-
       const minApprovalDelta = this.approvalDelta;
       const minRemovalDelta = this.removalDelta;
       const cosignatories = this.cosignatoryList;
-
-
-      // const mosaicId = this.lockFundsMosaicType
       const namespaceHttp = new NamespaceHttp(endpoint);
       const namespaceId = NetworkCurrencyMosaic.NAMESPACE_ID;
       const mosaicId = await namespaceHttp.getLinkedMosaicId(namespaceId).toPromise();
-      // eslint-disable-next-line no-console
-      console.log(mosaicId, '////');
 
       const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
         Deadline.create(),
@@ -456,21 +447,15 @@ export default {
         signedAggregateTx,
       );
       const signedLockFundsTx = activeWallet.account.sign(lockFundsTx);
-      // eslint-disable-next-line no-console
-      console.log(activeWallet);
-      // this.txs = [lockFundsTx,aggregateTx];
 
       transactionHttp.announce(signedLockFundsTx);
-      // eslint-disable-next-line no-console
-      console.log(signedLockFundsTx.hash);
+
       const listener = new Listener(activeWallet.node.replace('http', 'ws'), WebSocket);
 
       const that = this;
       listener.open().then(() => {
         listener.confirmed(activeWallet.account.address).subscribe(() => {
           that.disabledSendAggregateTransaction = false;
-          // eslint-disable-next-line no-console
-          console.log(that.disabledSendAggregateTransaction);
           listener.close();
         });
       });
@@ -480,8 +465,6 @@ export default {
       const transactionHttp = new TransactionHttp(activeWallet.node);
 
       transactionHttp.announceAggregateBonded(this.aggregateTx);
-      // eslint-disable-next-line no-console
-      console.log(this.aggregateTx);
     },
     createComplete() {
       const multisigPublicAccount = PublicAccount.createFromPublicKey(
@@ -504,10 +487,6 @@ export default {
         )),
         network,
       );
-      // eslint-disable-next-line no-console
-      console.log(cosignatories);
-      // eslint-disable-next-line no-console
-      console.log(modifyMultisigAccountTx);
 
       const aggregateTx = AggregateTransaction.createComplete(
         Deadline.create(),

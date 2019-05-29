@@ -17,37 +17,37 @@
 
 <template>
   <v-layout
-    row
-    pb-2
-    mt-4
+          row
+          pb-2
+          mt-4
   >
     <v-container
-      fluid
-      pa-0
-      ma-0
+            fluid
+            pa-0
+            ma-0
     >
       <v-layout
-        row
-        wrap
+              row
+              wrap
       >
         <v-flex xs12>
           <v-card
-            v-if="wallet.wallets.length > 0
+                  v-if="wallet.wallets.length > 0
               && wallet.activeWallet"
-            style="height: auto;padding:0 !important"
-            class="card--flex-toolbar"
+                  style="height: auto;padding:0 !important"
+                  class="card--flex-toolbar"
           >
             <v-toolbar
-              card
-              prominent
+                    card
+                    prominent
             >
               <v-toolbar-title>Transfer Transaction</v-toolbar-title>
 
               <v-spacer />
               <v-btn
-                href="https://nemtech.github.io/concepts/transfer-transaction.html"
-                target="_new"
-                icon
+                      href="https://nemtech.github.io/concepts/transfer-transaction.html"
+                      target="_new"
+                      icon
               >
                 <v-icon>local_library</v-icon>
               </v-btn>
@@ -58,71 +58,70 @@
               <p class="mb-4 mt-4">
                 Current Node:
                 <a
-                  :href="activeWallet.node"
-                  target="_new"
+                        :href="activeWallet.node"
+                        target="_new"
                 >{{ activeWallet.node }}</a>
                 (Cow)
               </p>
               <v-flex xs12>
                 <v-form lazy-validation>
                   <v-text-field
-                    v-model="txRecipient"
-                    label="Recipient's address"
-                    placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
-                    required
+                          v-model="txRecipient"
+                          label="Recipient's address"
+                          placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
+                          required
                   />
 
                   <v-text-field
-                    v-model="txAmount"
-                    label="cat.currency amount"
-                    placeholder="ex. 10"
-                    type="number"
+                          v-model="txAmount"
+                          label="cat.currency amount"
+                          placeholder="ex. 10"
+                          type="number"
                   />
 
                   <v-text-field
-                    v-model="txMaxFee"
-                    label="Max fee"
-                    placeholder="ex. 10"
-                    type="number"
+                          v-model="txMaxFee"
+                          label="Max fee"
+                          placeholder="ex. 10"
+                          type="number"
                   />
 
                   <v-checkbox
-                    v-model="checkbox"
-                    label="Sending other assets?"
+                          v-model="checkbox"
+                          label="Sending other assets?"
                   />
                   <v-flex
-                    v-if="checkbox"
-                    sm
-                    class="ma-4"
+                          v-if="checkbox"
+                          sm
+                          class="ma-4"
                   >
                     <v-combobox
-                      v-if="wallet.activeWallet && assets.assets[wallet.activeWallet.name].length>0"
-                      v-model="currentMosaicName"
-                      :items="assets.assets[wallet.activeWallet.name].map(({id})=>id)"
-                      label="Chose an asset"
+                            v-if="mutisigAccount.mosaics.length > 0"
+                            v-model="currentMosaicName"
+                            :items="mutisigAccount.mosaics.map((mosaics)=> mosaics.id.toHex())"
+                            label="Chose an asset"
                     />
 
                     <v-text-field
-                      v-if="!wallet.activeWallet
-                        || assets.assets[wallet.activeWallet.name].length===0"
-                      v-model="currentMosaicName"
-                      label="Enter a mosaic ID"
+                            v-if="mutisigAccount.mosaics.length == 0"
+                            v-model="currentMosaicName"
+                            label="Enter a mosaic ID"
                     />
 
                     <v-layout row>
                       <v-flex xs-11>
                         <v-text-field
-                          v-model="currentMosaicAmount"
-                          label="Asset Amount"
-                          placeholder="ex. 10"
+                                v-model="currentMosaicAmount"
+                                label="Asset Amount"
+                                placeholder="ex. 10"
                         />
                       </v-flex>
 
                       <v-flex xs-1>
                         <v-btn
-                          :disabled="currentMosaicName === ''"
-                          color="primary"
-                          @click="addMosaic"
+                                :disabled="currentMosaicName === ''"
+                                color="primary"
+                                @click="addMosaic"
                         >
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -130,10 +129,10 @@
                     </v-layout>
                     <template v-for="(mosaic, index) in mosaics">
                       <v-list
-                        :key="index"
-                        two-line
+                              :key="index"
+                              two-line
                       >
-                        <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
+                        <v-list-tile v-if="!(mosaic.id.toHex() == currentXEM.id.toHex())">
                           <v-list-tile-action>
                             <v-icon>group_work</v-icon>
                           </v-list-tile-action>
@@ -144,10 +143,10 @@
                             </v-subheader>
                           </v-list-tile-content>
                           <v-btn
-                            fab
-                            small
-                            color="error"
-                            @click="removeMosaic(index)"
+                                  fab
+                                  small
+                                  color="error"
+                                  @click="removeMosaic(index)"
                           >
                             <v-icon>remove</v-icon>
                           </v-btn>
@@ -156,43 +155,21 @@
                     </template>
                   </v-flex>
                   <v-spacer />
-
                   <v-text-field
-                    v-model="txMessage"
-                    label="Message"
-                    placeholder="Here is your XEM, Bob! - Alice"
+                          v-model="txMessage"
+                          label="Message"
+                          placeholder="Here is your XEM, Bob! - Alice"
                   />
 
-                  <v-text-field
-                    v-model="userPrivateKey"
-                    label="Private Key"
-                    class="mt-3 mb-3"
-                    :counter="64"
-                    required
-                  >
-                    <template slot="append">
-                      <v-spacer />
-                      <v-btn
-                        v-if="userPrivateKey == ''"
-                        small
-                        color="primary"
-                        @click="fillPrivateKeyField"
-                      >
-                        Use my wallet's private key
-                      </v-btn>
-                    </template>
-                  </v-text-field>
-
                   <v-flex
-                    v-if="txRecipient == '' || userPrivateKey == ''"
-                    xs12
+                          v-if="txRecipient == ''"
+                          xs12
                   >
                     <v-alert
-                      :value="true"
-                      type="info"
+                            :value="true"
+                            type="info"
                     >
-                      A private key, recipient address, and amount&nbsp;
-                      are required in order to send a transaction.
+                      A recipient address is required in order to send a transaction.
                     </v-alert>
                   </v-flex>
                 </v-form>
@@ -200,24 +177,24 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  :disabled="txRecipient == '' || userPrivateKey == ''"
-                  color="primary mx-0"
-                  @click="dialog = true"
+                        :disabled="txRecipient == ''"
+                        color="primary mx-0"
+                        @click="sendTx "
                 >
                   Send
                 </v-btn>
               </v-card-actions>
               <div class="mt-4">
                 <SendConfirmation
-                  :tx-hash="txHash"
-                  :tx-recipient="txRecipient"
-                  :node-u-r-l="activeWallet.node"
+                        :tx-hash="txHash"
+                        :tx-recipient="txRecipient"
+                        :node-u-r-l="activeWallet.node"
                 />
               </div>
 
               <v-dialog
-                v-model="dialog"
-                max-width="500"
+                      v-model="dialog"
+                      max-width="500"
               >
                 <v-card>
                   <v-card-title class="headline">
@@ -253,35 +230,34 @@
                         </v-list-tile-content>
                       </v-list-tile>
                     </v-list>
-                    <template v-for="(mosaic) in mosaics">
-                      <v-list :key="mosaic.id.toHex()">
-                        <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
+                    <template v-for="(mosaic,index) in dialogMosaics">
+                      <v-list :key="index">
+                        <v-list-tile>
                           <v-list-tile-action>
                             <v-icon>group_work</v-icon>
                           </v-list-tile-action>
                           <v-list-tile-content>
                             <v-list-tile-title>
-                              Asset Attached: {{ mosaic.id.toHex() }}
+                              Asset Attached: {{ mosaic.id.id.toHex() }}
                             </v-list-tile-title>
                           </v-list-tile-content>
                         </v-list-tile>
                       </v-list>
                     </template>
                   </v-card-text>
-
                   <v-card-actions>
                     <v-spacer />
 
                     <v-btn
-                      color="info"
-                      @click="dialog = false"
+                            color="info"
+                            @click="dialog = false"
                     >
                       Cancel
                     </v-btn>
 
                     <v-btn
-                      color="info"
-                      @click="transmitTransaction"
+                            color="info"
+                            @click="transmitTransaction"
                     >
                       Yes, send it!
                     </v-btn>
@@ -299,32 +275,36 @@
 <script>
 import {
   NetworkType,
-  Account,
   TransferTransaction,
   Deadline,
   Address,
   PlainMessage,
   NetworkCurrencyMosaic,
+  PublicAccount,
   UInt64,
   TransactionHttp,
   MosaicId,
   Mosaic,
+  AccountHttp,
+  NamespaceHttp,
+  AggregateTransaction,
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
-import store from '../../store/index';
-import SendConfirmation from './SendConfirmation.vue';
+import store from '../../../store/index';
+import SendConfirmation from '../SendConfirmation.vue';
 
 export default {
   components: {
     SendConfirmation,
   },
+  props: ['currentMultisigPublicKey'],
   store,
   data() {
     return {
       txMessage: '',
       txAmount: 0,
       txMaxFee: 0,
-      txRecipient: '',
+      txRecipient: 'SAXJSNGSDPXHRK2N4PRB646HGZJT6GSJ4SJI3OEZ',
       userPrivateKey: '',
       signedTx: null,
       transferTx: null,
@@ -334,6 +314,11 @@ export default {
       currentMosaicName: '',
       currentMosaicAmount: '',
       txHash: '',
+      mutisigAccount: {},
+      multisigAccountInfo: {},
+      currentXEM: {},
+      mutisigPublicAccount: {},
+      dialogMosaics: [],
     };
   },
   computed: {
@@ -342,62 +327,53 @@ export default {
       'application',
       'assets',
     ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
     transactionHttp() {
       return new TransactionHttp(this.activeWallet.node);
     },
   },
   methods: {
-    createTransferTransaction() {
-      const recipientAddr = Address.createFromRawAddress(this.txRecipient);
-      const nativeCurrency = NetworkCurrencyMosaic.createRelative(
-        UInt64.fromUint(this.txAmount),
-      );
-
-      if (this.txAmount > 0) {
-        this.mosaics.unshift(nativeCurrency);
-      }
-
-      this.transferTx = TransferTransaction.create(
+    sendTx() {
+      let mosaics = [];
+      mosaics = this.mosaics.map(mosaic => mosaic);
+      mosaics.push(new Mosaic(new MosaicId(this.currentXEM.id.toHex()), UInt64.fromUint(this.txAmount)));
+      this.dialogMosaics = mosaics
+      this.dialog = true;
+    },
+    transmitTransaction() {
+      const transactionHttp = new TransactionHttp(this.activeWallet.node);
+      const innerTx = TransferTransaction.create(
         Deadline.create(),
-        recipientAddr,
-        this.mosaics,
+        Address.createFromRawAddress(this.txRecipient),
+        this.dialogMosaics,
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST,
-        UInt64.fromUint(this.txMaxFee),
-      );
-    },
-
-    transmitTransaction() {
-      this.createTransferTransaction();
-      const signerAccount = Account.createFromPrivateKey(
-        this.userPrivateKey,
-        NetworkType.MIJIN_TEST,
       );
 
-      if (this.transferTx) {
-        this.signedTx = signerAccount.sign(this.transferTx);
-        this.dialog = false;
-        if (this.signedTx) {
-          this.transactionHttp.announce(this.signedTx).subscribe(
-            (txAnnouncmentResponse) => {
-              if (
-                txAnnouncmentResponse.message
-                === 'packet 9 was pushed to the network via /transaction'
-              ) {
-                this.txHash = this.signedTx.hash;
-                this.mosaics = [];
-              }
-            },
-            // eslint-disable-next-line no-console
-            err => console.log(err),
-          );
-        }
+      if (this.multisigAccountInfo.minApproval <= 1) {
+        // complete
+        this.aggregeteCompleteTx(transactionHttp, innerTx);
+      } else {
+        // bonded
+        this.aggregeteBondedTx(transactionHttp, innerTx);
       }
     },
+    aggregeteCompleteTx(transactionHttp, innerTx) {
+      const that = this
+      const completeTx = AggregateTransaction.createComplete(
+        Deadline.create(),
+        [innerTx.toAggregate(that.mutisigPublicAccount)],
+        NetworkType.MIJIN_TEST,
+        []
+      );
+      const signedCompleteTx = this.activeWallet.account.sign(completeTx);
+      transactionHttp
+        .announce(signedCompleteTx)
+        .subscribe(x => console.log(x), err => console.error(err));
+    },
 
+    aggregeteBondedTx(transactionHttp, innerTx) {
+      console.log('bonded tx');
+    },
     addMosaic() {
       const mosaicHex = this.currentMosaicName.toUpperCase();
       const mosaic = new Mosaic(
@@ -414,6 +390,25 @@ export default {
     fillPrivateKeyField() {
       this.userPrivateKey = this.activeWallet.account.privateKey;
     },
+  },
+  watch: {
+    async currentMultisigPublicKey() {
+      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+      const accountHttp = new AccountHttp(activeWallet.node);
+      const mutisigPublicAccount = PublicAccount.createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
+      this.mutisigPublicAccount = mutisigPublicAccount
+      const address = mutisigPublicAccount.address;
+      const mutisigAccountInfo = await accountHttp.getMultisigAccountInfo(address).toPromise();
+      this.multisigAccountInfo = mutisigAccountInfo;
+      const mutisigAccount = await accountHttp.getAccountInfo(address).toPromise();
+      this.mutisigAccount = mutisigAccount
+    },
+  },
+  async created() {
+    this.activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+    const namespaceHttp = new NamespaceHttp(this.activeWallet.node)
+    const currentXEM = await namespaceHttp.getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACE_ID).toPromise();
+    this.currentXEM = currentXEM
   },
 };
 

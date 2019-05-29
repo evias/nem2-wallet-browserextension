@@ -33,14 +33,6 @@
           xs12
         >
           <Errors class="mb-4" />
-
-          <MultisigAccountInfo
-            v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
-            :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
-            :loading-get-multisig-info="multisig.loading_getMultisigInfo"
-            class="mb-4"
-          />
-
           <v-card
             v-if="wallet.wallets.length > 0
               && wallet.activeWallet
@@ -69,7 +61,9 @@
               <v-tab>
                 Cosign Multisig Transactions
               </v-tab>
-
+              <v-tab>
+                Send Multisig Transactions
+              </v-tab>
               <v-tab-item>
                 <v-card flat>
                   <MultisigConversion
@@ -89,13 +83,28 @@
 
               <v-tab-item>
                 <v-card flat>
-                  <MultisigTransactions
+                  <MultisigCosignation
                     :loading-get-multisig-info="multisig.loading_getMultisigInfo"
+                  />
+                </v-card>
+              </v-tab-item>
+
+              <v-tab-item>
+                <v-card flat>
+                  <OtherMultisigTransactions
+                          :loading-get-multisig-info="multisig.loading_getMultisigInfo"
                   />
                 </v-card>
               </v-tab-item>
             </v-tabs>
           </v-card>
+
+          <MultisigAccountInfo
+                  v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
+                  :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
+                  :loading-get-multisig-info="multisig.loading_getMultisigInfo"
+                  class="mb-4"
+          />
         </v-flex>
       </v-layout>
     </v-container>
@@ -108,15 +117,17 @@ import Errors from '../Errors.vue';
 import MultisigConversion from './MultisigConversion.vue';
 import MultisigModification from './MultisigModification.vue';
 import MultisigAccountInfo from './MultisigAccountInfo.vue';
-import MultisigTransactions from './MultisigTransactions.vue';
+import MultisigCosignation from './MultisigCosignation.vue';
+import OtherMultisigTransactions from './OtherMultisigTransactions.vue';
 
 export default {
   components: {
     Errors,
     MultisigConversion,
     MultisigModification,
-    MultisigTransactions,
+    MultisigCosignation,
     MultisigAccountInfo,
+    OtherMultisigTransactions
   },
   data() {
     return {
