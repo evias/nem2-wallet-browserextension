@@ -16,91 +16,73 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-scale-transition>
-    <v-layout
-      column
-      class="pt-2 pr-4 pb-2 pl-4"
-    >
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Namespace Type</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-radio-group
-            v-model="namespaceType"
-            row
-          >
-            <v-radio
-              v-for="t in namespaceTypes"
-              :key="t.type"
-              :label="t.label"
-              :value="t.type"
-            />
-          </v-radio-group>
-        </v-flex>
-      </v-layout>
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Namespace name</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-text-field
-            v-model="namespaceName"
-            class="ma-0 pa-0"
-            label="Namespace name"
-            solo
-            required
+  <v-dialog
+    v-model="show"
+    max-width="680px"
+  >
+    <v-card>
+      <v-toolbar card>
+        <v-card-title primary-title>
+          <h3 class="headline mb-3">
+            Create a new namespace
+          </h3>
+        </v-card-title>
+      </v-toolbar>
+
+      <v-card-text>
+        <v-radio-group v-model="namespaceType">
+          <template v-slot:label>
+            <div>Namespace Type</div>
+          </template>
+          <v-radio
+            v-for="t in namespaceTypes"
+            :key="t.type"
+            :label="t.label"
+            :value="t.type"
           />
-        </v-flex>
-      </v-layout>
-      <v-layout
-        v-if="isSubNamespace"
-        row
-      >
-        <v-flex xs3>
-          <v-subheader>Parent Namespace name</v-subheader>
-        </v-flex>
-        <v-flex xs9>
+        </v-radio-group>
+
+        <v-text-field
+          v-model="namespaceName"
+          class="ma-0 pa-0"
+          label="Namespace name"
+          required
+        />
+
+        <v-layout
+          v-if="isSubNamespace"
+          row
+        >
           <v-text-field
             v-model="parentNamespaceName"
             class="ma-0 pa-0"
             label="Parent Namespace name"
-            solo
+            required
           />
-        </v-flex>
-      </v-layout>
-      <v-layout
-        v-if="!isSubNamespace"
-        row
-      >
-        <v-flex xs3>
-          <v-subheader>Duration</v-subheader>
-        </v-flex>
-        <v-flex xs9>
+        </v-layout>
+        <v-layout
+          v-if="!isSubNamespace"
+          row
+        >
           <v-text-field
             v-model="duration"
             class="ma-0 pa-0"
             label="Duration"
-            type="number"
-            solo
             required
+            number
           />
-        </v-flex>
-      </v-layout>
-      <v-layout column>
-        <SendConfirmation
-          :tx-send-data="txSendResults"
-        />
-      </v-layout>
-      <v-layout
-        row
-        justify-end
-        align-center
-        mb-3
-      >
+        </v-layout>
+        <v-layout column>
+          <SendConfirmation
+            :tx-send-data="txSendResults"
+          />
+        </v-layout>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
         <v-btn
           flat
-          @click="$emit('closeComponent')"
+          @click="$emit('close')"
         >
           Close
         </v-btn>
@@ -111,32 +93,31 @@
         >
           Send Transaction
         </v-btn>
-      </v-layout>
-      <Confirmation
-        v-model="isDialogShow"
-        :transactions="transactions"
-        @sent="txSent"
-        @error="txError"
-      >
-        <v-list>
-          <v-list-tile
-            v-for="detail in dialogDetails"
-            :key="detail.key"
-          >
-            <v-list-tile-action>
-              <v-icon>{{ detail.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ detail.key }}: {{ detail.value }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </Confirmation>
-      <v-divider />
-    </v-layout>
-  </v-scale-transition>
+      </v-card-actions>
+    </v-card>
+    <Confirmation
+      v-model="isDialogShow"
+      :transactions="transactions"
+      @sent="txSent"
+      @error="txError"
+    >
+      <v-list>
+        <v-list-tile
+          v-for="detail in dialogDetails"
+          :key="detail.key"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ detail.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ detail.key }}: {{ detail.value }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </Confirmation>
+  </v-dialog>
 </template>
 <script>
 import {
@@ -149,6 +130,9 @@ export default {
   components: {
     Confirmation,
     SendConfirmation,
+  },
+  props: {
+    visible: Boolean,
   },
   data() {
     return {
@@ -175,6 +159,16 @@ export default {
         return this.namespaceName === '' || this.duration === 0;
       }
       return this.namespaceName === '' || this.parentNamespaceName === '';
+    },
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
+        }
+      },
     },
   },
   methods: {

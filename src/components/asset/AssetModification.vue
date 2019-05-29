@@ -13,88 +13,57 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-scale-transition>
-    <v-layout
-      column
-      class="mb-3"
-    >
-      <v-layout row>
-        <v-flex xs12>
-          <v-subheader class="mb-3">
-            <h3>Asset modification</h3>
-          </v-subheader>
-        </v-flex>
-      </v-layout>
+  <v-dialog
+    v-model="show"
+    max-width="680px"
+  >
+    <v-card>
+      <v-toolbar card>
+        <v-card-title primary-title>
+          <h3 class="headline mb-3">
+            Mofify the supply of asset {{ activeAsset }}
+          </h3>
+        </v-card-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-select
+          v-model="direction"
+          :items="directions"
+          label="Direction"
+          required
+        />
 
-      <v-layout row>
-        <v-flex xs9>
-          <v-text-field
-            v-model="activeAsset"
-            class="ma-0 pa-0"
-            solo
-            required
-            disabled
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Direction</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-select
-            v-model="direction"
-            :items="directions"
-            solo
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Supply (unit)</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-text-field
-            v-model="supply"
-            class="ma-0 pa-0"
-            label="Supply (unit)"
-            type="number"
-            solo
-            required
-            number
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout column>
+        <v-text-field
+          v-model="supply"
+          class="ma-0 pa-0"
+          label="Supply (unit)"
+          type="number"
+          required
+          number
+        />
         <SendConfirmation
           :tx-send-data="txSendResults"
         />
-      </v-layout>
-      <v-layout
-        row
-        justify-end
-        align-center
-      >
-        <v-btn
-          flat
-          @click="$emit('closeComponent')"
-        >
-          Close
-        </v-btn>
-        <v-btn
-          :disabled="disabledSendTransaction"
-          color="primary mx-0"
-          @click="showDialog"
-        >
-          Send Transaction
-        </v-btn>
-      </v-layout>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            flat
+            @click="$emit('close')"
+          >
+            close
+          </v-btn>
+          <v-btn
+            :disabled="disabledSendTransaction"
+            color="primary mx-0"
+            @click="showDialog"
+          >
+            Send Transaction
+          </v-btn>
+        </v-card-actions>
+      </v-card-text>
       <Dialog
         :is-show="isDialogShow"
         @transmitTransaction="modifyAsset"
@@ -116,9 +85,8 @@
           </v-list-tile>
         </v-list>
       </Dialog>
-      <v-divider />
-    </v-layout>
-  </v-scale-transition>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -143,6 +111,7 @@ export default {
     SendConfirmation,
   },
   props: {
+    visible: Boolean,
     activeAsset: {
       type: String,
       default() {
@@ -161,9 +130,21 @@ export default {
       directions: ['Increase', 'Decrease'],
     };
   },
-  computed: mapState([
-    'wallet',
-  ]),
+  computed: {
+    ...mapState([
+      'wallet',
+    ]),
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
+        }
+      },
+    },
+  },
   watch: {
     supply: {
       handler(e) {

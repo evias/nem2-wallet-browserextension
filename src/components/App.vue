@@ -162,6 +162,8 @@
             pb-1
             pl-4
             icon
+            href="https://github.com/decentraliser/nem2-wallet-browserextension"
+            target="_new"
           >
             Github
           </v-btn>
@@ -171,6 +173,8 @@
             pb-1
             pl-4
             icon
+            href="https://nem2.slack.com/"
+            target="_new"
           >
             Slack
           </v-btn>
