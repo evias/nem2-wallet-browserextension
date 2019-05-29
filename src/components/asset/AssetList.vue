@@ -41,24 +41,21 @@
     >
       <div>
         <v-tabs
+          v-model="defaultTab"
           fixed-tabs
         >
-          <v-tab
-            :key="1"
-          >
+          <v-tab :key="0">
             Assets Balance
           </v-tab>
 
-          <v-tab-item :key="1">
+          <v-tab-item :key="0">
             <AssetTab :assets="filterZeros(assets.assets[wallet.activeWallet.name])" />
           </v-tab-item>
 
-          <v-tab
-            :key="2"
-          >
+          <v-tab :key="1">
             My Assets
           </v-tab>
-          <v-tab-item :key="2">
+          <v-tab-item :key="1">
             <AssetTab
               :assets="filterByOwner(
                 assets.assets[wallet.activeWallet.name],
@@ -86,10 +83,11 @@ export default {
   components: {
     AssetTab,
   },
-  data() {
-    return {
-      active: null,
-    };
+  props: {
+    defaultTab: {
+      type: Number,
+      default() { return 0; },
+    },
   },
   computed: mapState([
     'wallet',

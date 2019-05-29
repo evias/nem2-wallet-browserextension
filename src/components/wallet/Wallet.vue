@@ -64,7 +64,9 @@
         </v-toolbar>
 
         <v-spacer />
-        <v-card-text>
+        <v-card-text
+          v-if="wallet.wallets.length > 0"
+        >
           <WalletList class="my-2" />
         </v-card-text>
       </v-card>
@@ -84,6 +86,7 @@
   </v-layout>
 </template>
 <script>
+import { mapState } from 'vuex';
 import WalletCreationDialog from './WalletCreationDialog.vue';
 import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 import WalletImportDialog from './WalletImportDialog.vue';
@@ -105,6 +108,7 @@ export default {
       showWalletImportDialog: false,
     };
   },
+  computed: mapState(['wallet']),
 };
 </script>
 <style scoped>

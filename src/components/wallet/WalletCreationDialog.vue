@@ -35,7 +35,6 @@
           <v-icon>refresh</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text />
       <v-card-text>
         <v-text-field
           v-model="node"
@@ -71,7 +70,6 @@
           label="private key"
           readonly
         />
-
       </v-card-text>
       <v-card-actions>
         <v-spacer />

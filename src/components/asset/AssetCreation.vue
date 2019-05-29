@@ -1,138 +1,77 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
 
 <template>
-  <v-scale-transition>
-    <v-layout
-      column
-      class="pt-2 pr-4 pb-2 pl-4"
-    >
-      <v-layout row>
-        <v-flex xs12>
-          <v-subheader
-            class="mb-3"
-          >
-            <h3>Asset creation</h3>
-          </v-subheader>
-        </v-flex>
-      </v-layout>
-
-      <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Supply (unit)</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-text-field
-            v-model="supply"
-            class="ma-0 pa-0"
-            label="Integer in the range of 0 and 9,000,000,000"
-            type="number"
-            solo
-            required
-            number
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout>
-        <v-flex xs3>
-          <v-subheader>Divisibility (number of decimals)</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-text-field
-            v-model="divisibility"
-            class="ma-0 pa-0"
-            label="Integer in the range of 0 and 6"
-            type="number"
-            solo
-            required
-            number
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout>
-        <v-flex xs3>
-          <v-subheader>Duration (blocks)</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-text-field
-            v-model="duration"
-            class="ma-0 pa-0"
-            label="Fill 0 for unlimited duration"
-            type="number"
-            solo
-            required
-            number
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout>
-        <v-flex xs3>
-          <v-subheader>Transferable</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-switch
-            v-model="transferable"
-            :label="`${transferable.toString()}`"
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout>
-        <v-flex xs3>
-          <v-subheader>Mutable supply</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-switch
-            v-model="supplyMutable"
-            :label="`${supplyMutable.toString()}`"
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout>
-        <v-flex xs3>
-          <v-subheader>Mutable levy</v-subheader>
-        </v-flex>
-        <v-flex xs9>
-          <v-switch
-            v-model="levyMutable"
-            :label="`${levyMutable.toString()}`"
-          />
-        </v-flex>
-      </v-layout>
+  <v-dialog
+    v-model="show"
+    max-width="680px"
+  >
+    <v-card>
+      <v-toolbar card>
+        <v-card-title primary-title>
+          <h3 class="headline mb-3">
+            Create an asset
+          </h3>
+        </v-card-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-text-field
+          v-model="supply"
+          class="ma-0 pa-0 mt-3"
+          label="Supply (unit, Integer in the range of 0 and 9,000,000,000)"
+          type="number"
+        />
+        <v-text-field
+          v-model="divisibility"
+          class="ma-0 pa-0"
+          label="Divisibility (unit, Integer in the range of 0 and 6)"
+          type="number"
+        />
+        <v-text-field
+          v-model="duration"
+          class="ma-0 pa-0"
+          label="Duration (blocks, Fill 0 for unlimited duration)"
+          type="number"
+        />
+        <v-switch
+          v-model="transferable"
+          label="Transferable"
+        />
+        <v-switch
+          v-model="supplyMutable"
+          label="Mutable supply"
+        />
+        <v-switch
+          v-model="levyMutable"
+          label="Mutable levy"
+        />
+      </v-card-text>
       <v-layout column>
         <SendConfirmation
           :tx-send-data="txSendResults"
         />
       </v-layout>
-      <v-layout
-        row
-        justify-end
-        align-center
-        mb-3
-      >
+      <v-card-actions>
+        <v-spacer />
         <v-btn
           flat
-          @click="$emit('closeComponent')"
+          @click="$emit('close')"
         >
-          Close
+          close
         </v-btn>
         <v-btn
           :disabled="disabledSendTransaction"
@@ -141,31 +80,30 @@
         >
           Send Transaction
         </v-btn>
-      </v-layout>
-      <Dialog
-        :is-show="isDialogShow"
-        @transmitTransaction="createAsset"
-        @close="dialogClosed"
-      >
-        <v-list>
-          <v-list-tile
-            v-for="detail in dialogDetails"
-            :key="detail.key"
-          >
-            <v-list-tile-action>
-              <v-icon>{{ detail.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ detail.key }}: {{ detail.value }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </Dialog>
-      <v-divider />
-    </v-layout>
-  </v-scale-transition>
+      </v-card-actions>
+    </v-card>
+    <Dialog
+      :is-show="isDialogShow"
+      @transmitTransaction="createAsset"
+      @close="dialogClosed"
+    >
+      <v-list>
+        <v-list-tile
+          v-for="detail in dialogDetails"
+          :key="detail.key"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ detail.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ detail.key }}: {{ detail.value }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </Dialog>
+  </v-dialog>
 </template>
 
 <script>
@@ -192,6 +130,9 @@ export default {
     Dialog,
     SendConfirmation,
   },
+  props: {
+    visible: Boolean,
+  },
   data() {
     return {
       supply: 1,
@@ -206,9 +147,22 @@ export default {
       disabledSendTransaction: false,
     };
   },
-  computed: mapState([
-    'wallet',
-  ]),
+  computed: {
+    ...mapState([
+      'wallet',
+    ]),
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
+        }
+      },
+    },
+  },
+
   watch: {
     transferable: {
       handler(e) {

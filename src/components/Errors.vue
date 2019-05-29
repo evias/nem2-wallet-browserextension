@@ -29,13 +29,13 @@
       <v-alert
         :value="true"
         type="info"
+        style="text-align:center"
       >
-        You have no wallets configured,
         <v-btn
           to="/wallet"
-          color="success"
+          color="white"
         >
-          Create a wallet now!
+          No wallets configured, create one now!
         </v-btn>
       </v-alert>
     </div>
