@@ -178,7 +178,7 @@
           >
             Slack
           </v-btn>
-          <strong>NEM2 (Cow) Wallet V0.05</strong>
+          <strong>NEM2 (Cow) Wallet v0.1.0-alpha</strong>
         </v-card-text>
       </v-card>
     </v-footer>
