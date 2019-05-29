@@ -36,6 +36,7 @@
           card
           prominent
         >
+          <v-toolbar-title>Namespaces</v-toolbar-title>
           <v-spacer />
 
           <v-btn
@@ -50,7 +51,7 @@
 
           <v-btn
             icon
-            @click.stop="registerNamespace = !registerNamespace"
+            @click.stop="registerNamespace = true"
           >
             <v-icon>add_box</v-icon>
           </v-btn>
@@ -58,10 +59,6 @@
 
         <v-spacer />
         <v-card-text>
-          <NamespaceRegistration
-            v-if="registerNamespace"
-            @closeComponent="registerNamespace = false"
-          />
           <div
             v-if="wallet.wallets.length > 0
               && wallet.activeWallet
@@ -95,6 +92,10 @@
         </v-card-text>
       </v-card>
     </v-flex>
+    <NamespaceRegistration
+      :visible="registerNamespace"
+      @close="registerNamespace = false"
+    />
   </v-layout>
 </template>
 <script>

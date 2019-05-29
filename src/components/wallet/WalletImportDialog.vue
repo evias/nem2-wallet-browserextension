@@ -140,6 +140,7 @@ export default {
       this.walletName = '';
       this.privateKey = '';
       this.account = {};
+      this.$emit('close');
     },
     createFromPrivateKey() {
       const key = this.privateKey.length === 64
