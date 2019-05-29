@@ -36,6 +36,8 @@
           card
           prominent
         >
+          <v-toolbar-title>Assets</v-toolbar-title>
+
           <v-spacer />
 
           <v-btn
@@ -47,7 +49,7 @@
 
           <v-btn
             icon
-            @click.stop="createAsset = !createAsset"
+            @click.stop="createAsset = true"
           >
             <v-icon>add_box</v-icon>
           </v-btn>
@@ -56,10 +58,10 @@
         <v-spacer />
         <v-card-text>
           <AssetCreation
-            v-show="createAsset"
-            @closeComponent="createAsset = false"
+            :visible="createAsset"
+            @close="createAsset = false"
           />
-          <AssetList />
+          <AssetList :default-tab="1" />
         </v-card-text>
       </v-card>
     </v-flex>
