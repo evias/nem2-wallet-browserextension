@@ -1,13 +1,11 @@
 {
   "manifest_version": 2,
   "name": "nem2-wallet-browserextension",
-  "version": "0.1.0alpha",
-
+  "version": "0.1.1alpha",
   "description": "User friendly nem2 wallet",
-
-  "icons": {
-    "48": "icons/icon-48x48.png"
-  },
+  "icons": [
+    {"48": "icons/icon-48x48.png"}
+  ],
   "browser_action": {
     "default_icon": "icons/icon-48x48.png",
     "default_title": "Opens MyExtension",

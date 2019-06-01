@@ -1,7 +1,26 @@
 language: node_js
 node_js:
   - "10"
-cache: npm
+  - "12"
 
-install: npm install
-before_script: npm run production
+install:
+  - npm install web-ext
+
+before_script:
+  - npm install
+
+script:
+  - npm test
+  - npm run eslint
+  - npm run production
+
+before_deploy:
+  - web-ext sign --api-key=$USER --api-secret=$SECRET 
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: ./web-ext-artifacts/nem2_wallet_browserextension-$TRAVIS_TAG-an+fx.xpi
+  skip_cleanup: true
+  on:
+    tags: true
