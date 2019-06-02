@@ -14,7 +14,7 @@ script:
   - npm run production
 
 before_deploy:
-  - web-ext sign --api-key=$USER --api-secret=$SECRET 
+  - web-ext sign --api-key=$MOZ_API_KEY --api-secret=$SECRET 
 
 deploy:
   provider: releases
