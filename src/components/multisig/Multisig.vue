@@ -44,7 +44,7 @@
               card
               prominent
             >
-              <v-toolbar-title> Multisig actions</v-toolbar-title>
+              <v-toolbar-title>Multisig actions</v-toolbar-title>
             </v-toolbar>
 
             <v-tabs
@@ -61,9 +61,9 @@
               <v-tab>
                 Cosign Multisig Transactions
               </v-tab>
-              <v-tab>
+              <!-- <v-tab>
                 Send Multisig Transactions
-              </v-tab>
+              </v-tab> -->
               <v-tab-item>
                 <v-card flat>
                   <MultisigConversion
@@ -89,22 +89,17 @@
                 </v-card>
               </v-tab-item>
 
-              <v-tab-item>
+              <!-- <v-tab-item>
                 <v-card flat>
                   <OtherMultisigTransactions
                           :loading-get-multisig-info="multisig.loading_getMultisigInfo"
                   />
                 </v-card>
-              </v-tab-item>
+              </v-tab-item> -->
             </v-tabs>
           </v-card>
 
-          <MultisigAccountInfo
-                  v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
-                  :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
-                  :loading-get-multisig-info="multisig.loading_getMultisigInfo"
-                  class="mb-4"
-          />
+          <MultisigAccountInfo class="mb-4" />
         </v-flex>
       </v-layout>
     </v-container>
