@@ -60,6 +60,12 @@ $> npm run watch & npm run web-ext:run
 
 `web-ext` will open your Firefox browser with the extension loaded.
 
+Developing in web mode with hot reload:
+```
+$> npm run hot
+```
+Browse to localhost:8080/wallet.html
+
 ## License
 
 Copyright (c) 2019-present Contributors as noted in the AUTHORS file
