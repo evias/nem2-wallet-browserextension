@@ -1,4 +1,8 @@
 <template>
+<!--
+                   v-if="multisig.multisigInfo && multisig.multisigInfo[wallet.activeWallet.name]"
+                  :multisig-account-info="multisig.multisigInfo[wallet.activeWallet.name]"
+                  -->
   <div>
     <v-layout
       row
@@ -34,19 +38,19 @@
             </v-flex>
           </v-layout>
           <v-card-title
-            v-if="typeof multisigAccountInfo.account === 'undefined'
-              && !multisig.loading_getMultisigInfo"
+            v-if="!multisig.loading_getMultisigInfo
+            && !multisig.multisigInfo[wallet.activeWallet.name]"
             primary-title
           >
             <div class="monospaced">
               <div class="clearfix homeLine">
-                this account is not a multisig nor a cosignatory
+                This account is not a multisig nor a cosignatory one
               </div>
             </div>
           </v-card-title>
           <v-card-title
-            v-if="typeof multisigAccountInfo.account !== 'undefined'
-              && !multisig.loading_getMultisigInfo"
+            v-if="!multisig.loading_getMultisigInfo
+            && multisig.multisigInfo[wallet.activeWallet.name]"
             primary-title
           >
             <div class="monospaced">
@@ -55,8 +59,8 @@
                   account public key:
                 </div>
                 <div class="clearfix">
-                  {{ typeof multisigAccountInfo.account == 'undefined'
-                    ?'':multisigAccountInfo.account.publicKey }}
+                  {{ typeof multisig.multisigInfo[wallet.activeWallet.name].account == 'undefined'
+                    ?'':multisig.multisigInfo[wallet.activeWallet.name].account.publicKey }}
                 </div>
               </div>
 
@@ -65,7 +69,7 @@
                   min approval:
                 </div>
                 <div class="clearfix">
-                  {{ multisigAccountInfo.minApproval }}
+                  {{ multisig.multisigInfo[wallet.activeWallet.name].minApproval }}
                 </div>
               </div>
 
@@ -74,31 +78,38 @@
                   min removal:
                 </div>
                 <div class="clearfix">
-                  {{ multisigAccountInfo.minRemoval }}
+                  {{ multisig.multisigInfo[wallet.activeWallet.name].minRemoval }}
                 </div>
               </div>
 
-              <div class="clearfix homeLine">
+              <div
+                v-if="!multisig.loading_getMultisigInfo
+                 && !multisig.multisigInfo[wallet.activeWallet.name]"
+               class="clearfix homeLine"
+              >
                 <div class="clearfix">
                   cosignatory list:
                 </div>
                 <div
-                  v-for="(m, j) in multisigAccountInfo.cosignatories"
+                  v-for="(m, j) in multisig.multisigInfo[wallet.activeWallet.name].cosignatories"
                   :key="j"
                   class="clearfix"
                 >
                   {{ m.publicKey }}
                 </div>
               </div>
-              <div class="clearfix homeLine">
+              <div
+               v-if="!multisig.loading_getMultisigInfo
+                && multisig.multisigInfo[wallet.activeWallet.name]"
+              class="clearfix homeLine">
                 <div class="clearfix">
                   multisig account list:
                 </div>
-                <div v-if="multisigAccountInfo.multisigAccounts.length == 0">
+                <div v-if="multisig.multisigInfo[wallet.activeWallet.name].multisigAccounts.length == 0">
                   this account does not own any multisig account
                 </div>
                 <div
-                  v-for="(m, i) in multisigAccountInfo.multisigAccounts"
+                  v-for="(m, i) in multisig.multisigInfo[wallet.activeWallet.name].multisigAccounts"
                   v-else
                   :key="i"
                   class="clearfix"
@@ -121,14 +132,6 @@ import { GET_MULTISIG_MODES } from '../../infrastructure/multisig/multisig-types
 
 export default {
   name: 'MultisigInfo',
-  props: {
-    multisigAccountInfo: {
-      type: Object,
-      default() {
-        return undefined;
-      },
-    },
-  },
   computed: mapState([
     'wallet',
     'application',

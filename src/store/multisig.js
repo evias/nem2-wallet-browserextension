@@ -50,7 +50,9 @@ const actions = {
   async CLEAR_MULTISIG_INFO({ commit }, wallet) {
     commit('setAccountMultisigInfo', { wallet, multisigInfo: false });
   },
-  async GET_MULTISIG_INFO({ commit, dispatch, getters }, { wallet, mode }) {
+
+
+  async GET_MULTISIG_INFO({ commit, getters }, { wallet, mode }) {
     if (mode === GET_MULTISIG_MODES.ON_WALLET_CHANGE && getters.GET_MULTISIG_INFO) {
       commit('setLoading_getMultisigInfo', false);
       return;
@@ -65,7 +67,7 @@ const actions = {
       const multisigInfo = await accountHttp.getMultisigAccountInfo(address).toPromise();
       commit('setAccountMultisigInfo', { wallet, multisigInfo });
     } catch (error) {
-      dispatch('application/SET_ERROR', error, { root: true });
+      commit('setAccountMultisigInfo', { wallet, multisigInfo: false });
       // eslint-disable-next-line no-console
       console.error(error, 'GET_MULTISIG_INFO');
     }

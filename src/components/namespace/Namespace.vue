@@ -126,8 +126,9 @@ export default {
     'namespaces',
   ]),
   methods: {
-    reloadList(wallet) {
-      this.$store.dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS', { wallet });
+    reloadList({ wallet, mode }) {
+      this.$store.dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS',
+      { wallet, mode });
     },
   },
 };

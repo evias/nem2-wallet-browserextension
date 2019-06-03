@@ -47,6 +47,8 @@ const actions = {
   async CLEAR_ASSETS({ commit }, wallet) {
     commit('setAccountAssets', { wallet, assets: false });
   },
+
+
   async GET_ASSETS_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
     if (mode === GET_ASSETS_MODES.ON_WALLET_CHANGE && getters.GET_ASSETS) return;
 
