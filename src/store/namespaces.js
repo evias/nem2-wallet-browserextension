@@ -47,6 +47,8 @@ const actions = {
   async CLEAR_NAMESPACES({ commit }, wallet) {
     commit('setAccountNamespaces', { wallet, namespaces: false });
   },
+
+
   async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
     if (mode === GET_NAMESPACES_MODES.ON_WALLET_CHANGE && getters.GET_NAMESPACES) return;
 
