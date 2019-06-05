@@ -31,6 +31,7 @@ const state = {
   wallets: [],
   // @TODO: walletNumber is a quickfix, to be replaced in the future
   walletNumber: 0,
+  listener: false,
 };
 
 const getters = {
@@ -39,6 +40,9 @@ const getters = {
   },
   GET_ACTIVE_WALLET() {
     return state.activeWallet;
+  },
+  GET_LISTENER() {
+    return state.listener;
   },
 };
 
@@ -56,6 +60,9 @@ const mutations = {
   },
   removeWallet(state, indexOfWalletToRemove) {
     state.wallets.splice(indexOfWalletToRemove, 1);
+  },
+  createListener(state, listener) {
+    state.listener = listener;
   },
 };
 
@@ -217,7 +224,13 @@ const actions = {
     ]);
 
     const wsEndpoint = wallet.node.replace('http', 'ws');
-    const listener = new Listener(wsEndpoint, WebSocket);
+
+    const oldListener = getters.GET_LISTENER;
+    if (oldListener) oldListener.close();
+
+    commit('createListener', new Listener(wsEndpoint, WebSocket));
+    const listener = getters.GET_LISTENER;
+
     listener.open().then(() => {
       dispatch('application/SET_LISTENER_STATUS', { status: 'OK', text: '' }, { root: true });
 
