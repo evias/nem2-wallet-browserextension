@@ -62,6 +62,7 @@ router.beforeEach((to, from, next) => {
 Vue.use(Vuetify, {
   iconfont: 'md',
 });
+
 Vue.use(VueRouter);
 
 // eslint-disable-next-line no-new
