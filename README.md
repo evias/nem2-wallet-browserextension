@@ -21,7 +21,7 @@ This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq
 When you find that _nem2-wallet-browserextension_ could have XYZ, __think about what you can do for open source not what open source can do for you__. If you find something it's not working or something is missing, feel free to open a Pull Request, I will be more than happy to merge it, but I don't do features on demand :smile:.
 
 ## Tools (I use)
-
+- Make sure to use Node LTS (Node 12 is not yet supported)
 - npm or yarn
 - [visual studio code](https://code.visualstudio.com/) or your preferred IDE
 - [web-ext](https://github.com/mozilla/web-ext)
