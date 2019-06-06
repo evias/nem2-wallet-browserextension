@@ -170,7 +170,8 @@ const getBody = (tx) => {
                 },
                 {
                     key: 'Duration (blocks)',
-                    value: tx.mosaicProperties.duration.compact() === 0
+                    value: (tx.mosaicProperties.duration === undefined
+                        || tx.mosaicProperties.duration.compact() === 0)
                         ? 'unlimited'
                         : tx.mosaicProperties.duration.compact().toLocaleString(),
                 },
@@ -198,7 +199,8 @@ const getBody = (tx) => {
               },
               {
                   key: 'Duration (blocks): ',
-                  value: tx.mosaicProperties.duration.compact() === 0
+                  value: (tx.mosaicProperties.duration === undefined
+                    || tx.mosaicProperties.duration.compact() === 0)
                       ? 'unlimited'
                       : tx.mosaicProperties.duration.compact().toLocaleString(),
               },
