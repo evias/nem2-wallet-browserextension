@@ -41,8 +41,12 @@
           Exercise extreme caution and verify all details before proceeding.
         </v-alert>
       </v-flex>
-      <v-flex xs12>
+      <v-flex
+        xs12
+      >
         <UriTransactionList
+          v-if="transactions.receivedURI
+            && transactions.receivedURI.length > 0"
           :transactions="transactions.receivedURI"
           list-type="uriToValidate"
         />

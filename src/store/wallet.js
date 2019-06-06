@@ -223,7 +223,7 @@ const actions = {
       ),
     ]);
 
-    const wsEndpoint = wallet.node.replace('http', 'ws');
+    const wsEndpoint = wallet.node.toLowerCase().replace('http', 'ws');
 
     const oldListener = getters.GET_LISTENER;
     if (oldListener) oldListener.close();

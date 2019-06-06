@@ -18,7 +18,7 @@
  */
 
 import {
-  NamespaceHttp, BlockchainHttp, PublicAccount, NetworkType,
+  NamespaceHttp, ChainHttp, PublicAccount, NetworkType,
 } from 'nem2-sdk';
 import {
   mergeMap, map,
@@ -37,8 +37,8 @@ export const getNamespacesByAddress = async wallet => new Promise(async (resolve
         NetworkType.MIJIN_TEST,
       );
 
-    const blockChainHttp = new BlockchainHttp(endpoint);
-    const blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact();
+    const chainHttp = new ChainHttp(endpoint);
+    const blockHeight = (await chainHttp.getBlockchainHeight().toPromise()).compact();
     const namespaceHttp = new NamespaceHttp(endpoint);
     namespaceHttp.getNamespacesFromAccount(publicAccount.address).pipe(
       mergeMap((namespacesInfo) => {

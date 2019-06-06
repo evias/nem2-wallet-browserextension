@@ -57,7 +57,7 @@
                 @click="removeWallet(wallet.name)"
               >
                 <v-icon color="grey lighten-1">
-                  close
+                  delete_forever
                 </v-icon>
               </v-btn>
             </v-list-tile-action>

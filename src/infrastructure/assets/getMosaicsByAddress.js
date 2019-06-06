@@ -23,7 +23,7 @@ import {
   MosaicService,
   AccountHttp,
   MosaicHttp,
-  BlockchainHttp,
+  ChainHttp,
 } from 'nem2-sdk';
 import { formatMosaics, sortMosaics } from './formatMosaics';
 
@@ -38,8 +38,8 @@ const getMosaicsByAddress = async wallet => new Promise(async (resolve, reject) 
       );
 
       // @TODO: BlockHeight at a higher level, sync with the network
-      const blockChainHttp = new BlockchainHttp(endpoint);
-      const blockHeight = (await blockChainHttp
+      const chainHttp = new ChainHttp(endpoint);
+      const blockHeight = (await chainHttp
         .getBlockchainHeight()
         .toPromise()).compact();
 
