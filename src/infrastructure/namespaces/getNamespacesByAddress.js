@@ -26,10 +26,10 @@ import {
 import { formatNamespaces } from './formatNamespaces';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getNamespacesByAddress = async wallet => new Promise(async (resolve, reject) => {
+export const getNamespacesByAddress = async (wallet, activeNode) => new Promise(async (resolve, reject) => {
   try {
     const namespaces = [];
-    const endpoint = wallet.node;
+    const endpoint = activeNode;
     const publicAccount = wallet.isWatchOnly
       ? wallet.publicAccount
       : PublicAccount.createFromPublicKey(

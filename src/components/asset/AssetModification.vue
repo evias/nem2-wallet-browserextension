@@ -133,6 +133,7 @@ export default {
   computed: {
     ...mapState([
       'wallet',
+      'application',
     ]),
     show: {
       get() {
@@ -172,7 +173,7 @@ export default {
       if (!this.wallet.activeWallet) return;
       if (this.directions.indexOf(this.direction) === -1) return;
 
-      const endpoint = this.wallet.activeWallet.node;
+      const endpoint = this.application.activeNode;
       const transactionHttp = new TransactionHttp(endpoint);
       // eslint-disable-next-line prefer-destructuring;
       const { account } = this.wallet.activeWallet;

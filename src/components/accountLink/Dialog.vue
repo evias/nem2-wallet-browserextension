@@ -76,8 +76,10 @@ export default {
   computed: {
     ...mapState([
       'wallet',
+      'application',
     ], {
       wallet: state => state.wallet,
+      application: state => state.application,
     }),
   },
   methods: {
@@ -86,7 +88,7 @@ export default {
     },
     signAndAnnounce() {
       const { activeWallet } = this.wallet;
-      const endpoint = activeWallet.node;
+      const endpoint = this.application.activeNode;
       const { account } = activeWallet;
       const signedTx = account.sign(this.transaction);
       const preSignedTxPayload = signedTx.payload;

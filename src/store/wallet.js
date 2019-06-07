@@ -74,13 +74,17 @@ const actions = {
     if (!localStorageWallets) return;
 
     const wallets = await jsonToWallets(localStorageWallets);
+
     if (!(wallets.length > 0)) return;
+
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
+    await commit('application/setActiveNode', activeWallet.node, { root: true });
     await commit('setActiveWallet', activeWallet);
-
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
+
+
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
 
@@ -120,13 +124,15 @@ const actions = {
 
     const newActiveWallet = wallets.find(wallet => wallet.name === newActiveWalletName);
 
+    await commit('application/setActiveNode', newActiveWallet.node, { root: true });
     await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
 
 
   async REMOVE_WALLET({ commit, getters, dispatch }, walletName) {
-    const indexOfWalletToRemove = getters.GET_WALLETS.findIndex(({ name }) => name === walletName);
+    const indexOfWalletToRemove = getters.GET_WALLETS
+      .findIndex(({ name }) => name === walletName);
 
     await commit('removeWallet', indexOfWalletToRemove);
 
@@ -152,7 +158,13 @@ const actions = {
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
 
-  async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
+
+  async FETCH_WALLET_DATA({
+    dispatch,
+    getters,
+    rootState,
+    commit,
+  }, argWallet) {
     await Promise.all([
       dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true }),
       commit(
@@ -223,7 +235,8 @@ const actions = {
       ),
     ]);
 
-    const wsEndpoint = wallet.node.toLowerCase().replace('http', 'ws');
+    const wsEndpoint = rootState.application
+      .activeNode.toLowerCase().replace('http', 'ws');
 
     const oldListener = getters.GET_LISTENER;
     if (oldListener) oldListener.close();

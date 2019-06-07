@@ -49,13 +49,13 @@ const actions = {
   },
 
 
-  async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
+  async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch, getters, rootState }, { wallet, mode }) {
     if (mode === GET_NAMESPACES_MODES.ON_WALLET_CHANGE && getters.GET_NAMESPACES) return;
 
     await commit('setLoading_getNamespacesByAddress', true);
 
     try {
-      const namespaces = await getNamespacesByAddress(wallet);
+      const namespaces = await getNamespacesByAddress(wallet, rootState.application.activeNode);
       commit('setAccountNamespaces', { wallet, namespaces });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
