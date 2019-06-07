@@ -30,7 +30,7 @@ import { formatTransactions } from './formatTransactions';
 import { timestampNemesisBlock } from '../network/types';
 
 const getAccountTransactionsById = (
-  { wallet, currentId, activeNode, }
+  { wallet, currentId, activeNode },
 ) => new Promise(async (resolve, reject) => {
   try {
       const accountHttp = new AccountHttp(activeNode);

@@ -49,7 +49,12 @@ const actions = {
   },
 
 
-  async GET_ASSETS_BY_ADDRESS({ commit, dispatch, getters, rootState }, { wallet, mode }) {
+  async GET_ASSETS_BY_ADDRESS({
+    commit,
+    dispatch,
+    getters,
+    rootState,
+  }, { wallet, mode }) {
     if (mode === GET_ASSETS_MODES.ON_WALLET_CHANGE && getters.GET_ASSETS) return;
 
     await commit('setLoading_getMosaicsByAddress', true);
