@@ -203,6 +203,7 @@
     <v-layout column>
       <SendConfirmation
               :tx-send-data="txSendResults"
+              :generation-hash="currentGenerationHash"
       />
     </v-layout>
   </div>
@@ -232,7 +233,7 @@
       SendConfirmation,
     },
     // eslint-disable-next-line vue/require-prop-types
-    props: ['actionType', 'filterType', 'maxFee'],
+    props: ['actionType', 'filterType', 'maxFee', 'generationHash'],
     data() {
       return {
         filterList: [],

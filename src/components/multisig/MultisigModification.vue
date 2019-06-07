@@ -72,6 +72,17 @@
         </v-flex>
       </v-layout>
 
+      <v-layout>
+        <v-flex xs12>
+          <v-text-field
+            v-model="generationHash"
+            class="ma-0 pa-0"
+            label="Generation Hash"
+            required
+          />
+        </v-flex>
+      </v-layout>
+
       <v-layout
         v-if="showLockFunds"
         row
@@ -324,6 +335,7 @@ export default {
       txSendResults: [],
       activeWallet: this.$store.getters['wallet/GET_ACTIVE_WALLET'],
       aggregateTx: {},
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -334,6 +346,16 @@ export default {
     ], {
       wallet: state => state.wallet,
     }),
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
+    },
   },
   watch: {
     async currentMultisigPublicKey() {
@@ -428,7 +450,8 @@ export default {
         ],
       );
 
-      const signedAggregateTx = account.sign(aggregateTx);
+      const signedAggregateTx = account
+        .sign(aggregateTx, this.currentGenerationHash);
       this.aggregateTx = signedAggregateTx;
 
       const { lockFundsMosaicAmount } = this;
@@ -446,7 +469,8 @@ export default {
         UInt64.fromUint(this.lockFundsDuration),
         signedAggregateTx,
       );
-      const signedLockFundsTx = activeWallet.account.sign(lockFundsTx);
+      const signedLockFundsTx = activeWallet.account
+        .sign(lockFundsTx, this.currentGenerationHash);
 
       transactionHttp.announce(signedLockFundsTx);
 
