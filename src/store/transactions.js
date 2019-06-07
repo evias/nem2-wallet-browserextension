@@ -88,7 +88,12 @@ const actions = {
   },
 
 
-  async GET_TRANSACTIONS_BY_ID({ commit, dispatch, getters }, { wallet, mode }) {
+  async GET_TRANSACTIONS_BY_ID({
+    commit,
+    dispatch,
+    getters,
+    rootState,
+  }, { wallet, mode }) {
     await commit('setLoading_getAccountTransactionsById', true);
     const actualTransactions = getters.GET_TRANSACTIONS;
     let currentId;
@@ -107,10 +112,11 @@ const actions = {
         break;
       }
 
-      const newTransactions = await getAccountTransactionsById(
+      const newTransactions = await getAccountTransactionsById({
         wallet,
         currentId,
-      );
+        activeNode: rootState.application.activeNode,
+      });
 
       if (!newTransactions) {
         await commit('setAccountTransactions', {

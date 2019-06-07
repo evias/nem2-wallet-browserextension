@@ -47,7 +47,7 @@
               </div>
 
               <v-list-tile-sub-title class="monospaced">
-                {{ wallet.node }}
+                Default node: {{ wallet.node }}
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>

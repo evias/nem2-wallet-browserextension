@@ -31,6 +31,7 @@ const state = {
   snackbarText: '',
   blockNumber: 'loading',
   blocks: [],
+  activeNode: false,
 };
 
 const getters = {
@@ -73,6 +74,9 @@ const mutations = {
   addBlock(state, formattedBlock) {
     if (state.blocks.length >= 100) state.blocks.shift();
     state.blocks.push(formattedBlock);
+  },
+  setActiveNode(state, node) {
+    state.activeNode = node;
   },
 };
 

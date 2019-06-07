@@ -52,7 +52,7 @@ const actions = {
   },
 
 
-  async GET_MULTISIG_INFO({ commit, getters }, { wallet, mode }) {
+  async GET_MULTISIG_INFO({ commit, getters, rootState }, { wallet, mode }) {
     if (mode === GET_MULTISIG_MODES.ON_WALLET_CHANGE && getters.GET_MULTISIG_INFO) {
       commit('setLoading_getMultisigInfo', false);
       return;
@@ -61,7 +61,7 @@ const actions = {
     await commit('setLoading_getMultisigInfo', true);
 
     try {
-      const accountHttp = new AccountHttp(wallet.node);
+      const accountHttp = new AccountHttp(rootState.application.activeNode);
       const address = wallet.isWatchOnly
         ? wallet.publicAccount.address : wallet.account.address;
       const multisigInfo = await accountHttp.getMultisigAccountInfo(address).toPromise();

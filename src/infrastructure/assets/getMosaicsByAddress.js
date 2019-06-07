@@ -27,11 +27,11 @@ import {
 } from 'nem2-sdk';
 import { formatMosaics, sortMosaics } from './formatMosaics';
 
-const getMosaicsByAddress = async wallet => new Promise(async (resolve, reject) => {
+const getMosaicsByAddress = async (wallet, activeNode) => new Promise(async (resolve, reject) => {
     try {
       const { address } = wallet.isWatchOnly
         ? wallet.publicAccount : wallet.account;
-      const endpoint = wallet.node;
+      const endpoint = activeNode;
       const mosaicService = new MosaicService(
         new AccountHttp(endpoint),
         new MosaicHttp(endpoint),

@@ -194,7 +194,9 @@ export default {
       type: String,
     }
   },
-  computed: mapState(['wallet']),
+  computed: mapState(
+    ['wallet', 'application']
+  ),
   watch: {
   },
   methods: {
@@ -203,7 +205,7 @@ export default {
     },
     signAndAnnounce() {
       if (!this.wallet.activeWallet) return;
-      const endpoint = this.wallet.activeWallet.node;
+      const endpoint = this.application.activeNode;
       const { account } = this.wallet.activeWallet;
       const { address } = account;
       const transactions = signTransactions(this.transactions, account);

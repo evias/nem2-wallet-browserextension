@@ -279,15 +279,16 @@ export default {
     ...mapState([
       'wallet',
       'transactions',
+      'application',
     ]),
     activeWallet() {
       return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
     },
     transactionHttp() {
-      return new TransactionHttp(this.activeWallet.node);
+      return new TransactionHttp(this.application.activeNode);
     },
     endpoint() {
-      return this.activeWallet.node;
+      return this.application.activeNode;
     },
   },
   mounted() {

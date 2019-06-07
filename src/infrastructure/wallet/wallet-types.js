@@ -60,15 +60,16 @@ export class WoWallet {
 
   async create() {
     try {
+      // @TODO: rationalize
       let publicKey;
       if (this.publicAccount.publicKey) return this;
       if (this.publicKey) {
         publicKey = this.publicKey;
       } else if (!this.publicKey && this.publicAccount.address) {
-        const publicAccount = await getAccountInfo(this);
+        const publicAccount = await getAccountInfo(this, this.node);
         publicKey = publicAccount.publicKey;
       } else if (!this.publicKey && this.address) {
-        const publicAccount = await getAccountInfo(this);
+        const publicAccount = await getAccountInfo(this, this.node);
         publicKey = publicAccount.publicKey;
       } else {
         throw new Error('the parameters provided for watch only wallet creation are invalid');

@@ -330,14 +330,14 @@ export default {
     ...mapState([
       'wallet',
       'multisig',
+      'application',
     ], {
       wallet: state => state.wallet,
     }),
   },
   watch: {
     async currentMultisigPublicKey() {
-      const { activeWallet } = this;
-      const accountHttp = new AccountHttp(activeWallet.node);
+      const accountHttp = new AccountHttp(this.application.activeNode);
       this.currentMultisigAccount = await accountHttp
         .getMultisigAccountInfo(Address.createFromPublicKey(
           this.currentMultisigPublicKey, NetworkType.MIJIN_TEST,
@@ -391,10 +391,10 @@ export default {
       const multisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
 
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+      const activeWallet = this.wallet.activeWallet;
       const { account } = activeWallet;
       const network = NetworkType.MIJIN_TEST;
-      const endpoint = activeWallet.node;
+      const endpoint = this.application.activeNode;
       const transactionHttp = new TransactionHttp(endpoint);
       const minApprovalDelta = this.approvalDelta;
       const minRemovalDelta = this.removalDelta;
@@ -450,7 +450,7 @@ export default {
 
       transactionHttp.announce(signedLockFundsTx);
 
-      const listener = new Listener(activeWallet.node.replace('http', 'ws'), WebSocket);
+      const listener = new Listener(this.application.activeNode.replace('http', 'ws'), WebSocket);
 
       const that = this;
       listener.open().then(() => {
@@ -461,8 +461,7 @@ export default {
       });
     },
     sendAggregate() {
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-      const transactionHttp = new TransactionHttp(activeWallet.node);
+      const transactionHttp = new TransactionHttp(this.application.activeNode);
 
       transactionHttp.announceAggregateBonded(this.aggregateTx);
     },
