@@ -47,7 +47,14 @@ const actions = {
     commit('setAccountInfo', { wallet, accountInfo: false });
     commit('setLoading_getAccountInfo', false);
   },
-  async FETCH_ACCOUNT_INFO({ commit, dispatch, getters }, wallet) {
+  async FETCH_ACCOUNT_INFO(
+    {
+      commit,
+      dispatch,
+      getters,
+      rootState,
+    }, wallet,
+  ) {
     dispatch('application/RESET_ERRORS', null, { root: true });
 
     if (getters.GET_ACCOUNT_INFO) {
@@ -58,7 +65,7 @@ const actions = {
     commit('setLoading_getAccountInfo', true);
 
     try {
-      const accountInfo = await getAccountInfo(wallet);
+      const accountInfo = await getAccountInfo(wallet, rootState.application.activeNode);
       commit('setAccountInfo', { wallet, accountInfo });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });

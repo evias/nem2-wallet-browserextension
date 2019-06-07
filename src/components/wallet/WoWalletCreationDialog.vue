@@ -40,7 +40,7 @@
         <v-text-field
           v-model="node"
           class="ma-0 pa-0"
-          label="node"
+          label="default node"
           type="text"
           required
         />

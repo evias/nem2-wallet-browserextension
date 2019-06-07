@@ -20,8 +20,8 @@
 import { AccountHttp } from 'nem2-sdk';
 import { formatAccountInfo } from './formatAccountInfo';
 
-const getAccountInfo = wallet => new Promise((resolve, reject) => {
-  const accountHttp = new AccountHttp(wallet.node);
+const getAccountInfo = (wallet, activeNode) => new Promise((resolve, reject) => {
+  const accountHttp = new AccountHttp(activeNode);
   const address = wallet.isWatchOnly
     ? wallet.publicAccount.address : wallet.account.address;
 

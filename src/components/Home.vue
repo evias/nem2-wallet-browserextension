@@ -111,7 +111,7 @@
                             <v-text-field
                               :value="wallet.activeWallet.node"
                               class="ma-0 pa-0 monospaced"
-                              label="Node"
+                              label="Default node"
                               color="white"
                               readonly
                             />

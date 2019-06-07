@@ -58,9 +58,9 @@
               <p class="mb-4 mt-4">
                 Current Node:
                 <a
-                  :href="activeWallet.node"
+                  :href="application.activeNode"
                   target="_new"
-                >{{ activeWallet.node }}</a>
+                >{{ application.activeNode }}</a>
                 (Cow)
               </p>
               <v-flex xs12>
@@ -211,7 +211,7 @@
                 <SendConfirmation
                   :tx-hash="txHash"
                   :tx-recipient="txRecipient"
-                  :node-u-r-l="activeWallet.node"
+                  :node-u-r-l="application.activeNode"
                 />
               </div>
 

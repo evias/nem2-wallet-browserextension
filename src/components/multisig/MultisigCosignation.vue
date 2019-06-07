@@ -118,8 +118,7 @@ export default {
   },
   watch: {
     async currentMultisigPublicKey() {
-      const { activeWallet } = this;
-      const accountHttp = new AccountHttp(activeWallet.node);
+      const accountHttp = new AccountHttp(this.application.activeNode);
       const publicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
       this.aggregatedTx = await accountHttp.aggregateBondedTransactions(publicAccount).toPromise();
@@ -130,9 +129,8 @@ export default {
   methods: {
     cosignTransaction(index) {
       // eslint-disable-next-line no-console
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
       const { account } = activeWallet;
-      const transactionHttp = new TransactionHttp(activeWallet.node);
+      const transactionHttp = new TransactionHttp(this.application.activeNode);
 
       const cosignAggregateBondedTransaction = (transaction) => {
         const cosignatureTransaction = CosignatureTransaction.create(transaction);

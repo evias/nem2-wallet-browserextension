@@ -30,13 +30,11 @@ import { formatTransactions } from './formatTransactions';
 import { timestampNemesisBlock } from '../network/types';
 
 const getAccountTransactionsById = (
-  wallet,
-  currentId,
+  { wallet, currentId, activeNode, }
 ) => new Promise(async (resolve, reject) => {
   try {
-      const { node } = wallet;
-      const accountHttp = new AccountHttp(node);
-      const blockHttp = new BlockHttp(node);
+      const accountHttp = new AccountHttp(activeNode);
+      const blockHttp = new BlockHttp(activeNode);
       const pageSize = 10;
       const publicAccount = wallet.isWatchOnly
         ? wallet.publicAccount

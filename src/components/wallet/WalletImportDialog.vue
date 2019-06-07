@@ -33,7 +33,7 @@
         <v-text-field
           v-model="node"
           class="ma-0 pa-0"
-          label="NEM2 node URL"
+          label="NEM2 default node URL"
         >
           {{ node }}
         </v-text-field>
