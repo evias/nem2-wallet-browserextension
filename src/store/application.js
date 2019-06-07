@@ -18,6 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
+import { BlockHttp } from 'nem2-sdk';
 import { timestampNemesisBlock } from '../infrastructure/network/types';
 
 const state = {
@@ -32,6 +34,7 @@ const state = {
   blockNumber: 'loading',
   blocks: [],
   activeNode: false,
+  generationHashes: false,
 };
 
 const getters = {
@@ -77,6 +80,10 @@ const mutations = {
   },
   setActiveNode(state, node) {
     state.activeNode = node;
+  },
+  setGenerationHash(state, { endpoint, generationHash }) {
+    if (!state.generationHashes) state.generationHashes = [];
+    Vue.set(state.generationHashes, endpoint, generationHash);
   },
 };
 
@@ -126,6 +133,23 @@ const actions = {
     commit('addBlock', {
       blockNumber,
       timestamp,
+    });
+  },
+
+
+  SET_GENERATION_HASH({ commit, dispatch, rootState }) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const endpoint = rootState.application.activeNode;
+        const blockHttp = new BlockHttp(endpoint);
+        const block = await blockHttp.getBlockByHeight(1).toPromise();
+        const { generationHash } = block;
+        commit('setGenerationHash', { endpoint, generationHash });
+        resolve(true);
+      } catch (error) {
+        dispatch('SET_ERROR', error);
+        reject(error);
+      }
     });
   },
 };

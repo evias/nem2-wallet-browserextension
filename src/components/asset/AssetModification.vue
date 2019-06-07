@@ -44,6 +44,13 @@
           required
           number
         />
+
+        <v-text-field
+          v-model="generationHash"
+          class="ma-0 pa-0"
+          label="Generation Hash"
+          required
+        />
         <SendConfirmation
           :tx-send-data="txSendResults"
         />
@@ -128,6 +135,7 @@ export default {
       isDialogShow: false,
       direction: 'Increase',
       directions: ['Increase', 'Decrease'],
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -143,6 +151,16 @@ export default {
         if (!value) {
           this.$emit('close');
         }
+      },
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
       },
     },
   },
@@ -186,10 +204,9 @@ export default {
         NetworkType.MIJIN_TEST,
       );
 
-      const signedTx = account.sign(mosaicSupplyChangeTransaction);
-
       transactionHttp
-        .announce(account.sign(mosaicSupplyChangeTransaction))
+        .announce(account
+          .sign(mosaicSupplyChangeTransaction, this.currentGenerationHash))
         // eslint-disable-next-line no-console
         .subscribe(x => console.log(x), err => console.error(err));
 

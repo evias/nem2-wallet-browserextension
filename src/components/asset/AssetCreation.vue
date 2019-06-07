@@ -47,6 +47,11 @@
           label="Duration (blocks, Fill 0 for unlimited duration)"
           type="number"
         />
+        <v-text-field
+          v-model="generationHash"
+          class="ma-0 pa-0"
+          label="Generation Hash"
+        />
         <v-switch
           v-model="transferable"
           label="Transferable"
@@ -145,6 +150,7 @@ export default {
       dialogDetails: [],
       txSendResults: [],
       disabledSendTransaction: false,
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -160,6 +166,16 @@ export default {
         if (!value) {
           this.$emit('close');
         }
+      },
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
       },
     },
   },
@@ -274,7 +290,8 @@ export default {
         [],
       );
 
-      const signedTx = account.sign(aggregateTransaction);
+      const signedTx = account
+        .sign(aggregateTransaction, this.currentGenerationHash);
 
       transactionHttp
         .announce(signedTx)

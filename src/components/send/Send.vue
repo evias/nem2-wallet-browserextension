@@ -164,6 +164,13 @@
                   />
 
                   <v-text-field
+                    v-model="generationHash"
+                    label="Network generation hash"
+                    class="mt-3 mb-3"
+                    required
+                  />
+
+                  <v-text-field
                     v-model="userPrivateKey"
                     label="Private Key"
                     class="mt-3 mb-3"
@@ -200,7 +207,7 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  :disabled="txRecipient == '' || userPrivateKey == ''"
+                  :disabled="txRecipient === '' || userPrivateKey === '' || currentGenerationHash === ''"
                   color="primary mx-0"
                   @click="dialog = true"
                 >
@@ -333,6 +340,7 @@ export default {
       mosaics: [],
       currentMosaicName: '',
       currentMosaicAmount: '',
+      currentGenerationHash: '',
       txHash: '',
     };
   },
@@ -342,11 +350,18 @@ export default {
       'application',
       'assets',
     ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
     transactionHttp() {
-      return new TransactionHttp(this.activeWallet.node);
+      return new TransactionHttp(this.application.activeNode);
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
     },
   },
   methods: {
@@ -378,10 +393,12 @@ export default {
       );
 
       if (this.transferTx) {
-        this.signedTx = signerAccount.sign(this.transferTx);
+        this.signedTx = signerAccount
+          .sign(this.transferTx, this.currentGenerationHash);
         this.dialog = false;
         if (this.signedTx) {
-          this.transactionHttp.announce(this.signedTx).subscribe(
+          this.transactionHttp.announce(this.signedTx)
+            .subscribe(
             (txAnnouncmentResponse) => {
               if (
                 txAnnouncmentResponse.message
@@ -412,7 +429,7 @@ export default {
     },
 
     fillPrivateKeyField() {
-      this.userPrivateKey = this.activeWallet.account.privateKey;
+      this.userPrivateKey = this.wallet.activeWallet.account.privateKey;
     },
   },
 };

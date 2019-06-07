@@ -49,6 +49,18 @@
         </v-flex>
       </v-layout>
 
+      <v-layout row>
+        <v-flex xs12>
+          <v-text-field
+            v-model="generationHash"
+            class="ma-0 pa-0"
+            label="Generation Hash"
+            string
+            required
+          />
+        </v-flex>
+      </v-layout>
+
       <v-layout
         row
         justify-center
@@ -74,6 +86,7 @@
       <Dialog
         v-model="isDialogShow"
         :transaction="transaction"
+        :generationHash="currentGenerationHash"
         @sent="txSent"
       >
         <v-list>
@@ -105,6 +118,7 @@ import {
 } from 'nem2-sdk';
 import SendConfirmation from './SendConfirmation.vue';
 import Dialog from './Dialog.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -129,11 +143,25 @@ export default {
       dialogDetails: [],
       transaction: {},
       txSendResults: [],
+      currentGenerationHash: '',
     };
   },
   computed: {
+    ...mapState([
+      'application',
+    ]),
     disabledSendTransaction() {
       return this.linkAction === -1 || this.remoteAccountKey === '';
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
     },
   },
   methods: {

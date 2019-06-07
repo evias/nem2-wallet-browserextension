@@ -54,6 +54,12 @@ export default {
         return {};
       },
     },
+    generationHash: {
+      type: String,
+      default() {
+        return '';
+      },
+    },
     title: {
       type: String,
       default() {
@@ -90,7 +96,7 @@ export default {
       const { activeWallet } = this.wallet;
       const endpoint = this.application.activeNode;
       const { account } = activeWallet;
-      const signedTx = account.sign(this.transaction);
+      const signedTx = account.sign(this.transaction, this.generationHash);
       const preSignedTxPayload = signedTx.payload;
       const signedTxPayload = `99000000${preSignedTxPayload.substr(8)}`;
       request({

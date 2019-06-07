@@ -165,6 +165,7 @@ const actions = {
     rootState,
     commit,
   }, argWallet) {
+    // Set loading states
     await Promise.all([
       dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true }),
       commit(
@@ -179,6 +180,7 @@ const actions = {
       ),
     ]);
 
+    // Build the wallet object according to the situation
     if (argWallet === false) return;
 
     try {
@@ -212,6 +214,19 @@ const actions = {
       await commit('addWallet', wallet);
     }
 
+
+    // Get the generationHash of the network
+    // And check if the network is reachable at the same time
+    try {
+      await dispatch(
+        'application/SET_GENERATION_HASH', '', { root: true },
+      );
+    } catch (error) {
+      return;
+    }
+
+
+    // Fetch wallet data and open listeners
     await Promise.all([
       dispatch(
         'transactions/GET_TRANSACTIONS_BY_ID',

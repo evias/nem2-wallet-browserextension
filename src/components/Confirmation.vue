@@ -61,17 +61,17 @@ import {
 } from 'nem2-sdk';
 import store from '../store/index';
 
-function signTransactions(transactions, account) {
+function signTransactions(transactions, account, generationHash) {
   return transactions.map((tx) => {
     if (tx.type === TransactionType.LOCK) {
       return tx;
     }
-    return account.sign(tx);
+    return account.sign(tx, generationHash);
   }).map((tx, index, txs) => {
     if (tx.type === TransactionType.LOCK) {
       const txWithHash = tx;
       txWithHash.hash = txs[index + 1].hash;
-      return account.sign(txWithHash);
+      return account.sign(txWithHash, generationHash);
     }
     return tx;
   });
@@ -172,6 +172,12 @@ export default {
         return [];
       },
     },
+    generationHash: {
+      type: String,
+      default() {
+        return '';
+      },
+    },
     title: {
       type: String,
       default() {
@@ -208,7 +214,11 @@ export default {
       const endpoint = this.application.activeNode;
       const { account } = this.wallet.activeWallet;
       const { address } = account;
-      const transactions = signTransactions(this.transactions, account);
+      const transactions = signTransactions(
+        this.transactions,
+        account,
+        this.generationHash,
+      );
       const emitter = (type, value) => {
         this.$emit(type, value);
       };

@@ -86,6 +86,13 @@
                     type="number"
                   />
 
+                  <v-text-field
+                    v-model="generationHash"
+                    label="Max fee"
+                    placeholder="ex. 10"
+                    type="number"
+                  />
+
                   <v-checkbox
                     v-model="checkbox"
                     label="Sending other assets?"
@@ -179,7 +186,7 @@
                 <v-btn
                   :disabled="txRecipient == ''"
                   color="primary mx-0"
-                  @click="sendTx "
+                  @click="sendTx"
                 >
                   Send
                 </v-btn>
@@ -319,6 +326,7 @@ export default {
       currentXEM: {},
       mutisigPublicAccount: {},
       dialogMosaics: [],
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -329,6 +337,16 @@ export default {
     ]),
     transactionHttp() {
       return new TransactionHttp(this.application.activeNode);
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
     },
   },
   watch: {
@@ -387,7 +405,8 @@ export default {
         NetworkType.MIJIN_TEST,
         [],
       );
-      const signedCompleteTx = this.wallet.activeWallet.account.sign(completeTx);
+      const signedCompleteTx = this.wallet.activeWallet
+        .account.sign(completeTx, this.currentGenerationHash);
       transactionHttp
         .announce(signedCompleteTx)
         // eslint-disable-next-line no-console
