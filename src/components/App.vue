@@ -203,7 +203,7 @@
 <script>
 import { mapState } from 'vuex';
 import store from '../store/index';
-import WalletSelector from './WalletSelector.vue';
+import WalletSelector from './quickAccess/WalletSelector.vue';
 
 export default {
   components: {

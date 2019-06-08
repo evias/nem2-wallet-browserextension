@@ -24,6 +24,9 @@
       <DeveloperModeAccount />
     </v-flex>
     <v-flex xs12>
+      <DeveloperModePublicKey />
+    </v-flex>
+    <v-flex xs12>
       <DeveloperModeConversion />
     </v-flex>
     <v-flex xs12>
@@ -39,6 +42,7 @@ import DeveloperModeAccount from './DeveloperModeAccount.vue';
 import DeveloperModeConversion from './DeveloperModeConversion.vue';
 import DeveloperModeNamespace from './DeveloperModeNamespace.vue';
 import DeveloperModeTimestamp from './DeveloperModeTimestamp.vue';
+import DeveloperModePublicKey from './DeveloperModePublicKey.vue';
 
 export default {
   components: {
@@ -46,6 +50,7 @@ export default {
     DeveloperModeConversion,
     DeveloperModeNamespace,
     DeveloperModeTimestamp,
+    DeveloperModePublicKey,
   },
 };
 </script>

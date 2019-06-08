@@ -17,6 +17,7 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* Global classes */
 .monospaced {
   font-family: 'Courier New', Courier, monospace
 }
@@ -34,6 +35,31 @@
   overflow: hidden;
 }
 
+.centered{
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+.width-100{
+  width:100%;
+}
+
+.padding-0{
+  padding:0 !important;
+}
+
+.v-alert{
+  font-size: 16px !important;
+}
+
+/* Asset list */
 .asset-list-header{
   display: block;
   position: relative;
@@ -60,32 +86,9 @@
   padding-bottom: 9px !important;
 }
 
+/* Home */
 .homeLine {
   margin: 5px 0;
-}
-
-.centered{
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.pointer{
-  cursor: pointer;
-}
-
-.v-alert{
-  font-size: 16px !important;
-}
-
-.width-100{
-  width:100%;
-}
-
-.padding-0{
-  padding:0 !important;
 }
 
 .account-info-container {
@@ -93,6 +96,7 @@
   overflow: hidden;
 }
 
+/* Wallet selector */
 .ws-icons {
   display: block !important;
   position: relative;

@@ -107,21 +107,52 @@
       :color="chipColor"
       text-color="white"
       class="ws-height"
+      style="cursor: pointer !important"
+      @click.stop="showNodes=true"
     >
-      {{ application.listenerStatus === 'OK'
-        ? application.blockNumber.toLocaleString() : application.listenerStatus }}
-      <v-icon
-        v-if="!application.listenerError"
-        right
-      >
-        power
-      </v-icon>
-      <v-icon
-        v-if="application.listenerError"
-        right
-      >
-        power_off
-      </v-icon>
+      <span class="pointer">
+        <div
+          style="
+          display: block;
+          float: left;
+          height: 32px;
+          padding-top: 6px;
+        "
+        >
+          {{ application.listenerStatus === 'OK'
+            ? application.blockNumber.toLocaleString()
+            : application.listenerStatus }}
+        </div>
+
+        <v-icon
+          v-if="application.blockNumber !== 'error'"
+          style="
+            margin-left: 12px;
+            margin-right: -8px;
+            padding-top: 2px;
+            height: 32px;
+            display: block;
+            float: left;
+          "
+          right
+        >
+          power
+        </v-icon>
+        <v-icon
+          v-if="application.blockNumber === 'error'"
+          style="
+            margin-left: 12px;
+            margin-right: -8px;
+            padding-top: 2px;
+            height: 32px;
+            display: block;
+            float: left;
+          "
+          right
+        >
+          power_off
+        </v-icon>
+      </span>
     </v-chip>
 
     <WalletCreationDialog
@@ -136,14 +167,19 @@
       :visible="showWoWalletCreationDialog"
       @close="showWoWalletCreationDialog=false"
     />
+    <Nodes
+      :visible="showNodes"
+      @close="showNodes=false"
+    />
   </div>
 </template>
 <script>
 import { mapState } from 'vuex';
-import store from '../store/index';
-import WalletCreationDialog from './wallet/WalletCreationDialog.vue';
-import WoWalletCreationDialog from './wallet/WoWalletCreationDialog.vue';
-import WalletImportDialog from './wallet/WalletImportDialog.vue';
+import store from '../../store/index';
+import WalletCreationDialog from '../wallet/WalletCreationDialog.vue';
+import WoWalletCreationDialog from '../wallet/WoWalletCreationDialog.vue';
+import WalletImportDialog from '../wallet/WalletImportDialog.vue';
+import Nodes from './Nodes.vue';
 
 export default {
   store,
@@ -151,6 +187,7 @@ export default {
     WalletCreationDialog,
     WalletImportDialog,
     WoWalletCreationDialog,
+    Nodes,
   },
   props: {
     // eslint-disable-next-line vue/require-default-prop
@@ -163,6 +200,7 @@ export default {
       showWoWalletCreationDialog: false,
       showWalletCreationDialog: false,
       showWalletImportDialog: false,
+      showNodes: false,
     };
   },
   computed: {
@@ -171,7 +209,7 @@ export default {
     ]),
     chipColor() {
       if (this.application.listenerStatus === 'off') return 'false';
-      if (this.application.listenerStatus === 'error') return 'orange';
+      if (this.application.blockNumber === 'error') return 'red';
       if (this.application.blockNumber === 'loading') return 'blue';
       return 'green';
     },

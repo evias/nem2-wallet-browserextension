@@ -115,6 +115,13 @@
                               color="white"
                               readonly
                             />
+                            <v-text-field
+                              :value="application.activeNode"
+                              class="ma-0 pa-0 monospaced"
+                              label="Current node"
+                              color="white"
+                              readonly
+                            />
                             <div style="text-align: right">
                               <v-btn
                                 flat

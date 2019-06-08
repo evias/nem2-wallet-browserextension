@@ -17,13 +17,11 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable indent */
-
 import {
-    AccountHttp, NetworkType, PublicAccount, QueryParams, BlockHttp,
+  AccountHttp, NetworkType, PublicAccount, QueryParams, BlockHttp,
 } from 'nem2-sdk';
 import {
-    toArray, flatMap, map, concatMap,
+  toArray, flatMap, map, concatMap,
 } from 'rxjs/operators';
 
 import { formatTransactions } from './formatTransactions';
@@ -33,34 +31,35 @@ const getAccountTransactionsById = (
   { wallet, currentId, activeNode },
 ) => new Promise(async (resolve, reject) => {
   try {
-      const accountHttp = new AccountHttp(activeNode);
-      const blockHttp = new BlockHttp(activeNode);
-      const pageSize = 10;
-      const publicAccount = wallet.isWatchOnly
-        ? wallet.publicAccount
-        : PublicAccount.createFromPublicKey(wallet.account.publicKey, NetworkType.MIJIN_TEST);
-      accountHttp
-          .transactions(publicAccount, new QueryParams(pageSize, currentId))
-          .pipe(
-              flatMap(x => x),
-              concatMap(x => blockHttp
-                .getBlockByHeight(x.transactionInfo.height.compact()).toPromise(),
-              (x, res) => (
-                {
-                  ...x,
-                  timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
-                })),
-              map(formatTransactions),
-              flatMap(x => x),
-              toArray(),
-          )
-          .subscribe(
-            formattedTransactions => resolve(formattedTransactions),
-            // eslint-disable-next-line no-console
-            (error) => { console.error(error); resolve(false); },
-          );
+    const accountHttp = new AccountHttp(activeNode);
+    const blockHttp = new BlockHttp(activeNode);
+    const pageSize = 10;
+    const publicAccount = wallet.isWatchOnly
+      ? wallet.publicAccount
+      : PublicAccount.createFromPublicKey(wallet.account.publicKey, NetworkType.MIJIN_TEST);
+    accountHttp
+      .transactions(publicAccount, new QueryParams(pageSize, currentId))
+      .pipe(
+        flatMap(x => x),
+        concatMap(x => blockHttp
+          .getBlockByHeight(x.transactionInfo.height.compact()).toPromise(),
+        (x, res) => (
+          {
+            ...x,
+            timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
+          })),
+        map(formatTransactions),
+        flatMap(x => x),
+        toArray(),
+      )
+      .subscribe(
+        formattedTransactions => resolve(formattedTransactions),
+        // eslint-disable-next-line no-console
+        (error) => { console.error(error); resolve(false); },
+      );
   } catch (error) {
-      reject(error);
+    reject(error);
   }
 });
+
 export default getAccountTransactionsById;
