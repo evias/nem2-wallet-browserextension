@@ -165,20 +165,23 @@ const actions = {
     rootState,
     commit,
   }, argWallet) {
-    // Set loading states
-    await Promise.all([
-      dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true }),
-      commit(
-        'accountInfo/setLoading_getAccountInfo',
-        true,
-        { root: true },
-      ),
-      commit(
-        'multisig/setLoading_getMultisigInfo',
-        true,
-        { root: true },
-      ),
-    ]);
+    // @TODO: refactor
+
+    await dispatch('application/SET_ALL_LOADING_STATES', true, { root: true });
+    const oldListener = getters.GET_LISTENER;
+    if (oldListener) oldListener.close();
+
+
+    // Get the generationHash of the network
+    // And check if the network is reachable at the same time
+    try {
+      await dispatch(
+        'application/SET_GENERATION_HASH', '', { root: true },
+      );
+    } catch (error) {
+      return;
+    }
+
 
     // Build the wallet object according to the situation
     if (argWallet === false) return;
@@ -214,18 +217,6 @@ const actions = {
       await commit('addWallet', wallet);
     }
 
-
-    // Get the generationHash of the network
-    // And check if the network is reachable at the same time
-    try {
-      await dispatch(
-        'application/SET_GENERATION_HASH', '', { root: true },
-      );
-    } catch (error) {
-      return;
-    }
-
-
     // Fetch wallet data and open listeners
     await Promise.all([
       dispatch(
@@ -253,8 +244,6 @@ const actions = {
     const wsEndpoint = rootState.application
       .activeNode.toLowerCase().replace('http', 'ws');
 
-    const oldListener = getters.GET_LISTENER;
-    if (oldListener) oldListener.close();
 
     commit('createListener', new Listener(wsEndpoint, WebSocket));
     const listener = getters.GET_LISTENER;

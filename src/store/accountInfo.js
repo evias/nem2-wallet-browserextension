@@ -47,6 +47,8 @@ const actions = {
     commit('setAccountInfo', { wallet, accountInfo: false });
     commit('setLoading_getAccountInfo', false);
   },
+
+
   async FETCH_ACCOUNT_INFO(
     {
       commit,

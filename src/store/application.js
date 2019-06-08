@@ -139,18 +139,86 @@ const actions = {
 
   SET_GENERATION_HASH({ commit, dispatch, rootState }) {
     return new Promise(async (resolve, reject) => {
+      const endpoint = rootState.application.activeNode;
       try {
-        const endpoint = rootState.application.activeNode;
         const blockHttp = new BlockHttp(endpoint);
         const block = await blockHttp.getBlockByHeight(1).toPromise();
         const { generationHash } = block;
         commit('setGenerationHash', { endpoint, generationHash });
         resolve(true);
       } catch (error) {
-        dispatch('SET_ERROR', error);
+        // eslint-disable-next-line no-console
+        console.error(`Error at SET_GENERATION_HASH, ${error}`);
+        const errorMessage = `
+        We could not connect to the endpoint you are currently using
+        (${endpoint}), please check your internet connection, or try
+        to use another node`;
+        dispatch('SET_ALL_LOADING_STATES', false);
+        commit('setBlockNumber', 'error');
+        dispatch('SET_ERROR', errorMessage);
         reject(error);
       }
     });
+  },
+
+
+  async RESET_WALLET_DATA({ dispatch, rootState }) {
+    const { activeWallet } = rootState.wallet;
+    await Promise.all([
+      dispatch('accountInfo/CLEAR_ACCOUNT_INFO', activeWallet, { root: true }),
+      dispatch('assets/CLEAR_ASSETS', activeWallet, { root: true }),
+      dispatch('multisig/CLEAR_MULTISIG_INFO', activeWallet, { root: true }),
+      dispatch('namespaces/CLEAR_NAMESPACES', activeWallet, { root: true }),
+      dispatch('transactions/CLEAR_TRANSACTIONS', activeWallet, { root: true }),
+    ]);
+  },
+
+
+  async SET_ALL_LOADING_STATES({ commit, dispatch }, bool) {
+    const promises = [
+      commit(
+        'accountInfo/setLoading_getAccountInfo',
+        bool, { root: true },
+      ),
+      commit(
+        'multisig/setLoading_getMultisigInfo',
+        bool, { root: true },
+      ),
+      commit(
+        'assets/setLoading_getMosaicsByAddress',
+        bool, { root: true },
+      ),
+      commit(
+        'multisig/setLoading_getMultisigInfo',
+        bool, { root: true },
+      ),
+    ];
+
+    if (bool) {
+      promises.push(dispatch('SET_BLOCK_NUMBER', 'loading'));
+    }
+
+    await Promise.all(promises);
+  },
+
+
+  async CHANGE_CURRENT_NODE({ commit, dispatch, rootState }, newActiveNode) {
+    try {
+      await Promise.all([
+        await commit('setActiveNode', newActiveNode),
+        await dispatch('RESET_ERRORS'),
+        await dispatch('RESET_WALLET_DATA'),
+      ]);
+
+      dispatch(
+        'wallet/FETCH_WALLET_DATA',
+        rootState.wallet.activeWallet,
+        { root: true },
+      );
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(`error at CHANGE_CURRENT_NODE, ${error}`);
+    }
   },
 };
 
