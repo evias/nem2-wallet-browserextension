@@ -47,6 +47,11 @@
           label="Duration (blocks, Fill 0 for unlimited duration)"
           type="number"
         />
+        <v-text-field
+          v-model="generationHash"
+          class="ma-0 pa-0"
+          label="Generation Hash"
+        />
         <v-switch
           v-model="transferable"
           label="Transferable"
@@ -145,11 +150,13 @@ export default {
       dialogDetails: [],
       txSendResults: [],
       disabledSendTransaction: false,
+      currentGenerationHash: '',
     };
   },
   computed: {
     ...mapState([
       'wallet',
+      'application',
     ]),
     show: {
       get() {
@@ -159,6 +166,16 @@ export default {
         if (!value) {
           this.$emit('close');
         }
+      },
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
       },
     },
   },
@@ -233,7 +250,7 @@ export default {
     },
     createAsset() {
       if (!this.wallet.activeWallet) return;
-      const endpoint = this.wallet.activeWallet.node;
+      const endpoint = this.application.activeNode;
       const transactionHttp = new TransactionHttp(endpoint);
       // eslint-disable-next-line prefer-destructuring;
       const { account } = this.wallet.activeWallet;
@@ -273,7 +290,8 @@ export default {
         [],
       );
 
-      const signedTx = account.sign(aggregateTransaction);
+      const signedTx = account
+        .sign(aggregateTransaction, this.currentGenerationHash);
 
       transactionHttp
         .announce(signedTx)

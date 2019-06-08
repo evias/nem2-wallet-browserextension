@@ -58,9 +58,9 @@
               <p class="mb-4 mt-4">
                 Current Node:
                 <a
-                  :href="activeWallet.node"
+                  :href="application.activeNode"
                   target="_new"
-                >{{ activeWallet.node }}</a>
+                >{{ application.activeNode }}</a>
                 (Cow)
               </p>
               <v-flex xs12>
@@ -81,6 +81,13 @@
 
                   <v-text-field
                     v-model="txMaxFee"
+                    label="Max fee"
+                    placeholder="ex. 10"
+                    type="number"
+                  />
+
+                  <v-text-field
+                    v-model="generationHash"
                     label="Max fee"
                     placeholder="ex. 10"
                     type="number"
@@ -179,7 +186,7 @@
                 <v-btn
                   :disabled="txRecipient == ''"
                   color="primary mx-0"
-                  @click="sendTx "
+                  @click="sendTx"
                 >
                   Send
                 </v-btn>
@@ -188,7 +195,7 @@
                 <SendConfirmation
                   :tx-hash="txHash"
                   :tx-recipient="txRecipient"
-                  :node-u-r-l="activeWallet.node"
+                  :node-u-r-l="application.activeNode"
                 />
               </div>
 
@@ -319,6 +326,7 @@ export default {
       currentXEM: {},
       mutisigPublicAccount: {},
       dialogMosaics: [],
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -328,26 +336,35 @@ export default {
       'assets',
     ]),
     transactionHttp() {
-      return new TransactionHttp(this.activeWallet.node);
+      return new TransactionHttp(this.application.activeNode);
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
     },
   },
   watch: {
     async currentMultisigPublicKey() {
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-      const accountHttp = new AccountHttp(activeWallet.node);
+      const activeNode = this.application.activeNode;
+      const accountHttp = new AccountHttp(activeNode);
       const mutisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
       this.mutisigPublicAccount = mutisigPublicAccount;
       const { address } = mutisigPublicAccount;
       const mutisigAccountInfo = await accountHttp.getMultisigAccountInfo(address).toPromise();
       this.multisigAccountInfo = mutisigAccountInfo;
-      const mutisigAccount = await accountHttp.getAccountInfo(address).toPromise();
+      const mutisigAccount = await accountHttp.getAccountInfo(address, activeNode).toPromise();
       this.mutisigAccount = mutisigAccount;
     },
   },
   async created() {
-    this.activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    const namespaceHttp = new NamespaceHttp(this.activeWallet.node);
+    const namespaceHttp = new NamespaceHttp(this.application.activeNode);
     const currentXEM = await namespaceHttp
       .getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACE_ID).toPromise();
     this.currentXEM = currentXEM;
@@ -363,7 +380,7 @@ export default {
       this.dialog = true;
     },
     transmitTransaction() {
-      const transactionHttp = new TransactionHttp(this.activeWallet.node);
+      const transactionHttp = new TransactionHttp(this.application.activeNode);
       const innerTx = TransferTransaction.create(
         Deadline.create(),
         Address.createFromRawAddress(this.txRecipient),
@@ -388,7 +405,8 @@ export default {
         NetworkType.MIJIN_TEST,
         [],
       );
-      const signedCompleteTx = this.activeWallet.account.sign(completeTx);
+      const signedCompleteTx = this.wallet.activeWallet
+        .account.sign(completeTx, this.currentGenerationHash);
       transactionHttp
         .announce(signedCompleteTx)
         // eslint-disable-next-line no-console
@@ -414,7 +432,7 @@ export default {
     },
 
     fillPrivateKeyField() {
-      this.userPrivateKey = this.activeWallet.account.privateKey;
+      this.userPrivateKey = this.wallet.activeWallet.account.privateKey;
     },
   },
 };

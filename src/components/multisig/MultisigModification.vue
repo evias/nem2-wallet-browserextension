@@ -72,6 +72,17 @@
         </v-flex>
       </v-layout>
 
+      <v-layout>
+        <v-flex xs12>
+          <v-text-field
+            v-model="generationHash"
+            class="ma-0 pa-0"
+            label="Generation Hash"
+            required
+          />
+        </v-flex>
+      </v-layout>
+
       <v-layout
         v-if="showLockFunds"
         row
@@ -324,20 +335,31 @@ export default {
       txSendResults: [],
       activeWallet: this.$store.getters['wallet/GET_ACTIVE_WALLET'],
       aggregateTx: {},
+      currentGenerationHash: '',
     };
   },
   computed: {
     ...mapState([
       'wallet',
       'multisig',
+      'application',
     ], {
       wallet: state => state.wallet,
     }),
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
+    },
   },
   watch: {
     async currentMultisigPublicKey() {
-      const { activeWallet } = this;
-      const accountHttp = new AccountHttp(activeWallet.node);
+      const accountHttp = new AccountHttp(this.application.activeNode);
       this.currentMultisigAccount = await accountHttp
         .getMultisigAccountInfo(Address.createFromPublicKey(
           this.currentMultisigPublicKey, NetworkType.MIJIN_TEST,
@@ -391,10 +413,10 @@ export default {
       const multisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
 
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+      const activeWallet = this.wallet.activeWallet;
       const { account } = activeWallet;
       const network = NetworkType.MIJIN_TEST;
-      const endpoint = activeWallet.node;
+      const endpoint = this.application.activeNode;
       const transactionHttp = new TransactionHttp(endpoint);
       const minApprovalDelta = this.approvalDelta;
       const minRemovalDelta = this.removalDelta;
@@ -428,7 +450,8 @@ export default {
         ],
       );
 
-      const signedAggregateTx = account.sign(aggregateTx);
+      const signedAggregateTx = account
+        .sign(aggregateTx, this.currentGenerationHash);
       this.aggregateTx = signedAggregateTx;
 
       const { lockFundsMosaicAmount } = this;
@@ -446,11 +469,12 @@ export default {
         UInt64.fromUint(this.lockFundsDuration),
         signedAggregateTx,
       );
-      const signedLockFundsTx = activeWallet.account.sign(lockFundsTx);
+      const signedLockFundsTx = activeWallet.account
+        .sign(lockFundsTx, this.currentGenerationHash);
 
       transactionHttp.announce(signedLockFundsTx);
 
-      const listener = new Listener(activeWallet.node.replace('http', 'ws'), WebSocket);
+      const listener = new Listener(this.application.activeNode.replace('http', 'ws'), WebSocket);
 
       const that = this;
       listener.open().then(() => {
@@ -461,8 +485,7 @@ export default {
       });
     },
     sendAggregate() {
-      const activeWallet = this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-      const transactionHttp = new TransactionHttp(activeWallet.node);
+      const transactionHttp = new TransactionHttp(this.application.activeNode);
 
       transactionHttp.announceAggregateBonded(this.aggregateTx);
     },

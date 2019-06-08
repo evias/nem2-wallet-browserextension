@@ -76,6 +76,23 @@
       </v-layout>
     </v-layout>
 
+    <v-layout column>
+      <v-layout row>
+        <v-flex xs3>
+          <v-subheader>Max Fee</v-subheader>
+        </v-flex>
+        <v-flex xs7>
+          <v-text-field
+            v-model="generationHash"
+            class="ma-0 pa-0"
+            label="Generation Hash"
+            solo
+            required
+          />
+        </v-flex>
+      </v-layout>
+    </v-layout>
+
     <FilterTransaction
       v-if="filterType == PropertyType.AllowAddress"
       :action-type="actionType"
@@ -95,6 +112,7 @@
       :action-type="actionType"
       :filter-type="filterType"
       :max-fee="maxFee"
+      :generation-hash="currentGenerationHash"
       @closeFilter="$emit('closeFilter')"
     />
   </v-layout>
@@ -129,6 +147,7 @@ export default {
       maxFee: 0,
       isDialogShow: false,
       txSendResults: [],
+      currentGenerationHash: '',
     };
   },
   computed: {
@@ -140,6 +159,16 @@ export default {
         return this.namespaceName === '' || this.duration === 0;
       }
       return this.namespaceName === '' || this.parentNamespaceName === '';
+    },
+    generationHash: {
+      get() {
+        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
+        this.currentGenerationHash = currentGenerationHash;
+        return currentGenerationHash;
+      },
+      set(value) {
+        this.currentGenerationHash = value;
+      },
     },
   },
   methods: {

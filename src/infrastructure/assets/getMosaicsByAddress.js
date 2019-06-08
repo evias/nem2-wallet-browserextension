@@ -23,23 +23,23 @@ import {
   MosaicService,
   AccountHttp,
   MosaicHttp,
-  BlockchainHttp,
+  ChainHttp,
 } from 'nem2-sdk';
 import { formatMosaics, sortMosaics } from './formatMosaics';
 
-const getMosaicsByAddress = async wallet => new Promise(async (resolve, reject) => {
+const getMosaicsByAddress = async (wallet, activeNode) => new Promise(async (resolve, reject) => {
     try {
       const { address } = wallet.isWatchOnly
         ? wallet.publicAccount : wallet.account;
-      const endpoint = wallet.node;
+      const endpoint = activeNode;
       const mosaicService = new MosaicService(
         new AccountHttp(endpoint),
         new MosaicHttp(endpoint),
       );
 
       // @TODO: BlockHeight at a higher level, sync with the network
-      const blockChainHttp = new BlockchainHttp(endpoint);
-      const blockHeight = (await blockChainHttp
+      const chainHttp = new ChainHttp(endpoint);
+      const blockHeight = (await chainHttp
         .getBlockchainHeight()
         .toPromise()).compact();
 

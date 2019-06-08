@@ -18,7 +18,7 @@
  */
 
 import {
-  NamespaceHttp, BlockchainHttp, PublicAccount, NetworkType,
+  NamespaceHttp, ChainHttp, PublicAccount, NetworkType,
 } from 'nem2-sdk';
 import {
   mergeMap, map,
@@ -26,10 +26,13 @@ import {
 import { formatNamespaces } from './formatNamespaces';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getNamespacesByAddress = async wallet => new Promise(async (resolve, reject) => {
+export const getNamespacesByAddress = async (
+  wallet,
+  activeNode,
+) => new Promise(async (resolve, reject) => {
   try {
     const namespaces = [];
-    const endpoint = wallet.node;
+    const endpoint = activeNode;
     const publicAccount = wallet.isWatchOnly
       ? wallet.publicAccount
       : PublicAccount.createFromPublicKey(
@@ -37,8 +40,8 @@ export const getNamespacesByAddress = async wallet => new Promise(async (resolve
         NetworkType.MIJIN_TEST,
       );
 
-    const blockChainHttp = new BlockchainHttp(endpoint);
-    const blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact();
+    const chainHttp = new ChainHttp(endpoint);
+    const blockHeight = (await chainHttp.getBlockchainHeight().toPromise()).compact();
     const namespaceHttp = new NamespaceHttp(endpoint);
     namespaceHttp.getNamespacesFromAccount(publicAccount.address).pipe(
       mergeMap((namespacesInfo) => {

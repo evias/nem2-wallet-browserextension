@@ -47,7 +47,7 @@
               </div>
 
               <v-list-tile-sub-title class="monospaced">
-                {{ wallet.node }}
+                Default node: {{ wallet.node }}
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
@@ -57,7 +57,7 @@
                 @click="removeWallet(wallet.name)"
               >
                 <v-icon color="grey lighten-1">
-                  close
+                  delete_forever
                 </v-icon>
               </v-btn>
             </v-list-tile-action>

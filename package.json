@@ -16,32 +16,33 @@
   },
   "dependencies": {
     "nem2-library": "^0.9.14",
-    "nem2-qr-library": "^0.2.0",
-    "nem2-sdk": "^0.11.5",
+    "nem2-qr-library": "^0.3.0",
+    "nem2-sdk": "^0.12.1",
     "nem2-uri-scheme": "^0.2.5",
     "request": "^2.88.0",
-    "rxjs": "^6.5.0",
+    "rxjs": "^6.5.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
-    "vuetify": "^1.5.11",
-    "vuex": "^3.1.0"
+    "vuetify": "^1.5.14",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
     "cross-env": "^5.2.0",
     "eslint": "5.15.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-vue": "^5.2.2",
     "laravel-mix": "4.0.14",
     "resolve-url-loader": "2.3.1",
-    "sass": "^1.18.0",
+    "sass": "^1.21.0",
     "sass-loader": "7.*",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.0.5"
+    "vuetify-loader": "^1.0.5",
+    "webpack": "^4.33.0"
   },
   "bugs": {
     "url": "https://github.com/decentraliser/nem2-wallet-browserextension/issues"

@@ -20,7 +20,7 @@
 /* eslint-disable indent */
 
 import {
-    AccountHttp, NetworkType, PublicAccount, QueryParams, BlockchainHttp,
+    AccountHttp, NetworkType, PublicAccount, QueryParams, BlockHttp,
 } from 'nem2-sdk';
 import {
     toArray, flatMap, map, concatMap,
@@ -30,13 +30,11 @@ import { formatTransactions } from './formatTransactions';
 import { timestampNemesisBlock } from '../network/types';
 
 const getAccountTransactionsById = (
-  wallet,
-  currentId,
+  { wallet, currentId, activeNode },
 ) => new Promise(async (resolve, reject) => {
   try {
-      const { node } = wallet;
-      const accountHttp = new AccountHttp(node);
-      const blockchainHttp = new BlockchainHttp(node);
+      const accountHttp = new AccountHttp(activeNode);
+      const blockHttp = new BlockHttp(activeNode);
       const pageSize = 10;
       const publicAccount = wallet.isWatchOnly
         ? wallet.publicAccount
@@ -45,7 +43,7 @@ const getAccountTransactionsById = (
           .transactions(publicAccount, new QueryParams(pageSize, currentId))
           .pipe(
               flatMap(x => x),
-              concatMap(x => blockchainHttp
+              concatMap(x => blockHttp
                 .getBlockByHeight(x.transactionInfo.height.compact()).toPromise(),
               (x, res) => (
                 {
