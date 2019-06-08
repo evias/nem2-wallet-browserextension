@@ -140,10 +140,10 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import store from '../store/index';
-import WalletCreationDialog from './wallet/WalletCreationDialog.vue';
-import WoWalletCreationDialog from './wallet/WoWalletCreationDialog.vue';
-import WalletImportDialog from './wallet/WalletImportDialog.vue';
+import store from '../../store/index';
+import WalletCreationDialog from '../wallet/WalletCreationDialog.vue';
+import WoWalletCreationDialog from '../wallet/WoWalletCreationDialog.vue';
+import WalletImportDialog from '../wallet/WalletImportDialog.vue';
 
 export default {
   store,
