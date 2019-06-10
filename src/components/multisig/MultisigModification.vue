@@ -348,9 +348,7 @@ export default {
     }),
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
@@ -413,7 +411,7 @@ export default {
       const multisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
 
-      const activeWallet = this.wallet.activeWallet;
+      const { activeWallet } = this.wallet;
       const { account } = activeWallet;
       const network = NetworkType.MIJIN_TEST;
       const endpoint = this.application.activeNode;

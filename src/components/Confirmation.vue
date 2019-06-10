@@ -124,19 +124,20 @@ function sendSequential(transactions, endpoint, address, emitter, webhook) {
           uri: webhook,
           method: 'POST',
           body: {
-              action: 'AnnounceTransaction',
-              data: {
-                  hash: firstSignedTx.hash,
-                  signer: firstSignedTx.signer,
-              }
+            action: 'AnnounceTransaction',
+            data: {
+              hash: firstSignedTx.hash,
+              signer: firstSignedTx.signer,
+            },
           },
           json: true,
         };
-
-        request(options, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            console.log(body.id) // Print the shortened url.
+        request(options, (error, response, body) => {
+          if (!error && response.statusCode === 200) {
+            // eslint-disable-next-line no-console
+            console.log(body.id); // Print the shortened url.
           } else {
+            // eslint-disable-next-line no-console
             console.error(error);
           }
         });
@@ -196,12 +197,13 @@ export default {
         return 500;
       },
     },
+    // eslint-disable-next-line vue/require-default-prop
     webhook: {
       type: String,
-    }
+    },
   },
   computed: mapState(
-    ['wallet', 'application']
+    ['wallet', 'application'],
   ),
   watch: {
   },

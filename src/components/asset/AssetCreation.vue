@@ -170,9 +170,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;

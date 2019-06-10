@@ -69,6 +69,7 @@ const mutations = {
 const actions = {
   async INIT_APPLICATION({ dispatch, commit }) {
     // @TODO:Move application initialization to a more suitable place (application store?)
+    dispatch('application/FETCH_OFFICIAL_NODES', '', { root: true });
 
     const localStorageWallets = localStorage.getItem('wallets');
     if (!localStorageWallets) return;
@@ -81,7 +82,6 @@ const actions = {
     const activeWallet = wallets[0];
     await commit('application/setActiveNode', activeWallet.node, { root: true });
     await commit('setActiveWallet', activeWallet);
-    dispatch('application/FETCH_OFFICIAL_NODES', '', { root: true });
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
 

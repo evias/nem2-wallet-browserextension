@@ -340,9 +340,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
@@ -351,7 +349,7 @@ export default {
   },
   watch: {
     async currentMultisigPublicKey() {
-      const activeNode = this.application.activeNode;
+      const { activeNode } = this.application;
       const accountHttp = new AccountHttp(activeNode);
       const mutisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
@@ -374,7 +372,7 @@ export default {
       let mosaics = [];
       mosaics = this.mosaics.map(mosaic => mosaic);
       mosaics.push(new Mosaic(
-        new MosaicId(this.currentXEM.id.toHex()), UInt64.fromUint(this.txAmount)
+        new MosaicId(this.currentXEM.id.toHex()), UInt64.fromUint(this.txAmount),
       ));
       this.dialogMosaics = mosaics;
       this.dialog = true;

@@ -207,7 +207,8 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  :disabled="txRecipient === '' || userPrivateKey === '' || currentGenerationHash === ''"
+                  :disabled="txRecipient === '' || userPrivateKey === ''
+                    || generationHash === ''"
                   color="primary mx-0"
                   @click="dialog = true"
                 >
@@ -355,9 +356,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
@@ -399,18 +398,18 @@ export default {
         if (this.signedTx) {
           this.transactionHttp.announce(this.signedTx)
             .subscribe(
-            (txAnnouncmentResponse) => {
-              if (
-                txAnnouncmentResponse.message
+              (txAnnouncmentResponse) => {
+                if (
+                  txAnnouncmentResponse.message
                 === 'packet 9 was pushed to the network via /transaction'
-              ) {
-                this.txHash = this.signedTx.hash;
-                this.mosaics = [];
-              }
-            },
-            // eslint-disable-next-line no-console
-            err => console.log(err),
-          );
+                ) {
+                  this.txHash = this.signedTx.hash;
+                  this.mosaics = [];
+                }
+              },
+              // eslint-disable-next-line no-console
+              err => console.log(err),
+            );
         }
       }
     },

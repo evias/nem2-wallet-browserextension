@@ -155,9 +155,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
@@ -204,9 +202,11 @@ export default {
         NetworkType.MIJIN_TEST,
       );
 
+      const signedTx = account
+        .sign(mosaicSupplyChangeTransaction, this.currentGenerationHash);
+
       transactionHttp
-        .announce(account
-          .sign(mosaicSupplyChangeTransaction, this.currentGenerationHash))
+        .announce(signedTx)
         // eslint-disable-next-line no-console
         .subscribe(x => console.log(x), err => console.error(err));
 

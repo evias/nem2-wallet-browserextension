@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout column>
@@ -118,17 +118,17 @@
   </v-layout>
 </template>
 <script>
+
+import { mapState } from 'vuex';
 import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64,
   PropertyType,
 } from 'nem2-sdk';
-import FilterTransaction from './FilterTransaction';
-import Comirmation from '../Confirmation';
+import FilterTransaction from './FilterTransaction.vue';
 
 export default {
   components: {
     FilterTransaction,
-    Comirmation,
   },
   data() {
     return {
@@ -151,6 +151,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['application']),
     isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
@@ -162,9 +163,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
@@ -223,6 +222,7 @@ export default {
       });
     },
     txError(error) {
+      // eslint-disable-next-line no-console
       console.error(error);
     },
   },

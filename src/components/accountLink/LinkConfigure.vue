@@ -86,7 +86,7 @@
       <Dialog
         v-model="isDialogShow"
         :transaction="transaction"
-        :generationHash="currentGenerationHash"
+        :generation-hash="currentGenerationHash"
         @sent="txSent"
       >
         <v-list>
@@ -116,9 +116,9 @@ import {
   NetworkType,
   UInt64,
 } from 'nem2-sdk';
+import { mapState } from 'vuex';
 import SendConfirmation from './SendConfirmation.vue';
 import Dialog from './Dialog.vue';
-import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -155,9 +155,7 @@ export default {
     },
     generationHash: {
       get() {
-        const currentGenerationHash = this.application.generationHashes[this.application.activeNode];
-        this.currentGenerationHash = currentGenerationHash;
-        return currentGenerationHash;
+        return this.application.generationHashes[this.application.activeNode];
       },
       set(value) {
         this.currentGenerationHash = value;
