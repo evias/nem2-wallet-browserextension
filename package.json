@@ -19,6 +19,7 @@
     "nem2-qr-library": "^0.3.0",
     "nem2-sdk": "^0.12.1",
     "nem2-uri-scheme": "^0.2.5",
+    "node-fetch": "^2.6.0",
     "request": "^2.88.0",
     "rxjs": "^6.5.2",
     "vue": "^2.6.10",

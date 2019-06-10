@@ -37,8 +37,7 @@
           <v-card
             v-if="
               wallet.wallets.length > 0 &&
-                wallet.activeWallet
-            "
+                wallet.activeWallet"
           >
             <v-toolbar
               card

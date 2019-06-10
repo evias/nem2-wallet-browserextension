@@ -81,6 +81,7 @@ const actions = {
     const activeWallet = wallets[0];
     await commit('application/setActiveNode', activeWallet.node, { root: true });
     await commit('setActiveWallet', activeWallet);
+    dispatch('application/FETCH_OFFICIAL_NODES', '', { root: true });
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
 

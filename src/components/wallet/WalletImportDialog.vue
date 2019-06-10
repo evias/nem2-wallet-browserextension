@@ -38,6 +38,15 @@
           {{ node }}
         </v-text-field>
 
+        <v-select
+          v-if="application.officialNodes"
+          v-model="selectedOfficialNode"
+          :items="application.officialNodes"
+          class="ma-0 pa-0"
+          label="Pick a node from the official list"
+          @input="afterselection"
+        />
+
         <v-text-field
           v-model="walletName"
           class="ma-0 pa-0"
@@ -93,6 +102,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { NetworkType, Account } from 'nem2-sdk';
 import store from '../../store/index';
 
@@ -109,6 +119,7 @@ export default {
       account: {},
       privateKey: '',
       isValidAccount: false,
+      selectedOfficialNode: null,
     };
   },
   computed: {
@@ -122,6 +133,9 @@ export default {
         }
       },
     },
+    ...mapState([
+      'application',
+    ]),
   },
   watch: {
     privateKey() {
@@ -159,6 +173,10 @@ export default {
         this.account = {};
         this.isValidAccount = false;
       }
+    },
+    afterselection(e) {
+      if (e) this.node = e;
+      this.selectedOfficialNode = [];
     },
   },
 };

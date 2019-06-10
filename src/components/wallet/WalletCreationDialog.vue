@@ -42,6 +42,15 @@
           label="NEM2 default node URL"
         />
 
+        <v-select
+          v-if="application.officialNodes"
+          v-model="selectedOfficialNode"
+          :items="application.officialNodes"
+          class="ma-0 pa-0"
+          label="Pick a node from the official list"
+          @input="afterselection"
+        />
+
         <v-text-field
           v-model="walletName"
           class="ma-0 pa-0"
@@ -92,6 +101,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { NetworkType, Account } from 'nem2-sdk';
 
 import store from '../../store/index';
@@ -108,9 +118,13 @@ export default {
     account: Account.generateNewAccount(NetworkType.MIJIN_TEST),
     node: '',
     walletName: '',
+    selectedOfficialNode: null,
   }),
 
   computed: {
+    ...mapState([
+      'application',
+    ]),
     show: {
       get() {
         return this.visible;
@@ -125,6 +139,10 @@ export default {
   methods: {
     regenerateAccount() {
       this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
+    },
+    afterselection(e) {
+      if (e) this.node = e;
+      this.selectedOfficialNode = [];
     },
     save() {
       const newWallet = {

@@ -47,6 +47,14 @@
           label="New node"
           type="text"
         />
+        <v-select
+          v-if="application.officialNodes"
+          v-model="selectedOfficialNode"
+          :items="application.officialNodes"
+          class="ma-0 pa-0"
+          label="Pick a node from the official list"
+          @input="afterselection"
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -80,6 +88,7 @@ export default {
   data() {
     return {
       newActiveNode: '',
+      selectedOfficialNode: null,
     };
   },
   computed: {
@@ -101,6 +110,10 @@ export default {
   methods: {
     setNewActiveNode() {
       store.dispatch('application/CHANGE_CURRENT_NODE', this.newActiveNode);
+    },
+    afterselection(e) {
+      if (e) this.newActiveNode = e;
+      this.selectedOfficialNode = [];
     },
   },
 };

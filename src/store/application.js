@@ -19,8 +19,12 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Vue from 'vue';
+import fetch from 'node-fetch';
 import { BlockHttp } from 'nem2-sdk';
 import { timestampNemesisBlock } from '../infrastructure/network/types';
+
+const officialNodeListURL = 'https://api.swissvite.org/nemNodes';
+// const officialNodeListURL = 'http://13.114.200.132:8000/assets/api-address.json';
 
 const state = {
   error: false,
@@ -35,6 +39,7 @@ const state = {
   blocks: [],
   activeNode: false,
   generationHashes: false,
+  officialNodes: false,
 };
 
 const getters = {
@@ -84,6 +89,9 @@ const mutations = {
   setGenerationHash(state, { endpoint, generationHash }) {
     if (!state.generationHashes) state.generationHashes = [];
     Vue.set(state.generationHashes, endpoint, generationHash);
+  },
+  setOfficialNodes(state, nodes) {
+    state.officialNodes = nodes;
   },
 };
 
@@ -218,6 +226,30 @@ const actions = {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(`error at CHANGE_CURRENT_NODE, ${error}`);
+    }
+  },
+
+
+  async FETCH_OFFICIAL_NODES({ commit }) {
+    try {
+      const nodes = await fetch(officialNodeListURL);
+      if (nodes.ok) {
+        const response = await nodes.json();
+        const defaultNodes = response.data
+          && response.data instanceof Array && response.data.length > 0
+          ? response.data : false;
+        if (defaultNodes) {
+          commit('setOfficialNodes', defaultNodes);
+        }
+        return (new Error('An error occured when getting the result from the official node list link.'));
+      }
+      // eslint-disable-next-line no-console
+      console.error('An error occured when fetching the official node list.', 'FETCH_OFFICIAL_NODES');
+      return (new Error('An error occured when fetching the official node list.'));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error, 'FETCH_OFFICIAL_NODES');
+      return (error);
     }
   },
 };

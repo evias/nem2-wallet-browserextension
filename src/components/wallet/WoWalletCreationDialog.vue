@@ -44,6 +44,14 @@
           type="text"
           required
         />
+        <v-select
+          v-if="application.officialNodes"
+          v-model="selectedOfficialNode"
+          :items="application.officialNodes"
+          class="ma-0 pa-0"
+          label="Pick a node from the official list"
+          @input="afterselection"
+        />
         <v-text-field
           v-model="name"
           class="ma-0 pa-0"
@@ -76,6 +84,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { Address } from 'nem2-sdk';
 import store from '../../store/index';
 
@@ -93,6 +102,7 @@ export default {
       node: this.$store.getters['wallet/GET_ACTIVE_WALLET'].node,
       disabledValidation: true,
       isToBeSaved: true,
+      selectedOfficialNode: null,
     };
   },
   computed: {
@@ -106,6 +116,9 @@ export default {
         }
       },
     },
+    ...mapState([
+      'application',
+    ]),
   },
   watch: {
     address: {
@@ -147,6 +160,10 @@ export default {
           isToBeSaved: this.isToBeSaved,
         });
       this.$emit('close');
+    },
+    afterselection(e) {
+      if (e) this.node = e;
+      this.selectedOfficialNode = [];
     },
   },
 };
