@@ -1,7 +1,7 @@
 # nem2-wallet-browserextension
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://travis-ci.org/decentraliser/nem2-wallet-browserextension.svg?branch=master)](https://travis-ci.org/decentraliser/nem2-wallet-browserextension)
+[![Build Status](https://travis-ci.org/nemfoundation/nem2-wallet-browserextension.svg?branch=master)](https://travis-ci.org/nemfoundation/nem2-wallet-browserextension)
 
 [NEM2][nem2], aka Catapult, Wallet as Firefox Extension.
 
@@ -13,10 +13,10 @@ A browser wallet to facilitate the integration with web applications and Catapul
 
 This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
 
-- [Alpha Milestone Scope](https://github.com/decentraliser/nem2-wallet-browserextension/wiki/Alpha-Milestone)
-- [Non Planned Features](https://github.com/decentraliser/nem2-wallet-browserextension/wiki/Non-Planned-Features)
-- [Development Guidelines](https://github.com/decentraliser/nem2-wallet-browserextension/wiki/Development-Guidelines)
-- [Development Environment](https://github.com/decentraliser/nem2-wallet-browserextension/wiki/Development-environment)
+- [Alpha Milestone Scope](https://github.com/nemfoundation/nem2-wallet-browserextension/wiki/Alpha-Milestone)
+- [Non Planned Features](https://github.com/nemfoundation/nem2-wallet-browserextension/wiki/Non-Planned-Features)
+- [Development Guidelines](https://github.com/nemfoundation/nem2-wallet-browserextension/wiki/Development-Guidelines)
+- [Development Environment](https://github.com/nemfoundation/nem2-wallet-browserextension/wiki/Development-environment)
 
 When you find that _nem2-wallet-browserextension_ could have XYZ, __think about what you can do for open source not what open source can do for you__. If you find something it's not working or something is missing, feel free to open a Pull Request, I will be more than happy to merge it, but I don't do features on demand :smile:.
 
@@ -35,7 +35,7 @@ $> npm install --global web-ext
 ## Clone repository
 
 ```bash
-$> git clone git@github.com:decentraliser/nem2-wallet-browserextension.git
+$> git clone git@github.com:nemfoundation/nem2-wallet-browserextension.git
 $> cd nem2-wallet-browserextension
 ```
 

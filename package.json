@@ -46,17 +46,17 @@
     "webpack": "^4.33.0"
   },
   "bugs": {
-    "url": "https://github.com/decentraliser/nem2-wallet-browserextension/issues"
+    "url": "https://github.com/nemfoundation/nem2-wallet-browserextension/issues"
   },
   "directories": {
     "doc": "docs"
   },
-  "homepage": "https://github.com/decentraliser/nem2-wallet-browserextension#readme",
+  "homepage": "https://github.com/nemfoundation/nem2-wallet-browserextension#readme",
   "license": "GPLv3",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/decentraliser/nem2-wallet-browserextension.git"
+    "url": "git+https://github.com/nemfoundation/nem2-wallet-browserextension.git"
   },
   "sideEffects": false,
   "optionalDependencies": {
