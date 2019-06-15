@@ -25,6 +25,28 @@
       class="ws-select"
       solo
     />
+
+    <v-icon
+      v-if="wallet.activeWallet.walletType !== walletTypes.WATCH_ONLY_WALLET
+        && wallet.activeWallet && wallet.activeWallet.isWatchOnly"
+      class="ws-icons ws-dark"
+      alt="unlock the wallet"
+      large
+      @click.stop="showPasswordInput = true"
+    >
+      lock_open
+    </v-icon>
+
+    <v-icon
+      v-if="wallet.activeWallet.walletType !== walletTypes.WATCH_ONLY_WALLET
+        && wallet.activeWallet && !wallet.activeWallet.isWatchOnly"
+      class="ws-icons ws-dark"
+      large
+      @click.stop="showLockWallet = true"
+    >
+      lock
+    </v-icon>
+
     <v-menu
       transition="slide-y-transition"
       bottom
@@ -171,6 +193,18 @@
       :visible="showNodes"
       @close="showNodes=false"
     />
+    <PasswordInput
+      :visible="showPasswordInput"
+      :wallet-name="wallet.activeWallet.name"
+      :wallet-type="wallet.activeWallet.walletType"
+      @close="showPasswordInput = false"
+    />
+    <LockWallet
+      :visible="showLockWallet"
+      :wallet-name="wallet.activeWallet.name"
+      :wallet-type="wallet.activeWallet.walletType"
+      @close="showLockWallet = false"
+    />
   </div>
 </template>
 <script>
@@ -180,6 +214,9 @@ import WalletCreationDialog from '../wallet/WalletCreationDialog.vue';
 import WoWalletCreationDialog from '../wallet/WoWalletCreationDialog.vue';
 import WalletImportDialog from '../wallet/WalletImportDialog.vue';
 import Nodes from './Nodes.vue';
+import PasswordInput from '../wallet/PasswordInput.vue';
+import LockWallet from '../wallet/LockWallet.vue';
+import { walletTypes } from '../../infrastructure/wallet/wallet-types';
 
 export default {
   store,
@@ -188,6 +225,8 @@ export default {
     WalletImportDialog,
     WoWalletCreationDialog,
     Nodes,
+    PasswordInput,
+    LockWallet,
   },
   props: {
     // eslint-disable-next-line vue/require-default-prop
@@ -200,12 +239,16 @@ export default {
       showWoWalletCreationDialog: false,
       showWalletCreationDialog: false,
       showWalletImportDialog: false,
+      showPasswordInput: false,
+      showLockWallet: false,
       showNodes: false,
+      walletTypes,
     };
   },
   computed: {
     ...mapState([
       'application',
+      'wallet',
     ]),
     chipColor() {
       if (this.application.listenerStatus === 'off') return 'false';

@@ -16,71 +16,132 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-layout column>
-    <v-list
-      v-if="wallet.wallets.length > 0"
-      two-line
-      class="py-0"
+  <v-container
+    grid-list-md
+  >
+    <v-layout
+      row
+      wrap
+      align-content-center
+      justify-center
     >
-      <v-slide-y-transition
-        group
-        tag="v-list"
-        class="py-0"
-      >
-        <template v-for="(wallet, index) in wallet.wallets">
-          <v-list-tile
-            :key="wallet.name"
+      <template v-for="(wallet, index) in wallet.wallets">
+        <v-flex
+          :key="wallet.name"
+          style="max-width:450px;"
+          grow
+        >
+          <v-card
             avatar
             ripple
+            style="padding: 0 15px;"
           >
-            <v-list-tile-content class="my-2">
-              <v-list-tile-title>{{ wallet.name }}</v-list-tile-title>
-              <div v-if="!wallet.isWatchOnly">
-                <v-list-tile-sub-title class="monospaced-bold">
-                  {{ wallet.account.address.pretty() }}
-                </v-list-tile-sub-title>
-              </div>
-              <div v-if="wallet.isWatchOnly">
-                <v-list-tile-sub-title class="monospaced-bold">
-                  {{ wallet.publicAccount.address.pretty() }}
-                </v-list-tile-sub-title>
-              </div>
-
-              <v-list-tile-sub-title class="monospaced">
+            <v-card-title primary-title>
+              <h3 class="headline mb-0">
+                {{ wallet.name }}
+              </h3>
+            </v-card-title>
+            {{ wallet.publicAccount.address.pretty() }}
+            <div class="clearfix">
+              <div class="clearfix">
                 Default node: {{ wallet.node }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </div>
+              <div class="clearfix">
+                Type: {{ wallet.walletType }}
+              </div>
+              <div class="clearfix">
+                Locked: {{ wallet.isWatchOnly }}
+              </div>
+            </div>
+            <v-card-actions>
+              <v-btn
+                v-if="wallet.walletType !== walletTypes.WATCH_ONLY_WALLET
+                  && wallet.isWatchOnly"
+                icon
+                ripple
+                @click="
+                  clickedWalletName = wallet.name;
+                  clickedWalletType = wallet.type;
+                  showPasswordInput = true;"
+              >
+                <v-icon>
+                  lock_open
+                </v-icon>
+              </v-btn>
+
+              <v-btn
+                v-if="wallet.walletType !== walletTypes.WATCH_ONLY_WALLET
+                  && !wallet.isWatchOnly"
+                icon
+                ripple
+                @click="
+                  clickedWalletName=wallet.name;
+                  clickedWalletType = wallet.type;
+                  showLockWallet = true;"
+              >
+                <v-icon>
+                  lock
+                </v-icon>
+              </v-btn>
+
               <v-btn
                 icon
                 ripple
                 @click="removeWallet(wallet.name)"
               >
-                <v-icon color="grey lighten-1">
+                <v-icon>
                   delete_forever
                 </v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-card-actions>
+          </v-card>
           <v-divider
             v-if="index + 1 < wallet.walletsNumber"
             :key="index"
           />
-        </template>
-      </v-slide-y-transition>
-    </v-list>
-  </v-layout>
+        </v-flex>
+      </template>
+
+      <PasswordInput
+        :visible="showPasswordInput"
+        :wallet-name="clickedWalletName"
+        :wallet-type="clickedWalletType"
+        @close="showPasswordInput = false"
+      />
+      <LockWallet
+        :visible="showLockWallet"
+        :wallet-name="clickedWalletName"
+        :wallet-type="clickedWalletType"
+        @close="showLockWallet = false"
+      />
+    </v-layout>
+  </v-container>
 </template>
+
 <script>
 import { mapState } from 'vuex';
 import store from '../../store/index';
+import { walletTypes } from '../../infrastructure/wallet/wallet-types';
+import PasswordInput from './PasswordInput.vue';
+import LockWallet from './LockWallet.vue';
 
 export default {
   name: 'WalletList',
   store,
-  computed: mapState([
-    'wallet',
-  ]),
+  components: {
+    PasswordInput,
+    LockWallet,
+  },
+  data() {
+    return {
+      showPasswordInput: false,
+      showLockWallet: false,
+      clickedWalletName: '',
+      clickedWalletType: '',
+      walletTypes,
+    };
+  },
+  computed: mapState(['wallet']),
   methods: {
     removeWallet(walletName) {
       this.$store.dispatch('wallet/REMOVE_WALLET', walletName);
@@ -88,6 +149,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>

@@ -51,6 +51,7 @@
 
           <v-btn
             icon
+            :disabled="wallet.activeWallet.isWatchOnly"
             @click.stop="registerNamespace = true"
           >
             <v-icon>add_box</v-icon>
@@ -128,7 +129,7 @@ export default {
   methods: {
     reloadList({ wallet, mode }) {
       this.$store.dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS',
-      { wallet, mode });
+        { wallet, mode });
     },
   },
 };

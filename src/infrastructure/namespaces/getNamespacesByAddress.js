@@ -17,12 +17,8 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  NamespaceHttp, ChainHttp, PublicAccount, NetworkType,
-} from 'nem2-sdk';
-import {
-  mergeMap, map,
-} from 'rxjs/operators';
+import { NamespaceHttp, ChainHttp } from 'nem2-sdk';
+import { mergeMap, map } from 'rxjs/operators';
 import { formatNamespaces } from './formatNamespaces';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -33,17 +29,13 @@ export const getNamespacesByAddress = async (
   try {
     const namespaces = [];
     const endpoint = activeNode;
-    const publicAccount = wallet.isWatchOnly
-      ? wallet.publicAccount
-      : PublicAccount.createFromPublicKey(
-        wallet.account.publicKey,
-        NetworkType.MIJIN_TEST,
-      );
+    const { address } = wallet.publicAccount;
 
     const chainHttp = new ChainHttp(endpoint);
     const blockHeight = (await chainHttp.getBlockchainHeight().toPromise()).compact();
     const namespaceHttp = new NamespaceHttp(endpoint);
-    namespaceHttp.getNamespacesFromAccount(publicAccount.address).pipe(
+
+    namespaceHttp.getNamespacesFromAccount(address).pipe(
       mergeMap((namespacesInfo) => {
         const namespaceIds = namespacesInfo.map((x) => {
           namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x };

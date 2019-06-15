@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
 import { Listener } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
@@ -25,6 +26,7 @@ import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transacti
 import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
 import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
 import { GET_MULTISIG_MODES } from '../infrastructure/multisig/multisig-types';
+import { emptyPublicKey } from '../infrastructure/accountInfo/accountInfo-types';
 
 const state = {
   activeWallet: false,
@@ -61,6 +63,9 @@ const mutations = {
   removeWallet(state, indexOfWalletToRemove) {
     state.wallets.splice(indexOfWalletToRemove, 1);
   },
+  updateWallet(state, { index, wallet }) {
+    Vue.set(state.wallets, index, wallet);
+  },
   createListener(state, listener) {
     state.listener = listener;
   },
@@ -87,24 +92,37 @@ const actions = {
 
 
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
-    const newWallet = new Wallet(walletData);
+    try {
+      if (getters.GET_WALLETS.map(({ name }) => name)
+        .indexOf(walletData.name) > -1) {
+        dispatch(
+          'application/SET_SNACKBAR_TEXT',
+          { text: 'Wallet NOT SAVED, this wallet name already exists' },
+          { root: true },
+        );
+        return;
+      }
 
-    // no wallet name duplicate @TODO add snackbar message
-    if (getters.GET_WALLETS.map(({ name }) => name).indexOf(walletData.name) > -1) return;
+      const { password, locked } = walletData;
+      const wallet = await new Wallet(walletData).store({ password, locked });
+      await commit('addWallet', wallet);
 
-    await commit('addWallet', newWallet);
+      dispatch('SET_ACTIVE_WALLET', wallet.name);
 
-    dispatch('SET_ACTIVE_WALLET', newWallet.name);
-
-    const walletsToStore = [
-      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
-    ];
-    localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+      const walletsToStore = [
+        ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+      ];
+      localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error, 'ADD_WALLET');
+    }
   },
 
 
   async ADD_WATCH_ONLY_WALLET({ commit, dispatch, getters }, walletData) {
-    const newWoWallet = await new WoWallet(walletData).create();
+    const newWoWallet = await new WoWallet(walletData)
+      .create({ isToBeSaved: walletData.isToBeSaved });
 
     await commit('addWallet', newWoWallet);
 
@@ -160,6 +178,65 @@ const actions = {
   },
 
 
+  UNLOCK_WALLET({ commit, dispatch }, { walletName, password }) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const walletIndex = state.wallets.findIndex(({ name }) => name === walletName);
+        if (walletIndex === -1) {
+          reject(new Error('error: this wallet was not found'));
+        }
+
+        const unlockedWallet = await new Wallet({
+          ...state.wallets[walletIndex],
+        }).open({ password });
+
+        if (state.activeWallet.name === walletName) {
+          commit('setActiveWallet', unlockedWallet);
+        }
+
+        commit('updateWallet', { index: walletIndex, wallet: unlockedWallet });
+
+        resolve(true);
+        const notifText = `${walletName} unlocked successfuly!`;
+        dispatch(
+          'application/SET_SNACKBAR_TEXT', { text: notifText }, { root: true },
+        );
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  LOCK_WALLET({ commit, dispatch }, { walletName }) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const walletIndex = state.wallets.findIndex(({ name }) => name === walletName);
+        if (walletIndex === -1) {
+          reject(new Error('error: this wallet was not found'));
+        }
+
+        const lockedWallet = await new Wallet({
+          ...state.wallets[walletIndex],
+        }).close();
+
+        if (state.activeWallet.name === walletName) {
+          commit('setActiveWallet', lockedWallet);
+        }
+
+        commit('updateWallet', { index: walletIndex, wallet: lockedWallet });
+
+        resolve(true);
+        const notifText = `${walletName} locked successfuly!`;
+        dispatch(
+          'application/SET_SNACKBAR_TEXT', { text: notifText }, { root: true },
+        );
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+
   async FETCH_WALLET_DATA({
     dispatch,
     getters,
@@ -183,8 +260,6 @@ const actions = {
       return;
     }
 
-
-    // Build the wallet object according to the situation
     if (argWallet === false) return;
 
     try {
@@ -196,35 +271,37 @@ const actions = {
     }
 
     const wallet = !argWallet.publicAccount
-      ? argWallet : await new WoWallet(argWallet).create();
+      ? argWallet : await new WoWallet(argWallet)
+        .create({ isToBeSaved: argWallet.isToBeSaved });
 
-    if (wallet.publicAccount && !wallet.publicAccount.publicKey) {
+    if (wallet.publicAccount
+      && (!wallet.publicAccount.publicKey
+        || wallet.publicAccount.publicKey === emptyPublicKey)) {
       dispatch(
         'application/SET_ERROR',
         'This address is not known by the network. If it should, please try with another node, or verify your internet connection.',
         { root: true },
       );
-      return;
     }
-    if (argWallet.publicAccount && !argWallet.publicAccount.publicKey) {
+
+    if ((!argWallet.publicAccount.publicKey
+      || argWallet.publicAccount.publicKey === emptyPublicKey)
+      && (wallet.publicAccount.publicKey
+        && wallet.publicAccount.publicKey !== emptyPublicKey)) {
       // This was a watch-only wallet that had been created when
-      // It was not yet known by the network
-      await commit('setActiveWallet', wallet);
-      const walletsToStore = [
-        ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
-      ];
-      localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+      // It was not yet known by the network.
+      // Now we need to store it to save its privateKey
+      const index = state.wallets.findIndex(({ name }) => name === wallet.name);
+      await Promise.all([
+        commit('setActiveWallet', wallet),
+        commit('updateWallet', { wallet, index }),
+      ]);
 
       await commit('addWallet', wallet);
     }
 
     // Fetch wallet data and open listeners
-    await Promise.all([
-      dispatch(
-        'transactions/GET_TRANSACTIONS_BY_ID',
-        { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
-        { root: true },
-      ),
+    const promises = [
       dispatch(
         'namespaces/GET_NAMESPACES_BY_ADDRESS',
         { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE },
@@ -240,7 +317,20 @@ const actions = {
         { wallet, mode: GET_MULTISIG_MODES.ON_WALLET_CHANGE },
         { root: true },
       ),
-    ]);
+    ];
+
+    if (wallet.publicAccount.publicKey
+      && wallet.publicAccount.publicKey !== emptyPublicKey) {
+      promises.push(
+        dispatch(
+          'transactions/GET_TRANSACTIONS_BY_ID',
+          { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
+          { root: true },
+        ),
+      );
+    }
+
+    await Promise.all(promises);
 
     const wsEndpoint = rootState.application
       .activeNode.toLowerCase().replace('http', 'ws');

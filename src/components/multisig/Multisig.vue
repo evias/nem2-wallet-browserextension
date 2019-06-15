@@ -51,6 +51,7 @@
               v-model="activeTab"
               fixed-tabs
               slider-color="primary"
+              class="mb-4"
             >
               <v-tab>
                 Convert To Multisig
@@ -64,7 +65,45 @@
               <!-- <v-tab>
                 Send Multisig Transactions
               </v-tab> -->
-              <v-tab-item>
+              <v-tab-item
+                v-if="!(wallet.wallets.length > 0
+                  && wallet.activeWallet
+                  && !wallet.activeWallet.isWatchOnly)"
+              >
+                <v-layout
+                  row
+                  pb-2
+                  mt-4
+                >
+                  <v-container
+                    fluid
+                    pl-5
+                    pr-5
+                    ma-0
+                  >
+                    <v-layout
+                      column
+                      xs12
+                    >
+                      <v-flex
+                        xs12
+                      >
+                        <Errors
+                          :watch-only-warning="true"
+                          :application-warnings="false"
+                          class="mb-4"
+                        />
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
+                </v-layout>
+              </v-tab-item>
+
+              <v-tab-item
+                v-if="wallet.wallets.length > 0
+                  && wallet.activeWallet
+                  && !wallet.activeWallet.isWatchOnly"
+              >
                 <v-card flat>
                   <MultisigConversion
                     @closeComponent="multisigConversion = false"
@@ -72,7 +111,11 @@
                 </v-card>
               </v-tab-item>
 
-              <v-tab-item>
+              <v-tab-item
+                v-if="wallet.wallets.length > 0
+                  && wallet.activeWallet
+                  && !wallet.activeWallet.isWatchOnly"
+              >
                 <v-card flat>
                   <MultisigModification
                     class="my-2"
@@ -81,7 +124,11 @@
                 </v-card>
               </v-tab-item>
 
-              <v-tab-item>
+              <v-tab-item
+                v-if="wallet.wallets.length > 0
+                  && wallet.activeWallet
+                  && !wallet.activeWallet.isWatchOnly"
+              >
                 <v-card flat>
                   <MultisigCosignation
                     :loading-get-multisig-info="multisig.loading_getMultisigInfo"
@@ -122,7 +169,8 @@ export default {
     MultisigModification,
     MultisigCosignation,
     MultisigAccountInfo,
-    OtherMultisigTransactions
+    // eslint-disable-next-line vue/no-unused-components
+    OtherMultisigTransactions,
   },
   data() {
     return {

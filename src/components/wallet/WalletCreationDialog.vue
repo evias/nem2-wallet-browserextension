@@ -57,6 +57,18 @@
           label="Wallet name"
         />
 
+        <v-text-field
+          v-model.lazy="password"
+          class="ma-0 pa-0"
+          label="Password (min. 8 char)"
+        />
+
+        <v-switch
+          v-model="keepUnlocked"
+          class="ma-0 pa-0"
+          label="Keep the wallet unlocked during this session?"
+        />
+
         <v-divider class="mt-4" />
 
         <v-text-field
@@ -89,7 +101,8 @@
           close
         </v-btn>
         <v-btn
-          :disabled="node == '' || walletName == ''"
+          :disabled="node === '' || walletName === ''
+            || !validPassword"
           color="primary mx-0"
           @click="save"
         >
@@ -102,7 +115,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { NetworkType, Account } from 'nem2-sdk';
+import { NetworkType, Account, Password } from 'nem2-sdk';
 
 import store from '../../store/index';
 
@@ -119,7 +132,11 @@ export default {
     node: '',
     walletName: '',
     selectedOfficialNode: null,
+    password: '',
+    validPassword: false,
+    keepUnlocked: true,
   }),
+
 
   computed: {
     ...mapState([
@@ -136,6 +153,22 @@ export default {
       },
     },
   },
+
+
+  watch: {
+    password: {
+      handler(e) {
+        try {
+          const password = new Password(e);
+          this.validPassword = !!password.value;
+        } catch (error) {
+          // do nothing
+        }
+      },
+    },
+  },
+
+
   methods: {
     regenerateAccount() {
       this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
@@ -149,6 +182,8 @@ export default {
         name: this.walletName,
         account: this.account,
         node: this.node,
+        locked: !this.keepUnlocked,
+        password: this.password,
       };
       this.$store.dispatch('wallet/ADD_WALLET', newWallet);
     },

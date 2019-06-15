@@ -1,22 +1,38 @@
-import { Wallet, WoWallet } from './wallet-types';
+import { Wallet, WoWallet, walletTypes } from './wallet-types';
 
-export const walletsToJSON = wallets => JSON.stringify(wallets.map(wallet => ({
-  name: wallet.name,
-  isWatchOnly: wallet.isWatchOnly || false,
-  address: wallet.isWatchOnly && !wallet.publicAccount.publicKey ? wallet.publicAccount.address : '',
-  privateKey: wallet.isWatchOnly ? '' : wallet.account.privateKey,
-  publicKey: wallet.isWatchOnly ? wallet.publicAccount.publicKey : '',
-  node: wallet.node,
-})));
+export const walletsToJSON = wallets => JSON
+  .stringify(wallets.map((wallet) => {
+    switch (wallet.walletType) {
+    case walletTypes.SIMPLE_WALLET:
+      return {
+        name: wallet.name,
+        simpleWallet: wallet.simpleWallet,
+        walletType: wallet.walletType,
+        node: wallet.node,
+        publicAccount: wallet.publicAccount,
+      };
+    case walletTypes.WATCH_ONLY_WALLET:
+      return {
+        name: wallet.name,
+        walletType: wallet.walletType,
+        node: wallet.node,
+        publicAccount: wallet.publicAccount,
+      };
+    default: return [];
+    }
+  }));
 
 export const jsonToWallets = async (json) => {
   try {
     const proms = JSON.parse(json).map((wallet) => {
-      switch (wallet.isWatchOnly) {
-      case true:
-        return new WoWallet(wallet).create();
+      switch (wallet.walletType) {
+      case walletTypes.SIMPLE_WALLET:
+        return new Wallet(wallet).retrieve();
 
-      default: return new Wallet(wallet).create();
+      case walletTypes.WATCH_ONLY_WALLET:
+        return new WoWallet(wallet).retrieve();
+      default:
+        return {};
       }
     });
 

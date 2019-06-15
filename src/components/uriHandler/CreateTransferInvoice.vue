@@ -26,10 +26,15 @@
       wrap
     >
       <v-flex xs12>
-        <Errors class="mb-4" />
+        <Errors
+          :watch-only-warning="true"
+          :application-warnings="false"
+          class="mb-4"
+        />
         <v-card
           v-if="wallet.wallets.length > 0
-            && wallet.activeWallet"
+            && wallet.activeWallet
+            && !wallet.activeWallet.isWatchOnly"
           style="height: auto;padding:0 !important"
           class="card--flex-toolbar"
         >

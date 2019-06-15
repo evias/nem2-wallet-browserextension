@@ -32,6 +32,9 @@
     </v-card>
 
     <Transactions
+      v-if="wallet.activeWallet
+        && transactions.transactions
+        && transactions.transactions[wallet.activeWallet.name]"
       preset-filter="false"
       title="Recent transfers"
       class="mb-4"
@@ -40,6 +43,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Transactions from '../Transactions.vue';
 import AssetList from '../../asset/AssetList.vue';
 import Send from '../../send/Send.vue';
@@ -50,6 +54,7 @@ export default {
     Transactions,
     Send,
   },
+  computed: mapState(['transactions', 'wallet']),
 };
 
 </script>

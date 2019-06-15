@@ -41,7 +41,7 @@
     </div>
 
     <div v-if="wallet.wallets.length > 0">
-      <div v-if="!wallet.activeWallet">
+      <div v-if="!wallet.activeWallet && applicationWarnings">
         <v-alert
           :value="true"
           type="error"
@@ -51,7 +51,7 @@
       </div>
 
       <div v-if="wallet.activeWallet">
-        <div v-if="application.error">
+        <div v-if="application.error && applicationWarnings">
           <v-alert
             :value="true"
             type="error"
@@ -59,12 +59,20 @@
             {{ application.errorMessage }}
           </v-alert>
         </div>
-        <div v-if="application.listenerStatus === 'error'">
+        <div v-if="application.listenerStatus === 'error' && applicationWarnings">
           <v-alert
             :value="true"
             type="error"
           >
             {{ application.listenerErrorMessage }}
+          </v-alert>
+        </div>
+        <div v-if="watchOnlyWarning && wallet.activeWallet.isWatchOnly">
+          <v-alert
+            :value="true"
+            type="error"
+          >
+            This is a watch-only wallet, please unlock it to create and sign a transaction
           </v-alert>
         </div>
       </div>
@@ -77,6 +85,20 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'Errors',
+  props: {
+    watchOnlyWarning: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
+    applicationWarnings: {
+      type: Boolean,
+      default() {
+        return true;
+      },
+    },
+  },
   computed: mapState([
     'wallet',
     'accountInfo',

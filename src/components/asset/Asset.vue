@@ -49,6 +49,7 @@
 
           <v-btn
             icon
+            :disabled="wallet.activeWallet.isWatchOnly"
             @click.stop="createAsset = true"
           >
             <v-icon>add_box</v-icon>

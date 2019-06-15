@@ -18,11 +18,17 @@
 <template>
   <div>
     <Handler class="mb-4" />
-    <Transactions preset-filter="false" />
+    <Transactions
+      v-if="wallet.activeWallet
+        && transactions.transactions
+        && transactions.transactions[wallet.activeWallet.name]"
+      preset-filter="false"
+    />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Transactions from '../Transactions.vue';
 import Handler from '../../uriHandler/Handler.vue';
 
@@ -31,6 +37,7 @@ export default {
     Handler,
     Transactions,
   },
+  computed: mapState(['transactions', 'wallet']),
 };
 
 </script>

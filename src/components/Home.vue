@@ -76,9 +76,8 @@
                         >
                           <v-card-text>
                             <v-text-field
-                              :value="wallet.activeWallet.isWatchOnly
-                                ?wallet.activeWallet.publicAccount.address.pretty()
-                                :wallet.activeWallet.account.address.pretty()"
+                              :value="wallet.activeWallet
+                                .publicAccount.address.pretty()"
                               class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
                               label="Address"
                               color="white"
@@ -86,10 +85,8 @@
                             />
 
                             <v-text-field
-
-                              :value="accountInfo.accountInfo[wallet.activeWallet.name]
-                                ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
-                                : 'unknown'"
+                              :value="wallet.activeWallet
+                                .publicAccount.publicKey"
                               class="ma-0 pa-0 monospaced"
                               label="Public Key"
                               color="white"
@@ -99,8 +96,8 @@
                             <v-text-field
                               v-if="showPrivateKey"
                               :value="wallet.activeWallet.isWatchOnly
-                                ?'watch only'
-                                :wallet.activeWallet.account.privateKey"
+                                ? 'watch only'
+                                : wallet.activeWallet.account.privateKey"
                               class="ma-0 pa-0 monospaced"
                               label="Private Key"
                               color="white"
@@ -256,10 +253,9 @@
           xs12
         >
           <Transactions
-            v-if="wallet.wallets.length > 0 &&
-              wallet.activeWallet &&
-              !application.error &&
-              accountInfo.accountInfo"
+            v-if="wallet.activeWallet
+              && transactions.transactions
+              && transactions.transactions[wallet.activeWallet.name]"
           />
         </v-flex>
       </v-layout>

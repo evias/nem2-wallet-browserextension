@@ -19,6 +19,9 @@
   <div>
     <AccountLink class="mb-4" />
     <Transactions
+      v-if="wallet.activeWallet
+        && transactions.transactions
+        && transactions.transactions[wallet.activeWallet.name]"
       preset-filter="false"
       title="Recent account link transactions"
       class="mb-4"
@@ -27,6 +30,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Transactions from '../Transactions.vue';
 import AccountLink from '../../accountLink/AccountLink.vue';
 
@@ -35,6 +39,7 @@ export default {
     AccountLink,
     Transactions,
   },
+  computed: mapState(['transactions', 'wallet']),
 };
 
 </script>

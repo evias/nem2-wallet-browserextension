@@ -55,12 +55,15 @@ const actions = {
     getters,
     rootState,
   }, { wallet, mode }) {
-    if (mode === GET_ASSETS_MODES.ON_WALLET_CHANGE && getters.GET_ASSETS) return;
+    if (mode === GET_ASSETS_MODES.ON_WALLET_CHANGE
+      && getters.GET_ASSETS) return;
 
     await commit('setLoading_getMosaicsByAddress', true);
 
     try {
-      const assets = await getMosaicsByAddress(wallet, rootState.application.activeNode);
+      const assets = await getMosaicsByAddress(
+        wallet, rootState.application.activeNode,
+      );
       commit('setAccountAssets', { wallet, assets });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });

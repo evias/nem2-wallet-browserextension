@@ -1,33 +1,119 @@
 /* eslint-disable prefer-destructuring */
 // eslint-disable-next-line import/prefer-default-export
 import {
-  PublicAccount, NetworkType, Account,
+  PublicAccount,
+  NetworkType,
+  Account,
+  EncryptedPrivateKey,
+  Password,
+  SimpleWallet,
+  Address,
 } from 'nem2-sdk';
 
 import getAccountInfo from '../accountInfo/getAccountInfo';
+
+import { emptyPublicKey } from '../accountInfo/accountInfo-types';
+
+export const walletTypes = {
+  SIMPLE_WALLET: 'SIMPLE_WALLET',
+  WATCH_ONLY_WALLET: 'WATCH_ONLY_WALLET',
+  HD_WALLET: 'HD_WALLET',
+};
 
 export class Wallet {
   constructor(walletData) {
     const {
       name,
-      account,
       node,
-      privateKey,
+      account,
+      simpleWallet,
+      publicAccount,
     } = walletData;
 
     this.name = name;
-    this.account = account;
     this.node = node;
-    this.isWatchOnly = false;
-    this.publicAccount = false;
+    this.account = account || false;
+    this.simpleWallet = simpleWallet || false;
+    this.publicAccount = publicAccount;
     this.isToBeSaved = true;
-    this.publicKey = false;
-    this.privateKey = privateKey;
+    this.walletType = walletTypes.SIMPLE_WALLET;
     delete this.walletData;
   }
 
-  create() {
-    this.account = Account.createFromPrivateKey(this.privateKey, NetworkType.MIJIN_TEST);
+  store({ password, locked }) {
+    return new Promise((resolve, reject) => {
+      try {
+        const pass = new Password(password);
+        const simpleWallet = SimpleWallet
+          .createFromPrivateKey(
+            this.name, pass,
+            this.account.privateKey, NetworkType.MIJIN_TEST,
+          );
+
+        this.simpleWallet = simpleWallet;
+        // publicAccount is stored here so we can retrieve the publication
+        // just after retrieving the wallet from localStorage,
+        // without entering the wallet password.
+        const publicAccount = simpleWallet.open(pass).publicAccount;
+        this.publicAccount = publicAccount;
+
+        if (locked) {
+          this.account = false;
+          this.isWatchOnly = true;
+        } else {
+          this.isWatchOnly = false;
+        }
+
+        resolve(this);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  retrieve() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.isWatchOnly = true;
+        this.publicAccount.address = Address
+          .createFromRawAddress(this.publicAccount.address.address);
+        resolve(this);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async open({ password }) {
+    return new Promise((resolve, reject) => {
+      try {
+        const pass = new Password(password);
+        const { encryptedKey, iv } = this.simpleWallet.encryptedPrivateKey;
+
+        const privateKey = new EncryptedPrivateKey(encryptedKey, iv)
+          .decrypt(pass);
+
+        const account = Account
+          .createFromPrivateKey(privateKey, NetworkType.MIJIN_TEST);
+
+        this.account = account;
+        this.isWatchOnly = false;
+
+        resolve(this);
+      } catch (error) {
+        this.isWatchOnly = true;
+        const errMsg = error.toString()
+          .indexOf('Error: private key has unexpected size') > -1
+          ? 'Wrong password, try again!'
+          : error;
+        reject(errMsg);
+      }
+    });
+  }
+
+  close() {
+    this.account = false;
+    this.isWatchOnly = true;
     return this;
   }
 }
@@ -37,14 +123,14 @@ export class WoWallet {
     const {
       name,
       address,
-      publicKey,
       node,
-      isToBeSaved,
       publicAccount,
     } = walletData;
 
-    if (!address && !publicAccount && !publicKey) {
-      throw new Error('address, publicAccount and publicKey can not be undefined alltogether');
+    if (!address && !publicAccount) {
+      throw new Error(
+        'address and publicAccount can not be undefined alltogether',
+      );
     }
 
     this.name = name;
@@ -52,35 +138,48 @@ export class WoWallet {
     this.node = node;
     this.isWatchOnly = true;
 
-    this.publicAccount = publicAccount || { address };
-    this.isToBeSaved = isToBeSaved;
-    this.publicKey = publicKey || undefined;
+    if (publicAccount) {
+      this.publicAccount = publicAccount;
+    } else {
+      this.publicAccount = {};
+      this.publicAccount.address = address;
+    }
+
+    this.walletType = walletTypes.WATCH_ONLY_WALLET;
     delete this.walletData;
   }
 
-  async create() {
-    try {
-      // @TODO: rationalize
-      let publicKey;
-      if (this.publicAccount.publicKey) return this;
-      if (this.publicKey) {
-        publicKey = this.publicKey;
-      } else if (!this.publicKey && this.publicAccount.address) {
-        const publicAccount = await getAccountInfo(this, this.node);
-        publicKey = publicAccount.publicKey;
-      } else if (!this.publicKey && this.address) {
-        const publicAccount = await getAccountInfo(this, this.node);
-        publicKey = publicAccount.publicKey;
-      } else {
-        throw new Error('the parameters provided for watch only wallet creation are invalid');
+  retrieve() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.isWatchOnly = true;
+        this.isToBeSaved = true;
+        this.publicAccount.address = Address
+          .createFromRawAddress(this.publicAccount.address.address);
+        resolve(this);
+      } catch (error) {
+        reject(error);
       }
+    });
+  }
 
-      this.publicAccount = PublicAccount
-        .createFromPublicKey(publicKey, NetworkType.MIJIN_TEST);
-    } catch (error) {
-      this.accountInfo = false;
-    }
+  create({ isToBeSaved }) {
+    return new Promise(async (resolve) => {
+      try {
+        this.isToBeSaved = isToBeSaved;
 
-    return this;
+        if (!this.publicAccount.publicKey) {
+          const accountInfo = await getAccountInfo(this, this.node);
+          if (accountInfo.publicKey !== emptyPublicKey) {
+            this.publicAccount = PublicAccount.createFromPublicKey(
+              accountInfo.publicKey, NetworkType.MIJIN_TEST,
+            );
+          }
+        }
+      } catch (error) {
+        this.accountInfo = false;
+      }
+      resolve(this);
+    });
   }
 }

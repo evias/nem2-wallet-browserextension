@@ -21,9 +21,16 @@
         xs9
       />
     </v-layout>
+    <Errors
+      :watch-only-warning="true"
+      :application-warnings="false"
+      class="mb-4"
+    />
     <v-card
       v-if="wallet.wallets.length > 0
-        && wallet.activeWallet"
+        && wallet.activeWallet
+        && !wallet.activeWallet.isWatchOnly
+        && !application.error"
       style="height: auto;padding:0 !important"
       class="card--flex-toolbar"
     >
@@ -33,14 +40,8 @@
       >
         <v-toolbar-title>Link or Unlink an account</v-toolbar-title>
       </v-toolbar>
-      <Errors class="mb-4" />
-      <div
-        v-if="wallet.wallets.length > 0
-          && wallet.activeWallet
-          && !application.error"
-      >
-        <LinkConfigure />
-      </div>
+
+      <LinkConfigure />
     </v-card>
   </v-layout>
 </template>
@@ -65,10 +66,5 @@ export default {
     'application',
     'assets',
   ]),
-  methods: {
-  },
 };
 </script>
-
-<style scoped>
-</style>

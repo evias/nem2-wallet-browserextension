@@ -26,7 +26,8 @@
           Import a wallet from private key
         </h3>
         <p class="mb-0 clearfix">
-          This wallet will be saved in your browser storage.&nbsp;
+          This wallet will be saved in your browser storage,&nbsp;
+          safely encrypted with your password.
         </p>
       </v-card-title>
       <v-card-text>
@@ -57,6 +58,18 @@
           v-model.lazy="privateKey"
           class="ma-0 pa-0"
           label="Private Key (64 char)"
+        />
+
+        <v-text-field
+          v-model.lazy="password"
+          class="ma-0 pa-0"
+          label="Password (min. 8 char)"
+        />
+
+        <v-switch
+          v-model="keepUnlocked"
+          class="ma-0 pa-0"
+          label="Keep the wallet unlocked during this session?"
         />
 
         <div
@@ -90,7 +103,8 @@
           Close
         </v-btn>
         <v-btn
-          :disabled="node == '' || walletName == '' || !isValidAccount"
+          :disabled="node === '' || walletName === ''
+            || !isValidAccount || !validPassword"
           color="primary mx-0"
           @click="save"
         >
@@ -103,7 +117,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { NetworkType, Account } from 'nem2-sdk';
+import { NetworkType, Account, Password } from 'nem2-sdk';
 import store from '../../store/index';
 
 export default {
@@ -120,8 +134,13 @@ export default {
       privateKey: '',
       isValidAccount: false,
       selectedOfficialNode: null,
+      password: '',
+      validPassword: false,
+      keepUnlocked: true,
     };
   },
+
+
   computed: {
     show: {
       get() {
@@ -137,17 +156,33 @@ export default {
       'application',
     ]),
   },
+
+
   watch: {
     privateKey() {
       this.createFromPrivateKey(this.privateKey);
     },
+    password: {
+      handler(e) {
+        try {
+          const password = new Password(e);
+          this.validPassword = !!password.value;
+        } catch (error) {
+          // do nothing
+        }
+      },
+    },
   },
+
+
   methods: {
-    save() {
+    async save() {
       const newWallet = {
         name: this.walletName,
         account: this.account,
         node: this.node,
+        locked: !this.keepUnlocked,
+        password: this.password,
       };
       this.$store.dispatch('wallet/ADD_WALLET', newWallet);
       this.node = '';

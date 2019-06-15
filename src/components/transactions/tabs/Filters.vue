@@ -19,6 +19,9 @@
   <div>
     <Filters class="mb-4" />
     <Transactions
+      v-if="wallet.activeWallet
+        && transactions.transactions
+        && transactions.transactions[wallet.activeWallet.name]"
       preset-filter="false"
       title="Recent filter transactions"
       class="mb-4"
@@ -27,6 +30,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Transactions from '../Transactions.vue';
 import Filters from '../../filter/Filters.vue';
 
@@ -35,6 +39,7 @@ export default {
     Filters,
     Transactions,
   },
+  computed: mapState(['transactions', 'wallet']),
 };
 
 </script>

@@ -18,7 +18,7 @@
  */
 
 import {
-  AccountHttp, NetworkType, PublicAccount, QueryParams, BlockHttp,
+  AccountHttp, QueryParams, BlockHttp,
 } from 'nem2-sdk';
 import {
   toArray, flatMap, map, concatMap,
@@ -34,9 +34,8 @@ const getAccountTransactionsById = (
     const accountHttp = new AccountHttp(activeNode);
     const blockHttp = new BlockHttp(activeNode);
     const pageSize = 10;
-    const publicAccount = wallet.isWatchOnly
-      ? wallet.publicAccount
-      : PublicAccount.createFromPublicKey(wallet.account.publicKey, NetworkType.MIJIN_TEST);
+    const { publicAccount } = wallet;
+
     accountHttp
       .transactions(publicAccount, new QueryParams(pageSize, currentId))
       .pipe(
