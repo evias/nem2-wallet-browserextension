@@ -69,7 +69,9 @@ const actions = {
     } catch (error) {
       commit('setAccountMultisigInfo', { wallet, multisigInfo: false });
       // eslint-disable-next-line no-console
-      console.error(error, 'GET_MULTISIG_INFO');
+      if (error.message !== 'Not Found') {
+        console.error(error, 'GET_MULTISIG_INFO');
+      }
     }
     commit('setLoading_getMultisigInfo', false);
   },
