@@ -1,6 +1,6 @@
 {
     "/dist/popup.js": "/dist/popup.js",
-    "/dist/wallet.js": "/dist/wallet.js",
-    "/dist/wallet.632b5d18842b4a89295d.hot-update.js": "/dist/wallet.632b5d18842b4a89295d.hot-update.js",
-    "/dist/wallet.2f8330eb454e4b0cf24d.hot-update.js": "/dist/wallet.2f8330eb454e4b0cf24d.hot-update.js"
+    "/dist/popup.css": "/dist/popup.css",
+    "/dist/wallet.css": "/dist/wallet.css",
+    "/dist/wallet.js": "/dist/wallet.js"
 }
