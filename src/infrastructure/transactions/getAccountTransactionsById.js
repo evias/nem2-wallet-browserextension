@@ -21,8 +21,11 @@ import {
   AccountHttp, QueryParams, BlockHttp,
 } from 'nem2-sdk';
 import {
-  toArray, flatMap, map, concatMap,
+  toArray, flatMap, map, concatMap, groupBy
 } from 'rxjs/operators';
+import {
+  zip, of, from
+} from 'rxjs';
 
 import { formatTransactions } from './formatTransactions';
 import { timestampNemesisBlock } from '../network/types';
@@ -40,15 +43,14 @@ const getAccountTransactionsById = (
       .transactions(publicAccount, new QueryParams(pageSize, currentId))
       .pipe(
         flatMap(x => x),
-        concatMap(x => blockHttp
-          .getBlockByHeight(x.transactionInfo.height.compact()).toPromise(),
-        (x, res) => (
-          {
-            ...x,
-            timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
-          })),
-        map(formatTransactions),
+        groupBy(x => x.transactionInfo.height.compact()),
+        flatMap(g => zip(of(g.key), g.pipe(toArray()))),
+        concatMap(g =>  blockHttp.getBlockByHeight(g[0]).toPromise(),
+          (g, res) => g[1].map(t => (
+            { ...t, timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock, }
+        ))),
         flatMap(x => x),
+        flatMap(formatTransactions),
         toArray(),
       )
       .subscribe(
