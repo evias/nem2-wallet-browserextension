@@ -449,9 +449,8 @@ export default {
     transmitTransaction() {
       if(!this.checkForm()){
         this.isShowErrorMessage = true
-        return
+        return;
       }
-      this.creat
       this.createTransferTransaction();
       const signerAccount = Account.createFromPrivateKey(
         this.userPrivateKey,
