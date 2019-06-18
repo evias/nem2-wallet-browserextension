@@ -296,6 +296,39 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
+
+              <v-dialog
+                      v-model="isShowErrorMessage"
+                      width="500"
+              >
+                <v-card>
+                  <v-card-title
+                          class="headline grey lighten-2"
+                          primary-title
+                  >
+                    Lack of necessary information
+                  </v-card-title>
+
+                  <v-card-text>
+                    <div :key="index" v-for="(e,index) in errorMessage">
+                      {{e}}
+                    </div>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                            color="primary"
+                            flat
+                            @click="
+                            isShowErrorMessage = false;
+                            dialog = false"
+                    >
+                      i see
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -343,6 +376,8 @@ export default {
       currentMosaicAmount: '',
       currentGenerationHash: '',
       txHash: '',
+      errorMessage: [],
+      isShowErrorMessage: false,
     };
   },
   computed: {
@@ -364,6 +399,33 @@ export default {
     },
   },
   methods: {
+    checkForm() {
+      this.errorMessage = []
+      if (!this.userPrivateKey || this.userPrivateKey.trim() === ''){
+        this.errorMessage.push('private key is null.');
+        return false;
+      } else if(this.userPrivateKey.length < 64) {
+        this.errorMessage.push('private key is not correct.');
+        return false;
+      }
+
+      if (!this.generationHash || this.generationHash.trim() === '') {
+        this.errorMessage.push('generation hash key is null.');
+        return false;
+      } else if(this.generationHash.length !== 64) {
+        this.errorMessage.push('generation hash is not correct.');
+        return false;
+      }
+
+      if(!this.txRecipient || this.txRecipient.trim() === '') {
+        this.errorMessage.push('recipient address key is null.');
+        return false;
+      } else if(this.txRecipient.length < 40) {
+        this.errorMessage.push('recipient address is not correct.');
+        return false;
+      }
+      return true;
+    },
     createTransferTransaction() {
       const recipientAddr = Address.createFromRawAddress(this.txRecipient);
       const nativeCurrency = NetworkCurrencyMosaic.createRelative(
@@ -385,6 +447,10 @@ export default {
     },
 
     transmitTransaction() {
+      if(!this.checkForm()){
+        this.isShowErrorMessage = true
+        return;
+      }
       this.createTransferTransaction();
       const signerAccount = Account.createFromPrivateKey(
         this.userPrivateKey,
@@ -393,7 +459,7 @@ export default {
 
       if (this.transferTx) {
         this.signedTx = signerAccount
-          .sign(this.transferTx, this.currentGenerationHash);
+          .sign(this.transferTx, this.generationHash);
         this.dialog = false;
         if (this.signedTx) {
           this.transactionHttp.announce(this.signedTx)
