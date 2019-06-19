@@ -128,7 +128,7 @@
                 </v-subheader>
                 {{ filterType == filterTypes.ENTITY_FILTER ? 'Entity Type:':'' }}
                 {{ filterType == filterTypes.MOSAIC_FILTER ? 'Mosaic Id:':'' }}
-                {{ filterType == filterTypes.ADDRESS_fILTER ? 'Address Hex:':'' }}
+                {{ filterType == filterTypes.ADDRESS_FILTER ? 'Address Hex:':'' }}
                 {{ filter.hexId }}
               </v-list-tile-content>
               <v-btn
@@ -262,7 +262,7 @@ import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
 const FilterType = {
-  ADDRESS_fILTER: 0X01,
+  ADDRESS_FILTER: 0X01,
   MOSAIC_FILTER: 0X02,
   ENTITY_FILTER: 0X04,
 };
@@ -395,7 +395,7 @@ export default {
       }
       let flag = true
       switch (this.filterType) {
-      case FilterType.ADDRESS_fILTER:
+      case FilterType.ADDRESS_FILTER:
         flag = this.checkAddress();
         break;
       case FilterType.MOSAIC_FILTER:
@@ -410,7 +410,7 @@ export default {
         this.isShowErrorMessage = true;
         return;
       }
-      if (this.filterType === FilterType.ADDRESS_fILTER) {
+      if (this.filterType === FilterType.ADDRESS_FILTER) {
         this.generateAddressTransaction();
       } else if (this.filterType === FilterType.MOSAIC_FILTER) {
         this.generateMosaicTransaction();
