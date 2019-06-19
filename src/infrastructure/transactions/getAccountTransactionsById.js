@@ -21,10 +21,10 @@ import {
   AccountHttp, QueryParams, BlockHttp,
 } from 'nem2-sdk';
 import {
-  toArray, flatMap, map, concatMap, groupBy
+  toArray, flatMap, concatMap, groupBy,
 } from 'rxjs/operators';
 import {
-  zip, of, from
+  zip, of,
 } from 'rxjs';
 
 import { formatTransactions } from './formatTransactions';
@@ -45,10 +45,10 @@ const getAccountTransactionsById = (
         flatMap(x => x),
         groupBy(x => x.transactionInfo.height.compact()),
         flatMap(g => zip(of(g.key), g.pipe(toArray()))),
-        concatMap(g =>  blockHttp.getBlockByHeight(g[0]).toPromise(),
+        concatMap(g => blockHttp.getBlockByHeight(g[0]).toPromise(),
           (g, res) => g[1].map(t => (
-            { ...t, timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock, }
-        ))),
+            { ...t, timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock }
+          ))),
         flatMap(x => x),
         flatMap(formatTransactions),
         toArray(),
