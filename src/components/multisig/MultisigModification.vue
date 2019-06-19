@@ -449,7 +449,7 @@ export default {
       );
 
       const signedAggregateTx = account
-        .sign(aggregateTx, this.currentGenerationHash);
+        .sign(aggregateTx, this.generationHash);
       this.aggregateTx = signedAggregateTx;
 
       const { lockFundsMosaicAmount } = this;
@@ -468,7 +468,7 @@ export default {
         signedAggregateTx,
       );
       const signedLockFundsTx = activeWallet.account
-        .sign(lockFundsTx, this.currentGenerationHash);
+        .sign(lockFundsTx, this.generationHash);
 
       transactionHttp.announce(signedLockFundsTx);
 

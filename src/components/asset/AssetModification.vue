@@ -203,7 +203,7 @@ export default {
       );
 
       const signedTx = account
-        .sign(mosaicSupplyChangeTransaction, this.currentGenerationHash);
+        .sign(mosaicSupplyChangeTransaction, this.generationHash);
 
       transactionHttp
         .announce(signedTx)

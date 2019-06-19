@@ -289,7 +289,7 @@ export default {
       );
 
       const signedTx = account
-        .sign(aggregateTransaction, this.currentGenerationHash);
+        .sign(aggregateTransaction, this.generationHash);
 
       transactionHttp
         .announce(signedTx)
