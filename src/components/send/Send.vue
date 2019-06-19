@@ -350,8 +350,10 @@ import {
   TransactionHttp,
   MosaicId,
   Mosaic,
+  TransactionType,
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
+import ErrorMessage from '../../infrastructure/transactions/errorMessage';
 import store from '../../store/index';
 import SendConfirmation from './SendConfirmation.vue';
 
@@ -360,6 +362,7 @@ export default {
     SendConfirmation,
   },
   store,
+  props: ['transactionType'],
   data() {
     return {
       txMessage: '',
@@ -399,32 +402,50 @@ export default {
     },
   },
   methods: {
-    checkForm() {
-      this.errorMessage = []
-      if (!this.userPrivateKey || this.userPrivateKey.trim() === ''){
-        this.errorMessage.push('private key is null.');
+    checkTransfer() {
+      if (!this.userPrivateKey || this.userPrivateKey.trim() === '') {
+        this.errorMessage.push(ErrorMessage.PRIVATE_KEY_NULL);
         return false;
       } else if(this.userPrivateKey.length < 64) {
-        this.errorMessage.push('private key is not correct.');
+        this.errorMessage.push(ErrorMessage.PRIVATE_KEY_ERROR);
         return false;
       }
 
       if (!this.generationHash || this.generationHash.trim() === '') {
-        this.errorMessage.push('generation hash key is null.');
+        this.errorMessage.push(ErrorMessage.GENERATION_HASH_NULL);
         return false;
       } else if(this.generationHash.length !== 64) {
-        this.errorMessage.push('generation hash is not correct.');
+        this.errorMessage.push(ErrorMessage.GENERATION_HASH_ERROR);
         return false;
       }
 
-      if(!this.txRecipient || this.txRecipient.trim() === '') {
-        this.errorMessage.push('recipient address key is null.');
+      if (!this.txRecipient || this.txRecipient.trim() === '') {
+        this.errorMessage.push(ErrorMessage.ADDRESS_NULL);
         return false;
       } else if(this.txRecipient.length < 40) {
-        this.errorMessage.push('recipient address is not correct.');
+        this.errorMessage.push(ErrorMessage.ADDRESS_ERROR);
+        return false;
+      }
+      if (this.txAmount < 0) {
+        this.errorMessage.push(ErrorMessage.TX_AMOUNT_ERROR);
+        return false;
+      }
+      if (this.txMaxFee < 0) {
+        this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR);
         return false;
       }
       return true;
+    },
+    checkForm() {
+      this.errorMessage = [];
+      let flag = false;
+      switch (this.transactionType) {
+      case TransactionType.TRANSFER:
+        flag = this.checkTransfer();
+        break;
+      default: flag = false;
+      }
+      return flag;
     },
     createTransferTransaction() {
       const recipientAddr = Address.createFromRawAddress(this.txRecipient);
@@ -447,8 +468,8 @@ export default {
     },
 
     transmitTransaction() {
-      if(!this.checkForm()){
-        this.isShowErrorMessage = true
+      if (!this.checkForm()) {
+        this.isShowErrorMessage = true;
         return;
       }
       this.createTransferTransaction();
