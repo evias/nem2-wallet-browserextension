@@ -126,9 +126,9 @@
                 <v-subheader>
                   {{ filter.propertyModificationType == 0 ? 'add':'remove' }}
                 </v-subheader>
-                {{ filterType == 0x04 ? 'Entity Type:':'' }}
-                {{ filterType == 0x02 ? 'Mosaic Id:':'' }}
-                {{ filterType == 0x01 ? 'Address Hex:':'' }}
+                {{ filterType == filterTypes.ENTITY_FILTER ? 'Entity Type:':'' }}
+                {{ filterType == filterTypes.MOSAIC_FILTER ? 'Mosaic Id:':'' }}
+                {{ filterType == filterTypes.ADDRESS_FILTER ? 'Address Hex:':'' }}
                 {{ filter.hexId }}
               </v-list-tile-content>
               <v-btn
@@ -165,6 +165,7 @@
       <Confirmation
         v-model="isDialogShow"
         :transactions="transactions"
+        :generationHash="generationHash"
         @sent="txSent"
         @error="txError"
       >
@@ -206,6 +207,41 @@
         :generation-hash="generationHash"
       />
     </v-layout>
+
+
+    <v-dialog
+            v-model="isShowErrorMessage"
+            width="500"
+    >
+      <v-card>
+        <v-card-title
+                class="headline grey lighten-2"
+                primary-title
+        >
+          Lack of necessary information
+        </v-card-title>
+
+        <v-card-text>
+          <div :key="index" v-for="(e,index) in errorMessage">
+            {{e}}
+          </div>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+                  color="primary"
+                  flat
+                  @click="
+                            isShowErrorMessage = false;
+                            isDialogShow = false"
+          >
+            i see
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -213,18 +249,23 @@
 import {
   PropertyModificationType,
   NetworkType,
-  ModifyAccountPropertyAddressTransaction,
-  ModifyAccountPropertyMosaicTransaction,
-  ModifyAccountPropertyEntityTypeTransaction,
   Deadline,
   UInt64,
   AccountPropertyTransaction,
   Address,
   TransactionType,
   MosaicId,
+  AccountPropertyModification,
 } from 'nem2-sdk';
+import ErrorMessage from '../../infrastructure/transactions/errorMessage';
 import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
+
+const FilterType = {
+  ADDRESS_FILTER: 0X01,
+  MOSAIC_FILTER: 0X02,
+  ENTITY_FILTER: 0X04,
+};
 
 export default {
   name: 'FilterTransaction',
@@ -236,6 +277,8 @@ export default {
   props: ['actionType', 'filterType', 'maxFee', 'generationHash'],
   data() {
     return {
+      isShowErrorMessage: false,
+      filterTypes: FilterType,
       filterList: [],
       isAdd: true,
       hexId: '',
@@ -267,6 +310,7 @@ export default {
         hexEntityType: '4152',
       },
       currentEntityTypeId: 1,
+      errorMessage: [],
     };
   },
   watch: {
@@ -278,7 +322,7 @@ export default {
   methods: {
     addFilter() {
       let filter;
-      if (this.filterType !== 0x04) {
+      if (this.filterType !== FilterType.ENTITY_FILTER) {
         filter = {
           hexId: this.hexId,
           propertyModificationType: this.isAdd
@@ -296,15 +340,83 @@ export default {
     removeFilter(index) {
       this.filterList.splice(index, 1);
     },
+    checkCommon() {
+      if (this.maxFee < 0) {
+        this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR)
+        return false;
+      }
+      if (!this.generationHash || this.generationHash.trim() === '') {
+        this.errorMessage.push(ErrorMessage.GENERATION_HASH_NULL);
+        return false;
+      } else if(this.generationHash.length !== 64) {
+        this.errorMessage.push(ErrorMessage.GENERATION_HASH_ERROR);
+        return false;
+      }
+      if (this.filterList.length <= 0) {
+        this.errorMessage.push(ErrorMessage.FILTER_LIST_NULL);
+        return false;
+      }
+      return true;
+    },
+    checkAddress() {
+      const flag = this.filterList.every((item) => {
+        const filter = item.hexId;
+        if (!filter || filter.trim() === '') {
+          this.errorMessage.push(ErrorMessage.ADDRESS_NULL);
+          return false;
+        }
+        if (filter.length < 40) {
+          this.errorMessage.push(ErrorMessage.ADDRESS_ERROR);
+          return false;
+        }
+        return true;
+      });
+      return flag;
+    },
+    checkMosaic(){
+      const flag = this.filterList.every((item) => {
+        const filter = item.hexId;
+        if (!filter || filter.trim() === '') {
+          this.errorMessage.push(ErrorMessage.MOSAIC_NULL);
+          return false;
+        }
+        if (filter.length < 16) {
+          this.errorMessage.push(ErrorMessage.MOSAIC_ERROR);
+          return false;
+        }
+        return true;
+      });
+      return flag;
+    },
+    checkForm() {
+      this.errorMessage = [];
+      if (!this.checkCommon()) {
+        return false;
+      }
+      let flag = true
+      switch (this.filterType) {
+      case FilterType.ADDRESS_FILTER:
+        flag = this.checkAddress();
+        break;
+      case FilterType.MOSAIC_FILTER:
+        flag = this.checkMosaic();
+        break;
+      default: flag = true;
+      }
+      return flag;
+    },
     showDialog() {
-      if (this.filterType === 0x01) {
+      if (!this.checkForm()) {
+        this.isShowErrorMessage = true;
+        return;
+      }
+      if (this.filterType === FilterType.ADDRESS_FILTER) {
         this.generateAddressTransaction();
-      } else if (this.filterType === 0x02) {
+      } else if (this.filterType === FilterType.MOSAIC_FILTER) {
         this.generateMosaicTransaction();
-      } else if (this.filterType === 0x04) {
+      } else if (this.filterType === FilterType.ENTITY_FILTER) {
         this.generateEntityTypeTransaction();
       }
-
       this.dialogDetails = [
         {
           icon: 'add',
@@ -335,18 +447,17 @@ export default {
       } = this;
       const propertyType = actionType + filterType;
 
-      const modifyAccountPropertyAddressTransaction = new ModifyAccountPropertyAddressTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      const modifyAddress = AccountPropertyTransaction.createAddressPropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createAddressFilter(
+        filterList.map(modification => AccountPropertyModification.createForAddress(
           modification.propertyModificationType,
           Address.createFromRawAddress(modification.hexId),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
-      this.transactions = [modifyAccountPropertyAddressTransaction];
+      this.transactions = [modifyAddress];
     },
     generateMosaicTransaction() {
       const {
@@ -354,19 +465,19 @@ export default {
       } = this;
       const propertyType = actionType + filterType;
 
-      const modifyAccountPropertyMosaicTransaction = new ModifyAccountPropertyMosaicTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      const modifyMosaic = AccountPropertyTransaction.createMosaicPropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createMosaicFilter(
+        filterList.map(modification => AccountPropertyModification.createForMosaic(
           modification.propertyModificationType,
           new MosaicId(modification.hexId),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
-      this.transactions = [modifyAccountPropertyMosaicTransaction];
+      this.transactions = [modifyMosaic];
     },
+
     generateEntityTypeTransaction() {
       const {
         maxFee, actionType, filterType, filterList,
@@ -374,19 +485,19 @@ export default {
       const propertyType = actionType + filterType;
 
       // eslint-disable-next-line max-len
-      const modifyAccountPropertyEntityTypeTransaction = new ModifyAccountPropertyEntityTypeTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      console.log(filterList)
+      const modifyEntity = AccountPropertyTransaction.createEntityTypePropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createEntityTypeFilter(
+        filterList.map(modification => AccountPropertyModification.createForEntityType(
           modification.propertyModificationType,
           Number('0x'.concat(modification.hexId)),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
-
-      this.transactions = [modifyAccountPropertyEntityTypeTransaction];
+      console.log(modifyEntity);
+      this.transactions = [modifyEntity];
     },
     txSent(result) {
       this.txSendResults.push({

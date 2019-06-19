@@ -53,7 +53,6 @@
               </v-btn>
             </v-toolbar>
 
-
             <v-card-text>
               <p class="mb-4 mt-4">
                 Current Node:
@@ -404,7 +403,7 @@ export default {
         [],
       );
       const signedCompleteTx = this.wallet.activeWallet
-        .account.sign(completeTx, this.currentGenerationHash);
+        .account.sign(completeTx, this.generationHash);
       transactionHttp
         .announce(signedCompleteTx)
         // eslint-disable-next-line no-console
