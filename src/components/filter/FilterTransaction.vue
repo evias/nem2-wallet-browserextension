@@ -165,6 +165,7 @@
       <Confirmation
         v-model="isDialogShow"
         :transactions="transactions"
+        :generationHash="generationHash"
         @sent="txSent"
         @error="txError"
       >
@@ -213,15 +214,13 @@
 import {
   PropertyModificationType,
   NetworkType,
-  ModifyAccountPropertyAddressTransaction,
-  ModifyAccountPropertyMosaicTransaction,
-  ModifyAccountPropertyEntityTypeTransaction,
   Deadline,
   UInt64,
   AccountPropertyTransaction,
   Address,
   TransactionType,
   MosaicId,
+  AccountPropertyModification
 } from 'nem2-sdk';
 import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
@@ -335,18 +334,17 @@ export default {
       } = this;
       const propertyType = actionType + filterType;
 
-      const modifyAccountPropertyAddressTransaction = new ModifyAccountPropertyAddressTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      const modifyAddress = AccountPropertyTransaction.createAddressPropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createAddressFilter(
+        filterList.map(modification => AccountPropertyModification.createForAddress(
           modification.propertyModificationType,
           Address.createFromRawAddress(modification.hexId),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
-      this.transactions = [modifyAccountPropertyAddressTransaction];
+      this.transactions = [modifyAddress];
     },
     generateMosaicTransaction() {
       const {
@@ -354,19 +352,19 @@ export default {
       } = this;
       const propertyType = actionType + filterType;
 
-      const modifyAccountPropertyMosaicTransaction = new ModifyAccountPropertyMosaicTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      const modifyMosaic = AccountPropertyTransaction.createMosaicPropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createMosaicFilter(
+        filterList.map(modification => AccountPropertyModification.createForMosaic(
           modification.propertyModificationType,
           new MosaicId(modification.hexId),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
-      this.transactions = [modifyAccountPropertyMosaicTransaction];
+      this.transactions = [modifyMosaic];
     },
+
     generateEntityTypeTransaction() {
       const {
         maxFee, actionType, filterType, filterList,
@@ -374,19 +372,18 @@ export default {
       const propertyType = actionType + filterType;
 
       // eslint-disable-next-line max-len
-      const modifyAccountPropertyEntityTypeTransaction = new ModifyAccountPropertyEntityTypeTransaction(
-        NetworkType.MIJIN_TEST,
-        1,
+      const modifyEntity = AccountPropertyTransaction.createEntityTypePropertyModificationTransaction(
         Deadline.create(),
-        UInt64.fromUint(maxFee),
         propertyType,
-        filterList.map(modification => AccountPropertyTransaction.createEntityTypeFilter(
+        filterList.map(modification => AccountPropertyModification.createForEntityType(
           modification.propertyModificationType,
           Number('0x'.concat(modification.hexId)),
         )),
+        NetworkType.MIJIN_TEST,
+        UInt64.fromUint(maxFee),
       );
 
-      this.transactions = [modifyAccountPropertyEntityTypeTransaction];
+      this.transactions = [modifyEntity];
     },
     txSent(result) {
       this.txSendResults.push({

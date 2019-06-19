@@ -79,7 +79,7 @@
     <v-layout column>
       <v-layout row>
         <v-flex xs3>
-          <v-subheader>Max Fee</v-subheader>
+          <v-subheader>Generation Hash</v-subheader>
         </v-flex>
         <v-flex xs7>
           <v-text-field
@@ -98,6 +98,7 @@
       :action-type="actionType"
       :filter-type="filterType"
       :max-fee="maxFee"
+      :generationHash="generationHash"
       @closeFilter="$emit('closeFilter')"
     />
     <FilterTransaction
@@ -105,6 +106,7 @@
       :action-type="actionType"
       :filter-type="filterType"
       :max-fee="maxFee"
+      :generationHash="generationHash"
       @closeFilter="$emit('closeFilter')"
     />
     <FilterTransaction
@@ -112,7 +114,7 @@
       :action-type="actionType"
       :filter-type="filterType"
       :max-fee="maxFee"
-      :generation-hash="currentGenerationHash"
+      :generationHash="generationHash"
       @closeFilter="$emit('closeFilter')"
     />
   </v-layout>
