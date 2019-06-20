@@ -298,31 +298,34 @@
               </v-dialog>
 
               <v-dialog
-                      v-model="isShowErrorMessage"
-                      width="500"
+                v-model="isShowErrorMessage"
+                width="500"
               >
                 <v-card>
                   <v-card-title
-                          class="headline grey lighten-2"
-                          primary-title
+                    class="headline grey lighten-2"
+                    primary-title
                   >
                     Lack of necessary information
                   </v-card-title>
 
                   <v-card-text>
-                    <div :key="index" v-for="(e,index) in errorMessage">
-                      {{e}}
+                    <div
+                      v-for="(e,index) in errorMessage"
+                      :key="index"
+                    >
+                      {{ e }}
                     </div>
                   </v-card-text>
-                  <v-divider></v-divider>
+                  <v-divider />
                   <v-card-actions>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-btn
-                            color="primary"
-                            flat
-                            @click="
-                            isShowErrorMessage = false;
-                            dialog = false"
+                      color="primary"
+                      flat
+                      @click="
+                        isShowErrorMessage = false;
+                        dialog = false"
                     >
                       i see
                     </v-btn>
@@ -362,6 +365,7 @@ export default {
     SendConfirmation,
   },
   store,
+  // eslint-disable-next-line vue/require-prop-types
   props: ['transactionType'],
   data() {
     return {
@@ -406,7 +410,7 @@ export default {
       if (!this.userPrivateKey || this.userPrivateKey.trim() === '') {
         this.errorMessage.push(ErrorMessage.PRIVATE_KEY_NULL);
         return false;
-      } else if(this.userPrivateKey.length < 64) {
+      } if (this.userPrivateKey.length < 64) {
         this.errorMessage.push(ErrorMessage.PRIVATE_KEY_ERROR);
         return false;
       }
@@ -414,7 +418,7 @@ export default {
       if (!this.generationHash || this.generationHash.trim() === '') {
         this.errorMessage.push(ErrorMessage.GENERATION_HASH_NULL);
         return false;
-      } else if(this.generationHash.length !== 64) {
+      } if (this.generationHash.length !== 64) {
         this.errorMessage.push(ErrorMessage.GENERATION_HASH_ERROR);
         return false;
       }
@@ -422,7 +426,7 @@ export default {
       if (!this.txRecipient || this.txRecipient.trim() === '') {
         this.errorMessage.push(ErrorMessage.ADDRESS_NULL);
         return false;
-      } else if(this.txRecipient.length < 40) {
+      } if (this.txRecipient.length < 40) {
         this.errorMessage.push(ErrorMessage.ADDRESS_ERROR);
         return false;
       }
