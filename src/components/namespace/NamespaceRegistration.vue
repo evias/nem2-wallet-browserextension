@@ -27,6 +27,14 @@
             Create a new namespace
           </h3>
         </v-card-title>
+        <v-spacer />
+        <v-btn
+          href="https://nemtech.github.io/concepts/namespace.html"
+          target="_new"
+          icon
+        >
+          <v-icon>local_library</v-icon>
+        </v-btn>
       </v-toolbar>
 
       <v-card-text>
@@ -44,8 +52,9 @@
 
         <v-text-field
           v-model="namespaceName"
-          class="ma-0 pa-0"
+          class="my-2 pa-0"
           label="Namespace name"
+          hint="Allowed characters are a, b, c, …, z, 0, 1, 2, …, 9, ‘, _ , -."
           required
         />
 
@@ -55,8 +64,9 @@
         >
           <v-text-field
             v-model="parentNamespaceName"
-            class="ma-0 pa-0"
+            class="my-2 pa-0"
             label="Parent Namespace name"
+            hint="Allowed characters are a, b, c, …, z, 0, 1, 2, …, 9, ‘, _ , -."
             required
           />
         </v-layout>
@@ -66,7 +76,7 @@
         >
           <v-text-field
             v-model="duration"
-            class="ma-0 pa-0"
+            class="my-2 pa-0"
             label="Duration"
             required
             number
@@ -98,6 +108,7 @@
     <Confirmation
       v-model="isDialogShow"
       :transactions="transactions"
+      :generation-hash="application.generationHashes[application.activeNode]"
       @sent="txSent"
       @error="txError"
     >
@@ -120,9 +131,11 @@
   </v-dialog>
 </template>
 <script>
+import { mapState } from 'vuex';
 import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64,
 } from 'nem2-sdk';
+import { validateNamespaceName } from '../../infrastructure/namespaces/helpers';
 import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
@@ -151,14 +164,17 @@ export default {
     };
   },
   computed: {
+    ...mapState(['application']),
     isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
     disabledSendTransaction() {
       if (this.namespaceType === NamespaceType.RootNamespace) {
-        return this.namespaceName === '' || this.duration === 0;
+        return !validateNamespaceName(this.namespaceName)
+          || this.duration === 0;
       }
-      return this.namespaceName === '' || this.parentNamespaceName === '';
+      return !validateNamespaceName(this.namespaceName)
+        || this.parentNamespaceName === '';
     },
     show: {
       get() {
