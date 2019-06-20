@@ -87,11 +87,17 @@
                 </span>
 
                 <span class="clearfix">
-                  Endpoint: <a :href="uriTx.endpoint" target="_blank">{{ uriTx.endpoint }}</a>
+                  Endpoint: <a
+                    :href="uriTx.endpoint"
+                    target="_blank"
+                  >{{ uriTx.endpoint }}</a>
                 </span>
 
                 <span class="clearfix">
-                  Webhook: <a :href="uriTx.webhook" target="_blank">{{ uriTx.webhook }}</a>
+                  Webhook: <a
+                    :href="uriTx.webhook"
+                    target="_blank"
+                  >{{ uriTx.webhook }}</a>
                 </span>
 
                 <span
@@ -114,6 +120,7 @@
             <v-spacer />
             <v-btn
               flat
+              :disabled="wallet.activeWallet.isWatchOnly"
               @click="toggleDialog = true"
             >
               Accept transaction
@@ -148,14 +155,14 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile v-if="uriTx.txMessage && uriTx.txMessage !== ''">
+          <v-list-tile-tile v-if="uriTx.txMessage && uriTx.txMessage !== ''">
             <v-list-tile-action>
               <v-icon>message</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Message: {{ uriTx.txMessage }}</v-list-tile-title>
             </v-list-tile-content>
-          </v-list-tile>
+          </v-list-tile-tile>
         </v-list>
         <template v-for="(mosaic) in uriTx.transaction.mosaics">
           <v-list :key="mosaic.id.toHex()">
@@ -178,7 +185,7 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex';
 import { QRCodeGenerator } from 'nem2-qr-library';
 import Confirmation from '../Confirmation.vue';
 import { networkCurrencyIdToName } from '../../infrastructure/network/utils/nerworkCurrencyToName';
@@ -206,6 +213,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['wallet']),
     title() {
       return this.listType === 'uriToValidate'
         ? 'URI transactions to validate'

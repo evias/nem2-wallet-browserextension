@@ -33,8 +33,7 @@
         />
         <v-card
           v-if="wallet.wallets.length > 0
-            && wallet.activeWallet
-            && !wallet.activeWallet.isWatchOnly"
+            && wallet.activeWallet"
           style="height: auto;padding:0 !important"
           class="card--flex-toolbar"
         >
@@ -318,6 +317,7 @@ export default {
         this.mosaics,
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST,
+        UInt64.fromUint(0),
       );
 
       const serializedTransaction = transaction.serialize();
