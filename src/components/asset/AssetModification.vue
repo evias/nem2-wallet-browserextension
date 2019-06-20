@@ -112,7 +112,7 @@ import Dialog from './Dialog.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
 export default {
-  name: 'AssetCreation',
+  name: 'AssetModification',
   components: {
     Dialog,
     SendConfirmation,
@@ -224,6 +224,3 @@ export default {
 };
 
 </script>
-
-<style scoped>
-</style>
