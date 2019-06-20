@@ -119,7 +119,7 @@ const getBody = (tx) => {
             body.push(
                 {
                     key: 'Alias action type',
-                    value: tx.actionType === 0 ? 'Link' : 'Unlink',
+                    value: tx.actionType === 1 ? 'Link' : 'Unlink',
                 },
                 { key: 'Address', value: new Address(tx.address.address).pretty() },
                 {
@@ -139,7 +139,7 @@ const getBody = (tx) => {
             body.push(
                 {
                     key: 'Alias action type',
-                    value: tx.actionType === 0 ? 'Link' : 'Unlink',
+                    value: tx.actionType === 1 ? 'Link' : 'Unlink',
                 },
                 { key: 'Mosaic Id', value: tx.mosaicId.toHex().toLowerCase() },
                 {

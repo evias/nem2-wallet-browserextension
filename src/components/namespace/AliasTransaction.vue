@@ -1,19 +1,19 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-scale-transition>
@@ -38,9 +38,11 @@
             {{ currentAlias }}
           </v-subheader>
         </v-flex>
+
         <v-flex xs2>
           <v-btn
-            :disabled="disabledSendTransaction"
+            :disabled="disabledSendTransaction
+              || wallet.activeWallet.isWatchOnly"
             color="primary mx-0"
             @click="showDialog"
           >
@@ -48,14 +50,29 @@
           </v-btn>
         </v-flex>
       </v-layout>
-      <v-layout column>
-        <SendConfirmation
-          :tx-send-data="txSendResults"
-        />
+      <v-layout
+        row
+      >
+        <v-container
+          fluid
+        >
+          <v-layout
+            column
+            xs12
+          >
+            <v-flex xs12>
+              <SendConfirmation
+                :tx-send-data="txSendResults"
+              />
+            </v-flex>
+          </v-layout>
+        </v-container>
       </v-layout>
+
       <Confirmation
         v-model="isDialogShow"
         :transactions="transactions"
+        :generation-hash="application.generationHashes[application.activeNode]"
         @sent="txSent"
         @error="txError"
       >
@@ -79,6 +96,7 @@
   </v-scale-transition>
 </template>
 <script>
+import { mapState } from 'vuex';
 import {
   NetworkType, NamespaceType, Deadline,
   AliasActionType, MosaicId, NamespaceId, AddressAliasTransaction,
@@ -127,7 +145,10 @@ export default {
       txSendResults: [],
     };
   },
+
+
   computed: {
+    ...mapState(['application', 'wallet']),
     isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
@@ -207,10 +228,9 @@ export default {
       });
     },
     txError(error) {
+      // eslint-disable-next-line no-console
       console.error(error);
     },
   },
 };
 </script>
-<style scoped>
-</style>

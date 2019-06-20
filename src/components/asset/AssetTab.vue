@@ -61,25 +61,25 @@
                       </div>
                       <div class="asset-list-header asset-list-header-right">
                         <div v-if="ownedAssets">
-                          <!-- <v-btn
+                          <v-btn
                             small
                             color="primary"
-                            :disabled="!a.active"
-                            @click.stop
+                            :disabled="wallet.activeWallet.isWatchOnly"
+                            @click.stop="
+                              activeAsset = a.id;
+                              assetAlias = true"
                           >
-                            Link a namespace
-                          </v-btn>-->
+                            Add an alias
+                          </v-btn>
                           <v-btn
                             small
                             color="primary"
                             :disabled="
-                              !(a.active
-                                && a.supplyMutable)
-                            "
+                              !(a.active && a.supplyMutable)
+                                || wallet.activeWallet.isWatchOnly"
                             @click.stop="
                               activeAsset = a.id;
-                              modifyAsset = true;
-                            "
+                              modifyAsset = true;"
                           >
                             Modify supply
                           </v-btn>
@@ -114,16 +114,24 @@
       :active-asset="activeAsset"
       @close="modifyAsset = false"
     />
+    <AssetAlias
+      :visible="assetAlias"
+      :active-asset="activeAsset"
+      @close="assetAlias = false"
+    />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import AssetModification from './AssetModification.vue';
+import AssetAlias from './AssetAlias.vue';
 
 export default {
   name: 'AssetTab',
   components: {
     AssetModification,
+    AssetAlias,
   },
   props: {
     // eslint-disable-next-line vue/require-default-prop
@@ -143,10 +151,9 @@ export default {
     return {
       index: 0,
       modifyAsset: false,
+      assetAlias: false,
     };
   },
+  computed: mapState(['wallet']),
 };
 </script>
-
-<style scoped>
-</style>
