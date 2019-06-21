@@ -79,13 +79,13 @@ export default {
       const transactionQuery = this.$route.query.transaction;
       const transactionURI = TransactionURI.fromURI(transactionQuery);
       const transaction = transactionURI.toTransaction();
+
       const formattedMosaics = transaction.mosaics
         .map(mosaic => ({
           ...mosaic,
           mosaicName: networkCurrencyIdToName(mosaic.id.toHex()),
           mosaicAmount: mosaic.amount.compact(),
         }));
-
       this.$store.dispatch('transactions/SAVE_RECEIVED_URI', {
         uriTransaction: {
           URI: this.$route.query.transaction,
@@ -93,7 +93,7 @@ export default {
           txRecipient: new Address(transaction.recipient.address).pretty(),
           formattedMosaics,
           txType: txTypeNameFromTypeId(transaction.type),
-          chainId: transactionURI.chainId,
+          generationHash: transactionURI.generationHash,
           endpoint: transactionURI.endpoint,
           webhook: transactionURI.webhook,
         },

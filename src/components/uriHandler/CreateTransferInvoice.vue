@@ -68,8 +68,8 @@
                 />
 
                 <v-text-field
-                  v-model="chainId"
-                  label="Network Id (this is for testing purpose, leave ''test'' if not needed"
+                  v-model="generationHash"
+                  label="Generation Hash"
                   type="text"
                   required
                 />
@@ -275,7 +275,6 @@ export default {
       mosaics: [],
       currentMosaicName: '',
       currentMosaicAmount: '',
-      chainId: 'test',
       txRecipient: '',
     };
   },
@@ -293,6 +292,11 @@ export default {
     },
     endpoint() {
       return this.application.activeNode;
+    },
+    generationHash: {
+      get() {
+        return this.application.generationHashes[this.application.activeNode];
+      },
     },
   },
   mounted() {
@@ -324,7 +328,7 @@ export default {
 
       const transactionURI = new TransactionURI(
         serializedTransaction,
-        this.chainId,
+        this.generationHash,
         this.endpoint,
       ).build();
 
@@ -343,7 +347,7 @@ export default {
           txRecipient: this.txRecipient,
           formattedMosaics,
           txType: txTypeNameFromTypeId(transaction.type),
-          chainId: this.chainId,
+          generationHash: this.generationHash,
           endpoint: this.endpoint,
         },
       });
@@ -358,7 +362,6 @@ export default {
       this.mosaics = [];
       this.currentMosaicName = '';
       this.currentMosaicAmount = '';
-      this.chainId = 'test';
     },
 
     addMosaic() {

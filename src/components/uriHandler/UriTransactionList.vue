@@ -83,7 +83,7 @@
                 </span>
 
                 <span class="clearfix">
-                  Chain ID: {{ uriTx.chainId }}
+                  Generation Hash: {{ uriTx.generationHash }}
                 </span>
 
                 <span class="clearfix">
@@ -141,6 +141,7 @@
       :body="body"
       :webhook="transactions[0].webhook"
       :max-width="600"
+      :generation-hash="transactions[0].generationHash"
     >
       <template
         v-for="(uriTx, i) in transactions"
