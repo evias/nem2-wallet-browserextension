@@ -21,11 +21,11 @@
 /* eslint-disable indent */
 
 import {
- TransactionType, Address,
+  TransactionType, Address, NamespaceHttp,
 } from 'nem2-sdk';
-
 import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
 import { txTypeNameFromTypeId } from './transactions-types';
+
 
 export const formatDate = (d) => {
   let date = d.getDate();
@@ -98,8 +98,9 @@ const getBody = (tx) => {
                         { key: 'Duration (blocks)', value: 0 },
                         { key: 'Parent Namespace Id', value: tx.parentId.toHex().toLowerCase() },
                     );
-                    // eslint-disable-next-line no-case-declarations
-                    childOf = { key: 'Child of: ', value: tx.parentId.toHex().toLowerCase() };
+                  // eslint-disable-next-line no-case-declarations
+                  childOf = { key: 'Child of: ', value: tx.parentId.toHex().toLowerCase() };
+                  mainProps = [childOf];
                     break;
 
                 default:
@@ -109,10 +110,9 @@ const getBody = (tx) => {
                         { key: 'Duration (blocks)', value: tx.duration.compact().toLocaleString() },
                     );
                     namespaceName = { key: 'name: ', value: tx.namespaceName };
-                    break;
+                  mainProps = [namespaceName];
+                  break;
             }
-
-            mainProps = [namespaceName, childOf];
             break;
 
         case TransactionType.ADDRESS_ALIAS:
@@ -343,7 +343,6 @@ const getBody = (tx) => {
         type1: txTypeNameFromTypeId(tx.type),
         mainProps,
     };
-
     return { body, headerExtension };
 };
 

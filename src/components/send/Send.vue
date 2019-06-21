@@ -439,6 +439,9 @@ export default {
         this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR);
         return false;
       }
+      if (this.mosaics.length === 0) {
+        this.mosaics.push(NetworkCurrencyMosaic.createRelative(0));
+      }
       return true;
     },
     checkForm() {
