@@ -26,7 +26,10 @@
         tag="v-list"
         class="py-0"
       >
-        <template v-for="(ns, index) in namespaces.namespaces[wallet.activeWallet.name]">
+        <template
+          v-for="(ns, index) in namespaces
+            .namespaces[wallet.activeWallet.name]"
+        >
           <v-layout
             :key="ns.name"
             column

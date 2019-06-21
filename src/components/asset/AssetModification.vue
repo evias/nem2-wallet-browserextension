@@ -24,7 +24,9 @@
       <v-toolbar card>
         <v-card-title primary-title>
           <h3 class="headline mb-3">
-            Mofify the supply of asset {{ activeAsset }}
+            Mofify the supply of asset {{ activeAsset.name
+              ? `${activeAsset.name} (${activeAsset.id})`
+              : activeAsset.id }}
           </h3>
         </v-card-title>
       </v-toolbar>
@@ -120,9 +122,9 @@ export default {
   props: {
     visible: Boolean,
     activeAsset: {
-      type: String,
+      type: Object,
       default() {
-        return '';
+        return { id: false, name: false };
       },
     },
   },
@@ -196,7 +198,7 @@ export default {
 
       const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
         Deadline.create(),
-        new MosaicId(this.activeAsset),
+        new MosaicId(this.activeAsset.id),
         MosaicSupplyType[this.direction],
         UInt64.fromUint(parseInt(this.supply, 10)),
         NetworkType.MIJIN_TEST,
@@ -220,7 +222,6 @@ export default {
       this.dialogDetails = [];
     },
   },
-
 };
 
 </script>

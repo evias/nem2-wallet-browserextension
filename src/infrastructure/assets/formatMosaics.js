@@ -22,7 +22,7 @@ import {
   Address,
 } from 'nem2-sdk';
 
-import { networkCurrencyIdToName, networkCurrencyNames } from '../network/utils/nerworkCurrencyToName';
+import { networkCurrencyNames } from '../network/utils/nerworkCurrencyToName';
 
 const expirationText = (expiration) => {
  const expired = expiration < 0;
@@ -84,21 +84,21 @@ export const formatMosaics = (mosaic, blockHeight) => {
  const height = mosaic.mosaicInfo.height.compact();
  const expiration = height + mosaic.mosaicInfo.duration.compact() - blockHeight;
  return {
-   title: networkCurrencyIdToName(mosaic.mosaicInfo.mosaicId.toHex()),
-   metaId: mosaic.mosaicInfo.metaId,
-   balance: mosaic.relativeAmount().toString(10),
-   amount: mosaic.amount.compact(),
-   active: mosaic.mosaicInfo.duration.compact() === 0
-    ? true
-    : !expirationText(expiration).isActive,
-   expirationText: mosaic.mosaicInfo.duration.compact() === 0
-    ? 'unlimited'
-    : expirationText(expiration).text,
-   divisibility: mosaic.mosaicInfo.divisibility,
-   supply: mosaic.mosaicInfo.supply.compact(),
-   supplyMutable: mosaic.mosaicInfo.isSupplyMutable(),
-   transferable: mosaic.mosaicInfo.isTransferable(),
-   owner: new Address(mosaic.mosaicInfo.owner.address.address).pretty(),
-   id: mosaic.mosaicInfo.mosaicId.toHex(),
+    id: mosaic.mosaicInfo.mosaicId.toHex(),
+    mosaicId: mosaic.mosaicInfo.mosaicId,
+    metaId: mosaic.mosaicInfo.metaId,
+    balance: mosaic.relativeAmount().toString(10),
+    amount: mosaic.amount.compact(),
+    active: mosaic.mosaicInfo.duration.compact() === 0
+      ? true
+      : !expirationText(expiration).isActive,
+    expirationText: mosaic.mosaicInfo.duration.compact() === 0
+      ? 'unlimited'
+      : expirationText(expiration).text,
+    divisibility: mosaic.mosaicInfo.divisibility,
+    supply: mosaic.mosaicInfo.supply.compact(),
+    supplyMutable: mosaic.mosaicInfo.isSupplyMutable(),
+    transferable: mosaic.mosaicInfo.isTransferable(),
+    owner: new Address(mosaic.mosaicInfo.owner.address.address).pretty(),
  };
 };

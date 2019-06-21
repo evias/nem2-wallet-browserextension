@@ -49,7 +49,9 @@
                   <v-list-tile-content class="my-2">
                     <div class="asset-list-header asset-list-header-container">
                       <div class="asset-list-header asset-list-header-left">
-                        <v-list-tile-title>{{ a.title }}</v-list-tile-title>
+                        <v-list-tile-title>
+                          {{ a.name ? `${a.name} (${a.id})` : a.id }}
+                        </v-list-tile-title>
                         <v-list-tile-sub-title
                           class="text--primary"
                         >
@@ -66,10 +68,10 @@
                             color="primary"
                             :disabled="wallet.activeWallet.isWatchOnly"
                             @click.stop="
-                              activeAsset = a.id;
+                              activeAsset = { id: a.id, name: a.name };
                               assetAlias = true"
                           >
-                            Add an alias
+                            {{ a.name ? `${'unlink alias'}` : `${'add an alias'}` }}
                           </v-btn>
                           <v-btn
                             small
@@ -78,7 +80,7 @@
                               !(a.active && a.supplyMutable)
                                 || wallet.activeWallet.isWatchOnly"
                             @click.stop="
-                              activeAsset = a.id;
+                              activeAsset = { id: a.id, name: a.name };
                               modifyAsset = true;"
                           >
                             Modify supply
@@ -142,16 +144,13 @@ export default {
       type: Boolean,
       default() { return false; },
     },
-    activeAsset: {
-      type: String,
-      default() { return ''; },
-    },
   },
   data() {
     return {
       index: 0,
       modifyAsset: false,
       assetAlias: false,
+      activeAsset: { id: false, name: false },
     };
   },
   computed: mapState(['wallet']),

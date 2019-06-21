@@ -24,7 +24,11 @@
       <v-toolbar card>
         <v-card-title primary-title>
           <h3 class="headline mb-3">
-            Add an alias to the asset: {{ activeAsset }}
+            {{
+              activeAsset.name
+                ? `Remove the alias ${activeAsset.name} from the asset ${activeAsset.id}`
+                : `Add an alias to the asset: ${activeAsset.id}`
+            }}
           </h3>
         </v-card-title>
       </v-toolbar>
@@ -52,6 +56,7 @@
               :key="l.type"
               :label="l.label"
               :value="l.type"
+              disabled
             />
           </v-radio-group>
           <v-select
@@ -64,6 +69,7 @@
             item-text="display"
             item-value="name"
             label="Namespace"
+            :disabled="activeAsset.name ? true : false"
             required
           />
 
@@ -79,7 +85,7 @@
               close
             </v-btn>
             <v-btn
-              :disabled="namespace === ''"
+              :disabled="namespace === '' && !currentNamespace"
               color="primary mx-0"
               @click="showDialog"
             >
@@ -139,9 +145,9 @@ export default {
   props: {
     visible: Boolean,
     activeAsset: {
-      type: String,
+      type: Object,
       default() {
-        return '';
+        return { id: false, name: false };
       },
     },
   },
@@ -152,8 +158,7 @@ export default {
       transactions: [],
       disabledSendTransaction: false,
       isDialogShow: false,
-      namespace: '',
-      aliasActionType: AliasActionType.Link,
+      currentNamespace: false,
       aliasActionTypes: [
         {
           label: 'Link',
@@ -181,6 +186,20 @@ export default {
         }
       },
     },
+    aliasActionType: {
+      get() {
+        return this.activeAsset.name ? 1 : 0;
+      },
+    },
+    namespace: {
+      get() {
+        return this.activeAsset.name ? this.activeAsset.name : '';
+      },
+      set(e) {
+        this.currentNamespace = e;
+        return false;
+      },
+    },
   },
   methods: {
     showDialog() {
@@ -189,7 +208,9 @@ export default {
         {
           icon: 'add',
           key: 'Mosaic',
-          value: this.activeAsset,
+          value: this.activeAsset.name
+            ? `${this.activeAsset.name} (${this.activeAsset.id})`
+            : this.activeAsset.id,
         },
         {
           icon: 'add',
@@ -206,13 +227,16 @@ export default {
     },
 
     aliasTransaction() {
-      this.transactions = [MosaicAliasTransaction.create(
-        Deadline.create(),
-        this.aliasActionType,
-        new NamespaceId(this.namespace),
-        new MosaicId(this.activeAsset),
-        NetworkType.MIJIN_TEST,
-      )];
+      const namespace = this.currentNamespace || this.namespace;
+      this.transactions = [
+        MosaicAliasTransaction.create(
+          Deadline.create(),
+          this.aliasActionType,
+          new NamespaceId(namespace),
+          new MosaicId(this.activeAsset.id),
+          NetworkType.MIJIN_TEST,
+        ),
+      ];
     },
     dialogClosed() {
       this.isDialogShow = false;

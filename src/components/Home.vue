@@ -167,7 +167,7 @@
                           :key="i"
                         >
                           <v-card-text pa-0>
-                            {{ a.title }}:&nbsp;
+                            {{ a.name ? `${a.name} (${a.id})` : a.id }}:&nbsp;
                             {{ parseInt(a.balance).toLocaleString() }}&nbsp;
                             [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]
                           </v-card-text>

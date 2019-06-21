@@ -18,7 +18,10 @@
  */
 
 /* eslint-disable indent */
-import { flatMap, toArray, map } from 'rxjs/operators';
+import {
+ flatMap, toArray, map, concatMap,
+} from 'rxjs/operators';
+
 import {
   MosaicService,
   AccountHttp,
@@ -31,10 +34,10 @@ const getMosaicsByAddress = async (wallet, activeNode) => new Promise(async (res
     try {
       const { address } = wallet.publicAccount;
       const endpoint = activeNode;
-
+      const mosaicHttp = new MosaicHttp(endpoint);
       const mosaicService = new MosaicService(
         new AccountHttp(endpoint),
-        new MosaicHttp(endpoint),
+        mosaicHttp,
       );
 
       // @TODO: BlockHeight at a higher level, sync with the network
@@ -49,6 +52,20 @@ const getMosaicsByAddress = async (wallet, activeNode) => new Promise(async (res
           flatMap(x => x),
           map(mosaic => formatMosaics(mosaic, blockHeight)),
           toArray(),
+          concatMap(mosaics => mosaicHttp.getMosaicsNames(
+              mosaics.map(({ mosaicId }) => mosaicId),
+            ).toPromise(),
+              (mosaics, res) => {
+                const mosaicsWithNames = [];
+                res.forEach((r) => {
+                  const mosaicToUpdate = mosaics
+                    .find(({ id }) => id === r.mosaicId.id.toHex());
+                  const name = r.names.length > 0
+                    ? r.names[0].name : false;
+                  mosaicsWithNames.push({ ...mosaicToUpdate, name });
+                });
+                return mosaicsWithNames;
+              }),
         )
         .subscribe(
           (x) => {
