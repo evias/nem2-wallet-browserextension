@@ -145,22 +145,20 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <v-layout
-        row
-        justify-end
-        align-center
-      >
-        <v-card-actions>
+        <v-card-actions
+                row
+                justify-end
+                align-center
+        >
           <v-spacer />
           <v-btn
-            flat
+            color="primary mx-0"
             :disabled="disabledSendTransaction"
             @click="showDialog"
           >
-            Send Transaction
+              Send
           </v-btn>
         </v-card-actions>
-      </v-layout>
 
       <Confirmation
         v-model="isDialogShow"
@@ -342,7 +340,7 @@ export default {
     },
     checkCommon() {
       if (this.maxFee < 0) {
-        this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR)
+        this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR);
         return false;
       }
       if (!this.generationHash || this.generationHash.trim() === '') {
@@ -373,7 +371,7 @@ export default {
       });
       return flag;
     },
-    checkMosaic(){
+    checkMosaic() {
       const flag = this.filterList.every((item) => {
         const filter = item.hexId;
         if (!filter || filter.trim() === '') {
@@ -393,7 +391,7 @@ export default {
       if (!this.checkCommon()) {
         return false;
       }
-      let flag = true
+      let flag = true;
       switch (this.filterType) {
       case FilterType.ADDRESS_FILTER:
         flag = this.checkAddress();
@@ -483,9 +481,7 @@ export default {
         maxFee, actionType, filterType, filterList,
       } = this;
       const propertyType = actionType + filterType;
-
       // eslint-disable-next-line max-len
-      console.log(filterList)
       const modifyEntity = AccountPropertyTransaction.createEntityTypePropertyModificationTransaction(
         Deadline.create(),
         propertyType,
@@ -496,7 +492,6 @@ export default {
         NetworkType.MIJIN_TEST,
         UInt64.fromUint(maxFee),
       );
-      console.log(modifyEntity);
       this.transactions = [modifyEntity];
     },
     txSent(result) {

@@ -139,7 +139,7 @@ export default {
   ]),
   methods: {
     reloadMultisigInfo(wallet) {
-      this.$store.dispatch('multisig/GET_MULTISIG_INFO', {
+      this.$store.dispatch('multisig/REFRESH_MULTISIG_INFO', {
         wallet,
         mode: GET_MULTISIG_MODES.RELOAD,
       });

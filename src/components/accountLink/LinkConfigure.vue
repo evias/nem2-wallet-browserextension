@@ -52,6 +52,7 @@
       <v-layout row>
         <v-flex xs12>
           <v-text-field
+            disabled
             v-model="generationHash"
             class="ma-0 pa-0"
             label="Generation Hash"
@@ -61,21 +62,16 @@
         </v-flex>
       </v-layout>
 
-      <v-layout
-        row
-        justify-center
-        align-center
-      >
+
         <v-btn
           style="margin-bottom: 20px"
-          color="gray"
+          color="primary mx-0"
           :disabled="disabledSendTransaction"
           depressed
           @click="showDialog"
         >
-          Send Transaction
+          Send
         </v-btn>
-      </v-layout>
 
       <v-layout column>
         <SendConfirmation
@@ -86,7 +82,7 @@
       <Dialog
         v-model="isDialogShow"
         :transaction="transaction"
-        :generation-hash="currentGenerationHash"
+        :generation-hash="generationHash"
         @sent="txSent"
       >
         <v-list>

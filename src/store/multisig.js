@@ -52,14 +52,12 @@ const actions = {
   },
 
 
-  async GET_MULTISIG_INFO({ commit, getters, rootState }, { wallet, mode }) {
+  async REFRESH_MULTISIG_INFO({ commit, getters, rootState }, { wallet, mode }) {
     if (mode === GET_MULTISIG_MODES.ON_WALLET_CHANGE && getters.GET_MULTISIG_INFO) {
       commit('setLoading_getMultisigInfo', false);
       return;
     }
-
     await commit('setLoading_getMultisigInfo', true);
-
     try {
       const accountHttp = new AccountHttp(rootState.application.activeNode);
       const address = wallet.isWatchOnly

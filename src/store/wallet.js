@@ -313,7 +313,7 @@ const actions = {
         { root: true },
       ),
       dispatch(
-        'multisig/GET_MULTISIG_INFO',
+        'multisig/REFRESH_MULTISIG_INFO',
         { wallet, mode: GET_MULTISIG_MODES.ON_WALLET_CHANGE },
         { root: true },
       ),

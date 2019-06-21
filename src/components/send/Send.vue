@@ -164,6 +164,7 @@
                   />
 
                   <v-text-field
+                    disabled
                     v-model="generationHash"
                     label="Network generation hash"
                     class="mt-3 mb-3"

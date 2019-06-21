@@ -83,6 +83,7 @@
         </v-flex>
         <v-flex xs7>
           <v-text-field
+            disabled
             v-model="generationHash"
             class="ma-0 pa-0"
             label="Generation Hash"
