@@ -29,9 +29,7 @@ const getAccountInfo = (wallet, activeNode) => new Promise((resolve, reject) => 
       resolve(formatAccountInfo(ai));
     },
     (err) => {
-      if (err.response
-          && JSON.parse(err.response.text).code === 'ResourceNotFound'
-      ) {
+      if (err.response && JSON.parse(err.response.text).code === 'ResourceNotFound') {
         reject(new Error('This address is not known by the network.'));
       } else {
         reject(new Error('Error when trying to get the account information. Please make sure this address is known by the network. If it should, please try with another node, or verify your internet connection.', JSON.stringify(err)));
