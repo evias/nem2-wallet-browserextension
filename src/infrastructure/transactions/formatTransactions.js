@@ -21,7 +21,7 @@
 /* eslint-disable indent */
 
 import {
-  TransactionType, Address, NamespaceHttp,
+  TransactionType, Address,
 } from 'nem2-sdk';
 import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
 import { txTypeNameFromTypeId } from './transactions-types';
