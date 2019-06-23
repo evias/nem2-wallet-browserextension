@@ -190,7 +190,12 @@
                       </v-btn>
                     </template>
                   </v-text-field>
-
+                  <PasswordInput
+                    :visible="showPasswordInput"
+                    :wallet-name="wallet.activeWallet.name"
+                    :wallet-type="wallet.activeWallet.walletType"
+                    @close="fillPrivateKeyField"
+                  />
                   <v-flex
                     v-if="txRecipient == '' || userPrivateKey == ''"
                     xs12
@@ -339,6 +344,7 @@
       </v-layout>
     </v-container>
   </v-layout>
+
 </template>
 
 <script>
@@ -360,10 +366,12 @@ import { mapState } from 'vuex';
 import ErrorMessage from '../../infrastructure/transactions/errorMessage';
 import store from '../../store/index';
 import SendConfirmation from './SendConfirmation.vue';
+import PasswordInput from '../wallet/PasswordInput.vue';
 
 export default {
   components: {
     SendConfirmation,
+    PasswordInput,
   },
   store,
   // eslint-disable-next-line vue/require-prop-types
@@ -386,6 +394,7 @@ export default {
       txHash: '',
       errorMessage: [],
       isShowErrorMessage: false,
+      showPasswordInput: false,
     };
   },
   computed: {
@@ -523,7 +532,12 @@ export default {
     },
 
     fillPrivateKeyField() {
-      this.userPrivateKey = this.wallet.activeWallet.account.privateKey;
+      if (!this.wallet.activeWallet.account) {
+        this.showPasswordInput = true;
+      } else {
+        this.showPasswordInput = false;
+        this.userPrivateKey = this.wallet.activeWallet.account.privateKey;
+      }
     },
   },
 };
