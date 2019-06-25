@@ -402,7 +402,6 @@ export const formatTransactions = (
 ) => new Promise(async (resolve, reject) => {
   try {
     const formatted = await Promise.all(transactions.map(tx => new Promise(async (res, rej) => {
-      console.log(tx, 'txxxxxxxxxxxxxxxxxxxxxxxxx');
         try {
           if (tx.innerTransactions) {
             const formattedTransactionsPromises = tx.innerTransactions.map((t) => {
