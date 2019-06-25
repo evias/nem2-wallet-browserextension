@@ -52,6 +52,9 @@ const getters = {
   GET_BLOCKS() {
     return state.blocks;
   },
+  GET_ACTIVE_NODE() {
+    return state.activeNode;
+  },
 };
 
 const mutations = {
