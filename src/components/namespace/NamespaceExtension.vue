@@ -101,8 +101,9 @@ import { mapState } from 'vuex';
 import {
   NetworkType, RegisterNamespaceTransaction, Deadline, UInt64,
 } from 'nem2-sdk';
-import Confirmation from '../Confirmation.vue';
-import SendConfirmation from '../SendConfirmation.vue';
+
+import Confirmation from '../signature/Confirmation.vue';
+import SendConfirmation from '../signature/SendConfirmation.vue';
 
 export default {
   components: {
@@ -184,5 +185,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>

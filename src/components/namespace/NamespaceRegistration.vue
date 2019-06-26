@@ -136,8 +136,8 @@ import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64,
 } from 'nem2-sdk';
 import { validateNamespaceName } from '../../infrastructure/namespaces/helpers';
-import Confirmation from '../Confirmation.vue';
-import SendConfirmation from './SendConfirmation.vue';
+import Confirmation from '../signature/Confirmation.vue';
+import SendConfirmation from '../signature/SendConfirmation.vue';
 
 export default {
   components: {
