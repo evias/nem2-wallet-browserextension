@@ -83,65 +83,61 @@
         </v-flex>
       </v-layout>
 
-      <v-layout
-              v-if="showLockFunds"
-              row
-      >
-        <v-flex xs12>
-          <v-subheader>Lock Funds Transacion</v-subheader>
-        </v-flex>
-      </v-layout>
-      <v-layout
-              v-if="showLockFunds"
-              row
-      >
-        <v-flex xs6>
-          <v-text-field
-                  v-model="lockFundsMosaicType"
-                  class="ma-0 pa-0"
-                  required
-                  disabled
-          />
-        </v-flex>
-        <v-flex xs6>
-          <v-text-field
-                  v-model="lockFundsMosaicAmount"
-                  class="ma-0 pa-0"
-                  type="number"
-                  required
-                  disabled
-                  number
-          />
-        </v-flex>
-      </v-layout>
-
-
-      <v-layout v-if="showLockFunds">
-        <v-flex xs12>
-          <v-text-field
-                  v-model="lockFundsDuration"
-                  label="Lock Funds Duration In Blocks"
-                  class="ma-0 pa-0"
-                  type="number"
-                  required
-                  number
-          />
-        </v-flex>
-      </v-layout>
-
-      <v-layout v-if="showLockFunds">
-        <v-flex xs12>
-          <v-text-field
-                  v-model="lockFundsMaxFee"
-                  label="Lock Funds Max Fee"
-                  class="ma-0 pa-0"
-                  type="number"
-                  required
-                  number
-          />
-        </v-flex>
-      </v-layout>
-
+<!--      <v-layout-->
+<!--              v-if="showLockFunds"-->
+<!--              row-->
+<!--      >-->
+<!--        <v-flex xs12>-->
+<!--          <v-subheader>Lock Funds Transacion</v-subheader>-->
+<!--        </v-flex>-->
+<!--      </v-layout>-->
+<!--      <v-layout-->
+<!--              v-if="showLockFunds"-->
+<!--              row-->
+<!--      >-->
+<!--        <v-flex xs6>-->
+<!--          <v-text-field-->
+<!--                  v-model="lockFundsMosaicType"-->
+<!--                  class="ma-0 pa-0"-->
+<!--                  required-->
+<!--                  disabled-->
+<!--          />-->
+<!--        </v-flex>-->
+<!--        <v-flex xs6>-->
+<!--          <v-text-field-->
+<!--                  v-model="lockFundsMosaicAmount"-->
+<!--                  class="ma-0 pa-0"-->
+<!--                  type="number"-->
+<!--                  required-->
+<!--                  disabled-->
+<!--                  number-->
+<!--          />-->
+<!--        </v-flex>-->
+<!--      </v-layout>-->
+<!--      <v-layout v-if="showLockFunds">-->
+<!--        <v-flex xs12>-->
+<!--          <v-text-field-->
+<!--                  v-model="lockFundsDuration"-->
+<!--                  label="Lock Funds Duration In Blocks"-->
+<!--                  class="ma-0 pa-0"-->
+<!--                  type="number"-->
+<!--                  required-->
+<!--                  number-->
+<!--          />-->
+<!--        </v-flex>-->
+<!--      </v-layout>-->
+<!--      <v-layout v-if="showLockFunds">-->
+<!--        <v-flex xs12>-->
+<!--          <v-text-field-->
+<!--                  v-model="lockFundsMaxFee"-->
+<!--                  label="Lock Funds Max Fee"-->
+<!--                  class="ma-0 pa-0"-->
+<!--                  type="number"-->
+<!--                  required-->
+<!--                  number-->
+<!--          />-->
+<!--        </v-flex>-->
+<!--      </v-layout>-->
 
       <v-layout>
         <v-flex sm>
@@ -223,7 +219,7 @@
 
         <Confirmation
                 v-model="isDialogShow"
-                :aggregateTransaction="aggregateTransaction"
+                :transactions="transactions"
                 :transactionType="transactionType"
                 :generationHash="generationHash"
                 @sent="txSent"
@@ -287,10 +283,12 @@ import {
   TransactionType,
   MultisigCosignatoryModification,
   AccountHttp,
-  Address,
+  Address, HashLockTransaction,
+  NetworkCurrencyMosaic,
+  UInt64,
 } from 'nem2-sdk';
-import Confirmation from './Confirmation.vue';
-import SendConfirmation from './SendConfirmation.vue';
+import Confirmation from '../signature/Confirmation.vue';
+import SendConfirmation from '../signature/SendConfirmation.vue';
 
 export default {
   name: 'ModifyMultisig',
@@ -315,7 +313,7 @@ export default {
       lockFundsDuration: 480,
       lockFundsMaxFee: 0,
       isDialogShow: false,
-      aggregateTransaction: {},
+      transactions: [],
       dialogDetails: [],
       disabledSendLockFundsTransaction: false,
       disabledSendAggregateTransaction: true,
@@ -351,10 +349,8 @@ export default {
         )).toPromise();
       if (this.currentMultisigAccount.minApproval > 1) {
         this.showLockFunds = true;
-        this.transactionType = TransactionType.AGGREGATE_BONDED;
       } else {
         this.showLockFunds = false;
-        this.transactionType = TransactionType.AGGREGATE_COMPLETE;
       }
     },
   },
@@ -395,11 +391,13 @@ export default {
         },
       ];
       if (this.currentMultisigAccount.minApproval > 1) {
+        this.transactionType = TransactionType.AGGREGATE_BONDED;
         this.createBondedModifyTransaction();
       } else if (this.cosignatoryList.length > 0) {
         this.transactionType = TransactionType.AGGREGATE_BONDED;
         this.createBondedModifyTransaction();
       } else {
+        this.transactionType = TransactionType.AGGREGATE_COMPLETE;
         this.createComplete();
       }
     },
@@ -408,24 +406,25 @@ export default {
       const minApprovalDelta = this.approvalDelta;
       const minRemovalDelta = this.removalDelta;
       const multisigPublicAccount = PublicAccount.createFromPublicKey(
-        this.currentMultisigPublicKey, NetworkType.MIJIN_TEST,
+        this.currentMultisigPublicKey, network,
       );
       const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
         Deadline.create(),
-        minApprovalDelta,
-        minRemovalDelta,
+        Number(minApprovalDelta),
+        Number(minRemovalDelta),
         [],
         network,
       );
       const aggregateTransaction = AggregateTransaction.createComplete(
         Deadline.create(),
         [modifyMultisigAccountTx.toAggregate(multisigPublicAccount)],
-        NetworkType.MIJIN_TEST,
+        network,
         [],
       );
-      this.aggregateTransaction = aggregateTransaction;
+      this.transactions = [aggregateTransaction];
     },
     async createBondedModifyTransaction() {
+      const { account } = this.wallet.activeWallet;
       const multisigPublicAccount = PublicAccount
         .createFromPublicKey(this.currentMultisigPublicKey, NetworkType.MIJIN_TEST);
       const network = NetworkType.MIJIN_TEST;
@@ -435,8 +434,8 @@ export default {
 
       const modifyMultisigAccountTx = ModifyMultisigAccountTransaction.create(
         Deadline.create(),
-        minApprovalDelta,
-        minRemovalDelta,
+        Number(minApprovalDelta),
+        Number(minRemovalDelta),
         cosignatories.map(co => new MultisigCosignatoryModification(
           co.modificationType
             ? MultisigCosignatoryModificationType.Remove : MultisigCosignatoryModificationType.Add,
@@ -452,7 +451,15 @@ export default {
         ],
         network,
       );
-      this.aggregateTransaction = aggregateTransaction;
+      const signedTransaction = account.sign(aggregateTransaction, this.generationHash);
+      const hashLockTransaction = HashLockTransaction.create(
+        Deadline.create(),
+        NetworkCurrencyMosaic.createRelative(10),
+        UInt64.fromUint(480),
+        signedTransaction,
+        NetworkType.MIJIN_TEST,
+      );
+      this.transactions = [hashLockTransaction, aggregateTransaction];
     },
     txSent(result) {
       this.txSendResults.push({
