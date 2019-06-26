@@ -205,8 +205,6 @@ export default {
   computed: mapState(
     ['wallet', 'application'],
   ),
-  watch: {
-  },
   methods: {
     toggleDialog() {
       this.$emit('input', !this.value);
@@ -230,7 +228,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>
