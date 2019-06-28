@@ -26,19 +26,19 @@
     </h2>
     <p>
       This wallet is under development, if you find any issue <a
-        href="https://github.com/decentraliser/nem2-wallet-browserextension/issues"
+        :href="LINKS.repoIssues"
         target="_new"
       >please report them on Github</a>
     </p>
     <p>
       The wallet <a
-        href="https://github.com/decentraliser/nem2-wallet-browserextension/releases"
+        :href="LINKS.repoReleases"
         target="_new"
       >is available as a Mozilla Firefox extension</a>
     </p>
     <p>
       It is also <a
-        href="http://wallet.nemesis.land"
+        :href="LINKS.webWallet"
         target="_new"
       >deployed as a web version.</a>
       Please note that URI transaction handling can only be done with the web extension
@@ -52,11 +52,11 @@
         <v-layout class="align-center ml-0 mb-1">
           <b>Source code repository:</b>
           <a
-            href="https://github.com/decentraliser/nem2-wallet-browserextension"
+            :href="LINKS.repo"
             class="mx-1"
-          >https://github.com/decentraliser/nem2-wallet-browserextension</a> licenced under
+          >{{ LINKS.repo }}</a> licenced under
           <img
-            src="https://img.shields.io/badge/License-GPL%20v3-blue.svg"
+            :src="LINKS.licenceImage"
             class="ml-1"
           >
         </v-layout>
@@ -66,10 +66,10 @@
         </ul>
         <p>
           Please <a
-            href="https://github.com/decentraliser/nem2-wallet-browserextension"
+            :href="LINKS.repo"
             class="mx-1"
           >refer to the readme for guidance</a>, and make sure to join the <a
-            href="https://nem2.slack.com/"
+            :href="LINKS.nem2Slack"
             class="mx-1"
           >#sig-client Slack channel</a> to get in touch with the devs!
         </p>
@@ -78,7 +78,7 @@
         </ul>
         <p>
           There are no guides available yet. Feel free to <a
-            href="https://nem2.slack.com/"
+            :href="LINKS.nem2Slack"
             class="mx-1"
           >ask questions in the #sig-client Slack channel!</a>
         </p>
@@ -87,7 +87,15 @@
   </v-layout>
 </template>
 <script>
-export default {};
+import { LINKS } from '../constants';
+
+export default {
+  data() {
+    return {
+      LINKS,
+    };
+  },
+};
 </script>
 <style scoped>
 .sub-headline {

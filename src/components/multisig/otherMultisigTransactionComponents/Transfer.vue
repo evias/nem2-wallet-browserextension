@@ -45,7 +45,7 @@
 
               <v-spacer />
               <v-btn
-                href="https://nemtech.github.io/concepts/transfer-transaction.html"
+                :href="DOCS_LINKS.transferTransaction"
                 target="_new"
                 icon
               >
@@ -297,6 +297,7 @@ import {
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
 import store from '../../../store/index';
+import { DOCS_LINKS } from '../../../constants';
 import SendConfirmation from '../../signature/SendConfirmation.vue';
 
 export default {
@@ -307,6 +308,7 @@ export default {
   store,
   data() {
     return {
+      DOCS_LINKS,
       txMessage: '',
       txAmount: 0,
       txMaxFee: 0,

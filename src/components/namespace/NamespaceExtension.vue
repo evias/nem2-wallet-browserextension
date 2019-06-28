@@ -29,7 +29,7 @@
         </v-card-title>
         <v-spacer />
         <v-btn
-          href="https://nemtech.github.io/guides/namespace/extending-a-namespace-registration-period.html"
+          :href="DOCS_LINKS.namespaceExtension"
           target="_new"
           icon
         >
@@ -101,6 +101,7 @@ import { mapState } from 'vuex';
 import {
   NetworkType, RegisterNamespaceTransaction, Deadline, UInt64,
 } from 'nem2-sdk';
+import { DOCS_LINKS } from '../../constants';
 
 import Confirmation from '../signature/Confirmation.vue';
 import SendConfirmation from '../signature/SendConfirmation.vue';
@@ -123,6 +124,7 @@ export default {
   },
   data() {
     return {
+      DOCS_LINKS,
       duration: 0,
       transactions: [],
       isDialogShow: false,

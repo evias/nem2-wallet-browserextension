@@ -27,7 +27,7 @@ import {
   zip, of,
 } from 'rxjs';
 
-import { timestampNemesisBlock } from '../network/types';
+import { PARAMS } from '../../constants';
 
 const getAccountTransactionsById = (
   { wallet, currentId, activeNode },
@@ -46,7 +46,7 @@ const getAccountTransactionsById = (
         flatMap(g => zip(of(g.key), g.pipe(toArray()))),
         concatMap(g => blockHttp.getBlockByHeight(g[0]).toPromise(),
           (g, res) => g[1].map(t => (
-            { ...t, timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock }
+            { ...t, timestamp: res.timestamp.compact() / 1000 + PARAMS.NEMESIS_BLOCK_TIMESTAMP }
           ))),
         flatMap(x => x),
         toArray(),

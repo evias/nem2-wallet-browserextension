@@ -162,7 +162,7 @@
             pb-1
             pl-4
             icon
-            href="https://github.com/decentraliser/nem2-wallet-browserextension"
+            :href="LINKS.repo"
             target="_new"
           >
             Github
@@ -173,12 +173,12 @@
             pb-1
             pl-4
             icon
-            href="https://nem2.slack.com/"
+            :href="LINKS.nem2Slack"
             target="_new"
           >
             Slack
           </v-btn>
-          <strong>NEM2 (Dragon) Wallet v0.2.0alpha</strong>
+          <strong>NEM2 (Dragon) Wallet {{ VERSION }}</strong>
         </v-card-text>
       </v-card>
     </v-footer>
@@ -203,6 +203,7 @@
 <script>
 import { mapState } from 'vuex';
 import store from '../store/index';
+import { LINKS, VERSION } from '../constants';
 import WalletSelector from './quickAccess/WalletSelector.vue';
 
 export default {
@@ -212,6 +213,8 @@ export default {
   store,
   data() {
     return {
+      LINKS,
+      VERSION,
       drawer: true,
       right: null,
       snackbar: false,

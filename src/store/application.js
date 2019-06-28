@@ -21,10 +21,7 @@
 import Vue from 'vue';
 import fetch from 'node-fetch';
 import { BlockHttp } from 'nem2-sdk';
-import { timestampNemesisBlock } from '../infrastructure/network/types';
-
-const officialNodeListURL = 'https://api.nemesis.land/nodes';
-// const officialNodeListURL = 'http://13.114.200.132:8000/assets/api-address.json';
+import { LINKS, PARAMS } from '../constants';
 
 const state = {
   error: false,
@@ -140,7 +137,7 @@ const actions = {
     const blockNumber = block.height.compact();
     dispatch('SET_BLOCK_NUMBER', blockNumber);
 
-    const timestamp = block.timestamp.compact() / 1000 + timestampNemesisBlock;
+    const timestamp = block.timestamp.compact() / 1000 + PARAMS.NEMESIS_BLOCK_TIMESTAMP;
     commit('addBlock', {
       blockNumber,
       timestamp,
@@ -235,7 +232,7 @@ const actions = {
 
   async FETCH_OFFICIAL_NODES({ commit }) {
     try {
-      const nodes = await fetch(officialNodeListURL);
+      const nodes = await fetch(LINKS.officialNodesList);
       if (nodes.ok) {
         const response = await nodes.json();
         const defaultNodes = response.data

@@ -58,7 +58,7 @@
             <v-icon>add_box</v-icon>
           </v-btn>
           <v-btn
-            href="https://nemtech.github.io/concepts/namespace.html"
+            :href="DOCS_LINKS.transferTransaction"
             target="_new"
             icon
           >
@@ -118,6 +118,7 @@ import { mapState } from 'vuex';
 import store from '../../store/index';
 import { walletTypes } from '../../infrastructure/wallet/wallet-types';
 import { GET_NAMESPACES_MODES } from '../../infrastructure/namespaces/namespaces-types';
+import { DOCS_LINKS } from '../../constants';
 
 import Errors from '../Errors.vue';
 import NamespaceList from './NamespaceList.vue';
@@ -135,6 +136,7 @@ export default {
   },
   data() {
     return {
+      DOCS_LINKS,
       GET_NAMESPACES_MODES,
       walletTypes,
       showPasswordInput: false,

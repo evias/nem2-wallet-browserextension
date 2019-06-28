@@ -29,7 +29,7 @@
         </v-card-title>
         <v-spacer />
         <v-btn
-          href="https://nemtech.github.io/concepts/namespace.html"
+          :href="DOCS_LINKS.namespaceRegistration"
           target="_new"
           icon
         >
@@ -136,6 +136,8 @@ import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64,
 } from 'nem2-sdk';
 import { validateNamespaceName } from '../../infrastructure/namespaces/helpers';
+import { DOCS_LINKS } from '../../constants';
+
 import Confirmation from '../signature/Confirmation.vue';
 import SendConfirmation from '../signature/SendConfirmation.vue';
 
@@ -149,6 +151,7 @@ export default {
   },
   data() {
     return {
+      DOCS_LINKS,
       namespaceType: NamespaceType.RootNamespace,
       namespaceTypes: [
         { type: NamespaceType.RootNamespace, label: 'RootNamespace' },
