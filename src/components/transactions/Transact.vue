@@ -48,7 +48,7 @@
               <v-icon>send</v-icon>
             </v-tab>
             <v-tab-item key="0">
-              <Transfer />
+              <Transfer v-if="wallet.activeWallet"/>
             </v-tab-item>
 
 
@@ -90,6 +90,7 @@ import Transfer from './tabs/Transfer.vue';
 import URI from './tabs/URI.vue';
 import Filters from './tabs/Filters.vue';
 import AccountLink from './tabs/AccountLink.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -111,6 +112,7 @@ export default {
       },
     };
   },
+  computed: mapState(['wallet']),
   watch: {
     tab(tabNumber) {
       this.updateTransactionFilters(tabNumber);

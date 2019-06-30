@@ -35,7 +35,7 @@
       v-if="wallet.activeWallet
         && transactions.transactions
         && transactions.transactions[wallet.activeWallet.name]"
-      preset-filter="false"
+      preset-filter="Transfer"
       title="Recent transfers"
       class="mb-4"
     />
