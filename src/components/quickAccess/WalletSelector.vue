@@ -230,8 +230,6 @@ export default {
   },
   props: {
     // eslint-disable-next-line vue/require-default-prop
-    walletName: String,
-    // eslint-disable-next-line vue/require-default-prop
     wallets: Array,
   },
   data() {
@@ -256,18 +254,20 @@ export default {
       if (this.application.blockNumber === 'loading') return 'blue';
       return 'green';
     },
-  },
-  watch: {
-    walletName(newActiveWalletName) {
-      if (newActiveWalletName) {
+    walletName: {
+      get() {
+        return this.$store.getters['wallet/GET_ACTIVE_WALLET'].name;
+      },
+
+      set(newActiveWalletName) {
         this.$store.dispatch('wallet/SET_ACTIVE_WALLET', newActiveWalletName);
-      }
-    },
+      },
+    }
   },
   methods: {
     goToWallet() {
       this.$router.push('/wallet');
-    },
+    }
   },
 };
 </script>

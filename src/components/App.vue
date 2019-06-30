@@ -118,10 +118,7 @@
               <v-toolbar-side-icon @click.stop="drawer = !drawer" />
               <v-toolbar-title>{{ application.routeName }}</v-toolbar-title>
               <v-spacer />
-              <WalletSelector
-                :wallet-name="wallet.activeWallet.name || ''"
-                :wallets="wallet.wallets.map(({name})=>name) || []"
-              />
+              <WalletSelector :wallets="wallet.wallets.map(({name})=>name) || []" />
             </v-toolbar>
           </v-flex>
           <v-flex
