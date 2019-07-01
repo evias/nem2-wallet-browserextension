@@ -21,16 +21,14 @@
     pb-2
     mt-4
   >
-    <v-flex
-      xs12
-    >
+    <v-flex xs12>
       <Errors />
       <v-card
         v-if="wallet.wallets.length > 0
           && wallet.activeWallet
           && !application.error"
         style="height: auto;padding:0 !important"
-        class="card--flex-toolbar"
+        class="card--flex-toolbar mb-4"
       >
         <v-toolbar
           card
@@ -100,7 +98,16 @@
           </div>
         </v-card-text>
       </v-card>
+      <Transactions
+        v-if="wallet.activeWallet
+          && transactions.transactions
+          && transactions.transactions[wallet.activeWallet.name]"
+        preset-filter="Namespace"
+        title="Recent namespace transactions"
+        class="mb-4"
+      />
     </v-flex>
+
     <PasswordInput
       :visible="showPasswordInput"
       :wallet-name="wallet.activeWallet.name"
@@ -124,6 +131,7 @@ import Errors from '../Errors.vue';
 import NamespaceList from './NamespaceList.vue';
 import PasswordInput from '../wallet/PasswordInput.vue';
 import NamespaceRegistration from './NamespaceRegistration.vue';
+import Transactions from '../transactions/Transactions.vue';
 
 export default {
   name: 'Namespace',
@@ -133,6 +141,7 @@ export default {
     NamespaceList,
     PasswordInput,
     NamespaceRegistration,
+    Transactions,
   },
   data() {
     return {
@@ -147,6 +156,7 @@ export default {
     'wallet',
     'application',
     'namespaces',
+    'transactions',
   ]),
   methods: {
     reloadList({ wallet, mode }) {

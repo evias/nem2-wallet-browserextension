@@ -16,86 +16,86 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-scale-transition>
-    <v-layout column>
-      <v-layout
-        row
-        justify-between
-      >
-        <v-flex xs3>
-          <v-subheader>Alias</v-subheader>
-        </v-flex>
-        <v-flex xs7>
-          <v-text-field
-            v-if="!currentAlias"
-            v-model="aliasInput"
-            class="ma-0 pa-0"
-            label="Alias (MosaicId / Address)"
-            solo
-            required
-          />
-          <v-subheader v-if="currentAlias">
-            {{ currentAlias }}
-          </v-subheader>
-        </v-flex>
-
-        <v-flex xs2>
-          <v-btn
-            :disabled="disabledSendTransaction
-              || wallet.activeWallet.isWatchOnly"
-            color="primary mx-0"
-            @click="showDialog"
-          >
-            {{ !!currentAlias ? 'Unlink' : 'Link' }}
-          </v-btn>
-        </v-flex>
-      </v-layout>
-      <v-layout
-        row
-      >
-        <v-container
-          fluid
+  <v-dialog
+    v-model="show"
+    max-width="680px"
+  >
+    <v-card>
+      <v-toolbar card>
+        <v-card-title primary-title>
+          <h3 class="headline mb-3">
+            {{ namespaceName }}
+          </h3>
+        </v-card-title>
+        <v-spacer />
+        <v-btn
+          href="https://nemtech.github.io/guides/namespace/extending-a-namespace-registration-period.html"
+          target="_new"
+          icon
         >
-          <v-layout
-            column
-            xs12
-          >
-            <v-flex xs12>
-              <SendConfirmation
-                :tx-send-data="txSendResults"
-              />
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-layout>
-
-      <Confirmation
-        v-model="isDialogShow"
-        :transactions="transactions"
-        :generation-hash="application.generationHashes[application.activeNode]"
-        @sent="txSent"
-        @error="txError"
-      >
-        <v-list>
-          <v-list-tile
-            v-for="detail in dialogDetails"
-            :key="detail.key"
-          >
-            <v-list-tile-action>
-              <v-icon>{{ detail.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ detail.key }}: {{ detail.value }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </Confirmation>
-    </v-layout>
-  </v-scale-transition>
+          <v-icon>local_library</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-text-field
+          v-if="!currentAlias"
+          v-model="aliasInput"
+          class="ma-0 pa-0"
+          label="Alias (MosaicId / Address)"
+          required
+        />
+        <v-subheader v-if="currentAlias">
+          {{ currentAlias }}
+        </v-subheader>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          flat
+          @click="$emit('close')"
+        >
+          Close
+        </v-btn>
+        <v-btn
+          :disabled="disabledSendTransaction
+            || wallet.activeWallet.isWatchOnly"
+          color="primary mx-0"
+          @click="showDialog"
+        >
+          {{ !!currentAlias ? 'Unlink' : 'Link' }}
+        </v-btn>
+      </v-card-actions>
+      <SendConfirmation
+        :tx-send-data="txSendResults"
+      />
+    </v-card>
+    <Confirmation
+      v-model="isDialogShow"
+      :transactions="transactions"
+      :generation-hash="application.generationHashes[application.activeNode]"
+      @sent="txSent"
+      @error="txError"
+    >
+      <v-list>
+        <v-list-tile
+          v-for="detail in dialogDetails"
+          :key="detail.key"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ detail.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ detail.key }}: {{ detail.value }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </Confirmation>
+  </v-dialog>
 </template>
 <script>
+
 import { mapState } from 'vuex';
 import {
   NetworkType, NamespaceType, Deadline,
@@ -103,6 +103,7 @@ import {
   MosaicAliasTransaction, AliasType,
   Address,
 } from 'nem2-sdk';
+
 import Confirmation from '../signature/Confirmation.vue';
 import SendConfirmation from '../signature/SendConfirmation.vue';
 
@@ -119,11 +120,8 @@ export default {
     SendConfirmation,
   },
   props: {
-    aliasActionType: {
-      type: Number,
-      default: AliasActionType.Unlink,
-    },
-    currentAlias: {
+    visible: Boolean,
+    namespaceName: {
       type: String,
       default: '',
     },
@@ -131,7 +129,7 @@ export default {
       type: Number,
       default: AliasType.None,
     },
-    namespaceName: {
+    currentAlias: {
       type: String,
       default: '',
     },
@@ -146,7 +144,6 @@ export default {
     };
   },
 
-
   computed: {
     ...mapState(['application', 'wallet']),
     isSubNamespace() {
@@ -158,12 +155,25 @@ export default {
       }
       return !this.aliasInput;
     },
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
+        }
+      },
+    },
   },
   methods: {
     showDialog() {
       const {
-        namespaceName, currentAlias, currentAliasType, aliasActionType, aliasInput,
+        namespaceName, currentAlias, currentAliasType, aliasInput,
       } = this;
+      const aliasActionType = currentAliasType === AliasType.None
+        ? AliasActionType.Link : AliasActionType.Unlink;
+
       let transaction;
       if (aliasActionType === AliasActionType.Link) {
         const input = mosaicOrAddress(aliasInput);
@@ -178,7 +188,7 @@ export default {
         } else {
           transaction = AddressAliasTransaction.create(
             Deadline.create(),
-            this.aliasActionType,
+            aliasActionType,
             new NamespaceId(namespaceName),
             Address.createFromRawAddress(aliasInput),
             NetworkType.MIJIN_TEST,
@@ -187,7 +197,7 @@ export default {
       } else if (currentAliasType === AliasType.Mosaic) {
         transaction = MosaicAliasTransaction.create(
           Deadline.create(),
-          this.aliasActionType,
+          aliasActionType,
           new NamespaceId(namespaceName),
           new MosaicId(currentAlias),
           NetworkType.MIJIN_TEST,
@@ -195,7 +205,7 @@ export default {
       } else {
         transaction = AddressAliasTransaction.create(
           Deadline.create(),
-          this.aliasActionType,
+          aliasActionType,
           new NamespaceId(namespaceName),
           Address.createFromRawAddress(currentAlias),
           NetworkType.MIJIN_TEST,

@@ -250,7 +250,6 @@ export default {
     },
     createAsset() {
       if (!this.wallet.activeWallet) return;
-      // eslint-disable-next-line prefer-destructuring;
       const { account } = this.wallet.activeWallet;
       const nonce = MosaicNonce.createRandom();
 

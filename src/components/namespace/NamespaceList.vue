@@ -27,11 +27,11 @@
         class="py-0"
       >
         <template
-          v-for="(ns, index) in namespaces
+          v-for="(iterNamespace, index) in namespaces
             .namespaces[wallet.activeWallet.name]"
         >
           <v-layout
-            :key="ns.name"
+            :key="iterNamespace.name"
             column
           >
             <v-list-tile
@@ -40,17 +40,17 @@
             >
               <v-list-tile-content class="my-2">
                 <v-list-tile-title>
-                  {{ ns.name }} - <span class="">{{ ns.hexId }}</span>
+                  {{ iterNamespace.name }} ({{ iterNamespace.hexId }})
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
                   <div class="monospaced">
-                    {{ ns.expire }}
+                    {{ expirationText(iterNamespace) }}
                     <a
                       v-if="wallet.activeWallet.walletType !== walletTypes.WATCH_ONLY_WALLET
-                        && ns.namespaceType === NamespaceType.RootNamespace"
+                        && iterNamespace.namespaceType === NamespaceType.RootNamespace"
                       @click.stop="wallet.activeWallet.isWatchOnly
                         ? showPasswordInput = true
-                        : spawnExtendNamespace(ns.name, ns.endHeight)"
+                        : spawnExtendNamespace(iterNamespace)"
                     >
                       extend
                     </a>
@@ -58,29 +58,20 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
                   <div class="monospaced">
-                    {{ ns.type }} {{ ns.alias }}
+                    {{ messages.namespaces['namespace alias type'][iterNamespace.aliasType] }}
+                    {{ iterNamespace.aliasText }}
+                    <a
+                      v-if="wallet.activeWallet.walletType !== walletTypes.WATCH_ONLY_WALLET"
+                      @click.stop="wallet.activeWallet.isWatchOnly
+                        ? showPasswordInput = true
+                        : spawnAliasTransaction(iterNamespace)"
+                    >
+                      {{ messages.namespaces['namespace alias action'][iterNamespace.aliasType] }}
+                    </a>
                   </div>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-list-tile-action>
-                <v-btn
-                  icon
-                  @click="ns.expand.isExpandMore = !ns.expand.isExpandMore"
-                >
-                  <v-icon> {{ ns.expand.isExpandMore ? "expand_more" : "expand_less" }} </v-icon>
-                </v-btn>
-              </v-list-tile-action>
             </v-list-tile>
-            <v-layout>
-              <AliasTransaction
-                v-show="ns.expand.isExpandMore"
-                class="pa-3"
-                :alias-action-type="ns.expand.aliasActionType"
-                :namespace-name="ns.expand.namespaceName"
-                :current-alias="ns.expand.currentAlias"
-                :current-alias-type="ns.expand.currentAliasType"
-              />
-            </v-layout>
           </v-layout>
           <v-divider
             v-if="index + 1 < namespaces.namespaces[wallet.activeWallet.name].length"
@@ -101,12 +92,20 @@
       :end-height="currentNamespaceEndHeight"
       @close="extendNamespace = false"
     />
+    <AliasTransaction
+      :visible="aliasTransaction"
+      :namespace-name="currentNamespaceName"
+      :current-alias-type="currentAliasType"
+      :current-alias="currentAlias"
+      @close="aliasTransaction = false"
+    />
   </v-layout>
 </template>
 <script>
 import { mapState } from 'vuex';
 import { NamespaceType } from 'nem2-sdk';
 import { walletTypes } from '../../infrastructure/wallet/wallet-types';
+import messages from '../../locales/messages';
 
 import AliasTransaction from './AliasTransaction.vue';
 import PasswordInput from '../wallet/PasswordInput.vue';
@@ -121,23 +120,42 @@ export default {
   },
   data() {
     return {
-      extendNamespace: false,
-      showPasswordInput: false,
       NamespaceType,
-      currentNamespaceName: '',
-      currentNamespaceEndHeight: 0,
       walletTypes,
+      messages,
+      showPasswordInput: false,
+      extendNamespace: false,
+      aliasTransaction: false,
+      currentAlias: '',
+      currentAliasType: 0,
+      currentNamespaceEndHeight: 0,
+      currentNamespaceName: '',
     };
   },
   computed: mapState([
+    'application',
     'namespaces',
     'wallet',
   ]),
   methods: {
-    spawnExtendNamespace(name, endHeight) {
-      this.currentNamespaceName = name;
-      this.currentNamespaceEndHeight = endHeight;
+    spawnExtendNamespace(namespace) {
+      this.currentNamespaceName = namespace.name;
+      this.currentNamespaceEndHeight = namespace.endHeight;
       this.extendNamespace = true;
+    },
+    spawnAliasTransaction(namespace) {
+      this.currentNamespaceName = namespace.name;
+      this.currentAliasType = namespace.aliasType;
+      this.currentAlias = namespace.aliasText;
+      this.aliasTransaction = true;
+    },
+    expirationText(namespace) {
+      const { blockNumber } = this.application;
+      const { endHeight } = namespace;
+      if (!(blockNumber > 0)) return `This namespace expires at height ${endHeight.toLocaleString()}`;
+      const expiresIn = endHeight - blockNumber;
+      if (expiresIn > 0) return `This namespace expires in ${expiresIn.toLocaleString()} blocks.`;
+      return `This namespace has been expired for ${(expiresIn * -1).toLocaleString()} blocks.`;
     },
   },
 };

@@ -17,13 +17,10 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable max-len */
-import {
-  UInt64, Address, AliasActionType,
-} from 'nem2-sdk';
+import { UInt64, Address, AliasType } from 'nem2-sdk';
 
 // eslint-disable-next-line import/prefer-default-export
-export const formatNamespaces = (namespacesInfo, blockHeight) => namespacesInfo.filter((ns, index, namespaces) => {
+export const formatNamespaces = namespacesInfo => namespacesInfo.filter((ns, index, namespaces) => {
   for (let i = 0; i < index; i += 1) {
     if (ns === namespaces[i]) return false;
   }
@@ -40,45 +37,23 @@ export const formatNamespaces = (namespacesInfo, blockHeight) => namespacesInfo.
   return 0;
 }).map((ns, index, original) => {
   const name = ns.namespaceInfo.levels.map(level => original
-    .find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.');
-  const namespaceType = ns.namespaceInfo.type;
-  let aliasText;
-  let aliasType;
-  switch (ns.namespaceInfo.alias.type) {
-  case 1:
-    aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
-    aliasType = 'mosaic alias:';
-    break;
-  case 2:
-    aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
-    aliasType = 'address alias:';
-    break;
-  default:
-    aliasText = '';
-    aliasType = 'no alias';
-    break;
+    .find(n => n.namespaceInfo.id.equals(level)))
+    .map(n => n.namespaceName.name).join('.');
+
+  let aliasText = '';
+  if (ns.namespaceInfo.alias.type === AliasType.Mosaic) {
+    aliasText = new UInt64(ns.namespaceInfo.alias.mosaicId).toHex().toUpperCase();
   }
-  const endHeight = ns.namespaceInfo.endHeight.compact();
-  const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight;
-  const expireText = expireWithin > 0
-    ? `expires within ${expireWithin.toLocaleString()} blocks`
-    : `expired ${(-expireWithin).toLocaleString()} blocks ago`;
+  if (ns.namespaceInfo.alias.type === AliasType.Address) {
+    aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
+  }
+
   return {
     name,
-    namespaceType,
-    endHeight,
+    namespaceType: ns.namespaceInfo.type,
+    endHeight: ns.namespaceInfo.endHeight.compact(),
     hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
-    type: aliasType,
-    alias: aliasText,
-    expire: expireText,
-    active: expireWithin > 0,
-    expand: {
-      isExpandMore: false,
-      namespaceName: name,
-      aliasActionType:
-          ns.namespaceInfo.alias.type === 0 ? AliasActionType.Link : AliasActionType.Unlink,
-      currentAliasType: ns.namespaceInfo.alias.type,
-      currentAlias: ns.namespaceInfo.alias.type === 0 ? '' : aliasText,
-    },
+    aliasType: ns.namespaceInfo.alias.type,
+    aliasText,
   };
 });

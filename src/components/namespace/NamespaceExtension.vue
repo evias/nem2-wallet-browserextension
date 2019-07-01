@@ -39,7 +39,7 @@
 
       <v-card-text>
         <h3 class="headline mb-5">
-          {{ expiration(application.blockNumber, endHeight) }}
+          {{ expiration(endHeight) }}
         </h3>
         <v-text-field
           v-model="duration"
@@ -175,11 +175,12 @@ export default {
       // eslint-disable-next-line no-console
       console.error(error);
     },
-    expiration(blockNumber, endHeight) {
+    expiration(endHeight) {
+      const { blockNumber } = this.application;
       if (!(blockNumber > 0)) return `This namespace expires at height ${endHeight.toLocaleString()}`;
       const expiresIn = endHeight - blockNumber;
       if (expiresIn > 0) return `This namespace expires in ${expiresIn.toLocaleString()} blocks.`;
-      return `This namespace has been expired for ${expiresIn.toLocaleString() * -1} blocks.`;
+      return `This namespace has been expired for ${(expiresIn * -1).toLocaleString()} blocks.`;
     },
   },
 };
