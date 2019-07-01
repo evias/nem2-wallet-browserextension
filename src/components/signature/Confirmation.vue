@@ -77,7 +77,7 @@ function signTransactions(transactions, account, generationHash) {
   });
 }
 
-function sendSequential(transactions, endpoint, address, emitter, webhook) {
+function sendSequential(unsignedTransactions, transactions, endpoint, address, emitter, webhook) {
   const wsEndpoint = endpoint.replace('http', 'ws');
   const listener = new Listener(wsEndpoint, WebSocket);
   const txHttp = new TransactionHttp(endpoint);
@@ -95,12 +95,14 @@ function sendSequential(transactions, endpoint, address, emitter, webhook) {
         // txHttp.announce(signedTx).subscribe((x) => {
           emitter('sent', {
             message: x,
+            transaction: unsignedTransactions[confirmedTxIndex + 1],
             txHash: signedTx.hash,
             nodeURL: endpoint,
           });
         }, (e) => {
           emitter('error', {
             message: e,
+            transaction: unsignedTransactions[confirmedTxIndex + 1],
             txHash: signedTx.hash,
             nodeURL: endpoint,
           });
@@ -136,7 +138,7 @@ function sendSequential(transactions, endpoint, address, emitter, webhook) {
         request(options, (error, response, body) => {
           if (!error && response.statusCode === 200) {
             // eslint-disable-next-line no-console
-            console.log(body.id); // Print the shortened url.
+            console.log(body.id);
           } else {
             // eslint-disable-next-line no-console
             console.error(error);
@@ -145,12 +147,14 @@ function sendSequential(transactions, endpoint, address, emitter, webhook) {
       }
       emitter('sent', {
         message: x,
+        transaction: unsignedTransactions[0],
         txHash: firstSignedTx.hash,
         nodeURL: endpoint,
       });
     }, (e) => {
       emitter('error', {
         message: e,
+        transaction: unsignedTransactions[0],
         txHash: firstSignedTx.hash,
         nodeURL: endpoint,
       });
@@ -228,6 +232,7 @@ export default {
       const endpoint = this.application.activeNode;
       const { account } = this.wallet.activeWallet;
       const { address } = account;
+      const unsignedTransactions =  this.transactions;
       const transactions = signTransactions(
         this.transactions,
         account,
@@ -236,7 +241,7 @@ export default {
       const emitter = (type, value) => {
         this.$emit(type, value);
       };
-      sendSequential(transactions, endpoint, address, emitter, this.webhook);
+      sendSequential(unsignedTransactions, transactions, endpoint, address, emitter, this.webhook);
       this.toggleDialog();
     },
     cosignAndAnnounce() {
@@ -252,11 +257,13 @@ export default {
       transactionHttp.announceAggregateBondedCosignature(cosignedTx).subscribe((x) => {
         emitter('sent', {
           message: x,
+          transaction: this.transactions[0],
           txHash: cosignedTx.hash,
           nodeURL: endpoint,
         }, (e) => {
           emitter('error', {
             message: e,
+            transaction: this.transactions[0],
             txHash: cosignedTx.hash,
             nodeURL: endpoint,
           });

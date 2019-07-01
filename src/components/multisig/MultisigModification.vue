@@ -3,7 +3,10 @@
           column
           class="mt-2 mb-3"
   >
-    <v-container>
+    <v-container v-show="!multisig.multisigInfo[wallet.activeWallet.name].multisigAccounts">
+      this account does not own any multisig to modify
+    </v-container>
+    <v-container v-show="multisig.multisigInfo[wallet.activeWallet.name].multisigAccounts">
       <v-layout
               row
               wrap
@@ -263,8 +266,17 @@
 
       <v-layout column>
         <SendConfirmation
-                :tx-send-data="txSendResults"
+            :tx-send-data="txSendResults"
         />
+        <v-dialog
+                v-model="isShowErrorMessage"
+                width="500"
+        >
+        <ErrorMessageComponent
+            :errorMessage = 'errorMessage'
+            @hideErrorMessage = 'hideErrorMessage'
+        />
+        </v-dialog>
       </v-layout>
     </v-container>
   </v-layout>
@@ -289,15 +301,89 @@ import {
 } from 'nem2-sdk';
 import Confirmation from '../signature/Confirmation.vue';
 import SendConfirmation from '../signature/SendConfirmation.vue';
+import ErrorMessageComponent from '../errorMessage/ErrorMessage.vue';
+import ErrorMessage from '../../infrastructure/errorMessage/error-message';
+
+const multisigModifyValidator = (pointer) => {
+  const {
+    currentMultisigAccount, cosignatoryDeleteList, cosignatoryAddList,
+    removalDelta, approvalDelta, maxFee, generationHash, cosignatoryList,
+  } = pointer;
+  const { multisigAccounts } = pointer.multisig.multisigInfo[pointer.wallet.activeWallet.name];
+  const addAmount = cosignatoryAddList.length;
+  const deleteAmount = cosignatoryDeleteList.length;
+  const cosignerAmount = multisigAccounts.length;
+  const removalResult = removalDelta + currentMultisigAccount.minRemoval;
+  const approvalResult = approvalDelta + currentMultisigAccount.minApproval;
+  const cosignerResult = addAmount + cosignerAmount - deleteAmount;
+  /* eslint-disable */
+  let errorMessage = {
+    message: [],
+    disabled: true,
+  };
+  if (!currentMultisigAccount) {
+    errorMessage.message.push(ErrorMessage.PUBLIC_KEY_ERROR);
+    return errorMessage;
+  }
+  if (removalResult <= 0) {
+    errorMessage.message.push(ErrorMessage.REMOVAL_TOO_SMALL);
+    return false;
+  }
+  if (approvalResult <= 0) {
+    errorMessage.message.push(ErrorMessage.APPROVAL_TOO_SMALL);
+    return false;
+  }
+  if (removalResult >= 10) {
+    errorMessage.message.push(ErrorMessage.REMOVAL_TOO_BIG);
+    return false;
+  }
+  if (approvalResult <= 0) {
+    errorMessage.message.push(ErrorMessage.APPROVAL_TOO_BIG);
+    return false;
+  }
+  if (Number(maxFee) < 0) {
+    errorMessage.message.push(ErrorMessage.MAX_FEE_ERROR);
+    return false;
+  }
+  if (!generationHash || generationHash.trim().length !== 64) {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_NULL);
+    return errorMessage;
+  }
+  if (generationHash.length !== 64) {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_ERROR);
+    return errorMessage;
+  }
+  if (cosignerResult < 0) {
+    errorMessage.message.push(ErrorMessage.TOO_LESS_COSIGNERS);
+    return errorMessage;
+  }
+  if (cosignerResult > 10) {
+    errorMessage.message.push(ErrorMessage.TOO_MANY_COSIGNERS);
+    return errorMessage;
+  }
+  console.log(cosignatoryList);
+  const publickeyFlag = cosignatoryList.every((item) => {
+    if (item.cosignatoryPublicKey.trim().length !== 64) {
+      errorMessage.message.push(ErrorMessage.PUBLIC_KEY_ERROR);
+      return false;
+    }
+    return true;
+  });
+  errorMessage.disabled = publickeyFlag ? false : true;
+  return errorMessage;
+};
 
 export default {
   name: 'ModifyMultisig',
   components: {
     Confirmation,
     SendConfirmation,
+    ErrorMessageComponent,
   },
   data() {
     return {
+      isShowErrorMessage:false,
+      errorMessage: {},
       transactionType: -1,
       showLockFunds: true,
       currentMultisigPublicKey: '',
@@ -307,6 +393,8 @@ export default {
       isRemove: false,
       currentCosignatoryPublicKey: '5FA48DA997E605323BCD579ABD6FC996B18DF3289A488A12E3C9CE27C10AAC41',
       cosignatoryList: [],
+      cosignatoryAddList: [],
+      cosignatoryDeleteList: [],
       maxFee: 0,
       lockFundsMosaicType: '@cat.currency',
       lockFundsMosaicAmount: 10000000,
@@ -357,16 +445,33 @@ export default {
   methods: {
     addCosignatory() {
       const { isRemove, currentCosignatoryPublicKey } = this;
-      this.cosignatoryList.push({
+      const cosignerItem = {
         cosignatoryPublicKey: currentCosignatoryPublicKey,
         modificationType: isRemove ? MultisigCosignatoryModificationType.Remove : MultisigCosignatoryModificationType.Add,
-      });
+      }
+      if (isRemove) {
+        this.cosignatoryDeleteList.push(cosignerItem);
+      } else {
+        this.cosignatoryAddList.push(cosignerItem);
+      }
+      this.cosignatoryList.push(cosignerItem);
       this.currentCosignatoryPublicKey = '';
     },
     removeCosignatory(index) {
       this.cosignatoryList.splice(index, 1);
     },
+    checkForm() {
+      this.errorMessage = multisigModifyValidator(this);
+      if (this.errorMessage.disabled) {
+        this.isShowErrorMessage = true;
+        return false;
+      }
+      return true;
+    },
     showDialog() {
+      if (!this.checkForm()) {
+        return;
+      }
       this.isDialogShow = true;
       this.dialogDetails = [
         {
@@ -462,14 +567,14 @@ export default {
       this.transactions = [hashLockTransaction, aggregateTransaction];
     },
     txSent(result) {
-      this.txSendResults.push({
-        txHash: result.txHash,
-        nodeURL: result.nodeURL,
-      });
+      this.txSendResults.push(result);
     },
     txError(error) {
       // eslint-disable-next-line no-console
       console.error(error);
+    },
+    hideErrorMessage() {
+      this.isShowErrorMessage = false;
     },
   },
 };

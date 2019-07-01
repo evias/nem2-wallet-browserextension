@@ -186,6 +186,7 @@
       :bottom="true"
       :timeout="8000"
       :vertical="false"
+      :color = "color"
     >
       {{ snackbarText }}
       <v-btn
@@ -232,6 +233,8 @@ export default {
       if (action.type === 'application/SET_SNACKBAR_TEXT') {
         this.snackbarText = `${action.payload.text}`;
         this.snackbar = true;
+        console.log(action.payload.color)
+        this.color = action.payload.color ? action.payload.color : undefined;
       }
     });
   },

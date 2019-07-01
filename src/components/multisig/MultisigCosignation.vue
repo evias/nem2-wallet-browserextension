@@ -220,10 +220,7 @@ export default {
       this.isShowResult = true;
     },
     txSent(result) {
-      this.txSendResults.push({
-        txHash: result.txHash,
-        nodeURL: result.nodeURL,
-      });
+      this.txSendResults.push(result);
     },
     txError(error) {
       // eslint-disable-next-line no-console

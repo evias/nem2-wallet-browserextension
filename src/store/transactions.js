@@ -33,6 +33,7 @@ import { NetworkAsset } from '../infrastructure/assets/assets-types';
 
 const state = {
   transactions: false,
+  erroredTransactions: [],
   loading_getAccountTransactionsById: false,
   transactionTypesFilters: transactionTypesFilters(),
   activeTransaction: false,
@@ -356,11 +357,22 @@ const actions = {
     }
   },
 
-
   TRIGGER_TRANSACTION_SNACKBAR({ dispatch }, { tx, status }) {
     dispatch(
       'application/SET_SNACKBAR_TEXT',
       { bool: true, text: `New ${tx.type1} ${status}!` },
+      { root: true },
+    );
+  },
+
+  TRIGGER_ERRORED_TRANSACTION_SNACKBAR({ dispatch }, tx) {
+    dispatch(
+      'application/SET_SNACKBAR_TEXT',
+      {
+        bool: true,
+        text: `transaction announced failed for ${tx.type1}`,
+        color: 'red',
+      },
       { root: true },
     );
   },

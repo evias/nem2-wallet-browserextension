@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import request from 'request';
+
 export default {
   props: {
     txSendData: {
@@ -61,10 +63,33 @@ export default {
   },
   computed: {
     results() {
-      return this.txSendData.map(result => ({
-        txHash: result.txHash,
-        txStatusUrl: `${result.nodeURL}/transaction/${result.txHash}/status`,
-      }));
+      const that = this;
+      return this.txSendData.map((result) => {
+        const { txHash } = result;
+        const node = this.$store.state.application.activeNode;
+        const url = `${node}/transaction/${txHash}/status`;
+        request(url, (error, response, body) => {
+          if (!error && response.statusCode === 200) {
+            const res = JSON.parse(body);
+            if (res.group === 'failed') {
+              that.$store.dispatch(
+                'transactions/TRIGGER_ERRORED_TRANSACTION_SNACKBAR',
+                { type1: ` ${res.status}`, transaction: result.transaction },
+              );
+            }
+          } else {
+            that.$store.dispatch(
+              'transactions/TRIGGER_ERRORED_TRANSACTION_SNACKBAR',
+              { type1: ' error in announce', transaction: result.transaction },
+            );
+            console.error(error);
+          }
+        });
+        return {
+          txHash: result.txHash,
+          txStatusUrl: `${result.nodeURL}/transaction/${result.txHash}/status`,
+        };
+      });
     },
   },
 };

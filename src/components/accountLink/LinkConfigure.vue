@@ -101,6 +101,15 @@
           </v-list-tile>
         </v-list>
       </Confirmation>
+      <v-dialog
+              v-model="isShowErrorMessage"
+              width="500"
+      >
+        <ErrorMessageComponent
+                :errorMessage = 'errorMessage'
+                @hideErrorMessage = 'hideErrorMessage'
+        />
+      </v-dialog>
     </v-container>
   </v-layout>
 </template>
@@ -115,14 +124,46 @@ import {
 import { mapState } from 'vuex';
 import SendConfirmation from '../signature/SendConfirmation.vue';
 import Confirmation from '../signature/Confirmation.vue';
+import ErrorMessageComponent from '../errorMessage/ErrorMessage.vue';
+import ErrorMessage from '../../infrastructure/errorMessage/error-message';
+
+const accountLinkValidator = (pointer) => {
+  const { remoteAccountKey, generationHash, maxFee } = pointer;
+  /* eslint-disable */
+  let errorMessage = {
+    message: [],
+    disabled: true,
+  };
+  /* eslint-disable */
+  if (!generationHash || generationHash.trim() === '') {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_NULL);
+    return errorMessage;
+  } if (generationHash.length !== 64) {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_ERROR);
+    return errorMessage;
+  }
+  if (remoteAccountKey.trim().length !== 64) {
+    errorMessage.message.push(ErrorMessage.PUBLIC_KEY_ERROR);
+    return errorMessage;
+  }
+  if (maxFee < 0) {
+    errorMessage.message.push(ErrorMessage.MAX_FEE_ERROR);
+    return errorMessage;
+  }
+  errorMessage.disabled = false;
+  return errorMessage;
+};
 
 export default {
   components: {
     Confirmation,
     SendConfirmation,
+    ErrorMessageComponent,
   },
   data() {
     return {
+      isShowErrorMessage: false,
+      errorMessage: {},
       maxFee: 0,
       remoteAccountKey: 'F95DE849EA383A05F128DA22FD3801D83B1327A86959BB9EC53DBBEDE3AEE488',
       linkAction: LinkAction.Link,
@@ -160,6 +201,11 @@ export default {
   },
   methods: {
     showDialog() {
+      this.errorMessage = accountLinkValidator(this);
+      if (this.errorMessage.disabled) {
+        this.isShowErrorMessage = true;
+        return;
+      }
       const { linkAction, remoteAccountKey } = this;
       this.transactions = [new AccountLinkTransaction(
         NetworkType.MIJIN_TEST,
@@ -189,10 +235,10 @@ export default {
       this.isDialogShow = true;
     },
     txSent(result) {
-      this.txSendResults.push({
-        txHash: result.txHash,
-        nodeURL: result.nodeURL,
-      });
+      this.txSendResults.push(result);
+    },
+    hideErrorMessage() {
+      this.isShowErrorMessage = false;
     },
   },
 };

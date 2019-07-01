@@ -25,7 +25,7 @@
         sm
       >
         <v-layout
-          v-if="filterType != 0x04"
+          v-if="filterType != PropertyType.AllowTransaction"
           row
         >
           <v-flex>
@@ -47,7 +47,7 @@
           <v-flex xs7>
             <v-text-field
               v-model="hexId"
-              :placeholder="filterType == 0x01?'input address hex':'input mosaic id'"
+              :placeholder="filterType == PropertyType.AllowAddress ? 'input address hex':'input mosaic id'"
               solo
             />
           </v-flex>
@@ -126,9 +126,9 @@
                 <v-subheader>
                   {{ filter.propertyModificationType == 0 ? 'add':'remove' }}
                 </v-subheader>
-                {{ filterType == filterTypes.ENTITY_FILTER ? 'Entity Type:':'' }}
-                {{ filterType == filterTypes.MOSAIC_FILTER ? 'Mosaic Id:':'' }}
-                {{ filterType == filterTypes.ADDRESS_FILTER ? 'Address Hex:':'' }}
+                {{ filterType == PropertyType.AllowTransaction ? 'Entity Type:':'' }}
+                {{ filterType == PropertyType.AllowMosaic ? 'Mosaic Id:':'' }}
+                {{ filterType == PropertyType.AllowAddress ? 'Address Hex:':'' }}
                 {{ filter.hexId }}
               </v-list-tile-content>
               <v-btn
@@ -211,36 +211,10 @@
       v-model="isShowErrorMessage"
       width="500"
     >
-      <v-card>
-        <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-        >
-          Lack of necessary information
-        </v-card-title>
-
-        <v-card-text>
-          <div
-            v-for="(e,index) in errorMessage"
-            :key="index"
-          >
-            {{ e }}
-          </div>
-        </v-card-text>
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            flat
-            @click="
-              isShowErrorMessage = false;
-              isDialogShow = false"
-          >
-            i see
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <ErrorMessageComponent
+              :errorMessage = 'errorMessage'
+              @hideErrorMessage = 'hideErrorMessage'
+      />
     </v-dialog>
   </div>
 </template>
@@ -248,6 +222,7 @@
 <script>
 import {
   PropertyModificationType,
+  PropertyType,
   NetworkType,
   Deadline,
   UInt64,
@@ -257,14 +232,87 @@ import {
   MosaicId,
   AccountPropertyModification,
 } from 'nem2-sdk';
-import ErrorMessage from '../../infrastructure/transactions/errorMessage';
 import Confirmation from '../signature/Confirmation.vue';
 import SendConfirmation from '../signature/SendConfirmation.vue';
+import ErrorMessageComponent from '../errorMessage/ErrorMessage.vue';
+import ErrorMessage from '../../infrastructure/errorMessage/error-message';
 
-const FilterType = {
-  ADDRESS_FILTER: 0X01,
-  MOSAIC_FILTER: 0X02,
-  ENTITY_FILTER: 0X04,
+function checkMosaic(pointer, errorMessage) {
+  const { filterList } = pointer;
+  filterList.every((item) => {
+    const filter = item.hexId;
+    if (!filter || filter.trim() === '') {
+      errorMessage.message.push(ErrorMessage.MOSAIC_NULL);
+      return false;
+    }
+    if (filter.length < 16) {
+      errorMessage.message.push(ErrorMessage.MOSAIC_ERROR);
+      return false;
+    }
+    return true;
+  });
+  return errorMessage;
+}
+
+function checkAddress(pointer, errorMessage) {
+  const { filterList } = pointer;
+  filterList.every((item) => {
+    const filter = item.hexId;
+    if (!filter || filter.trim() === '') {
+      errorMessage.message.push(ErrorMessage.ADDRESS_NULL);
+      return false;
+    }
+    if (filter.length < 40) {
+      errorMessage.message.push(ErrorMessage.ADDRESS_ERROR);
+      return false;
+    }
+    return true;
+  });
+  return errorMessage;
+}
+
+function checkCommon(pointer, errorMessage) {
+  const { maxFee, generationHash, filterList } = pointer;
+  if (maxFee < 0) {
+    errorMessage.message.push(ErrorMessage.MAX_FEE_ERROR);
+    return errorMessage;
+  }
+  if (!generationHash || generationHash.trim() === '') {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_NULL);
+    return errorMessage;
+  }
+  if (generationHash.length !== 64) {
+    errorMessage.message.push(ErrorMessage.GENERATION_HASH_ERROR);
+    return errorMessage;
+  }
+  if (filterList.length <= 0) {
+    errorMessage.message.push(ErrorMessage.FILTER_LIST_NULL);
+    return errorMessage;
+  }
+  return errorMessage;
+}
+
+const filterValidator = (pointer) => {
+  const { filterType } = pointer;
+  let errorMessage = {
+    message: [],
+    disabled: true,
+  };
+  errorMessage = checkCommon(pointer, errorMessage);
+  if (errorMessage.length !== 0) {
+    return errorMessage;
+  }
+  switch (filterType) {
+  case PropertyType.AllowAddress:
+    errorMessage = checkAddress(pointer, errorMessage);
+    break;
+  case PropertyType.AllowMosaic:
+    errorMessage = checkMosaic(pointer, errorMessage);
+    break;
+  default: errorMessage = [];
+  }
+  errorMessage.disabled = false;
+  return errorMessage;
 };
 
 export default {
@@ -272,13 +320,14 @@ export default {
   components: {
     Confirmation,
     SendConfirmation,
+    ErrorMessageComponent,
   },
   // eslint-disable-next-line vue/require-prop-types
   props: ['actionType', 'filterType', 'maxFee', 'generationHash'],
   data() {
     return {
       isShowErrorMessage: false,
-      filterTypes: FilterType,
+      PropertyType,
       filterList: [],
       isAdd: true,
       hexId: '',
@@ -310,7 +359,7 @@ export default {
         hexEntityType: '4152',
       },
       currentEntityTypeId: 1,
-      errorMessage: [],
+      errorMessage: {},
     };
   },
   watch: {
@@ -322,7 +371,7 @@ export default {
   methods: {
     addFilter() {
       let filter;
-      if (this.filterType !== FilterType.ENTITY_FILTER) {
+      if (this.filterType !== PropertyType.AllowTransaction) {
         filter = {
           hexId: this.hexId,
           propertyModificationType: this.isAdd
@@ -340,81 +389,17 @@ export default {
     removeFilter(index) {
       this.filterList.splice(index, 1);
     },
-    checkCommon() {
-      if (this.maxFee < 0) {
-        this.errorMessage.push(ErrorMessage.MAX_FEE_ERROR);
-        return false;
-      }
-      if (!this.generationHash || this.generationHash.trim() === '') {
-        this.errorMessage.push(ErrorMessage.GENERATION_HASH_NULL);
-        return false;
-      } if (this.generationHash.length !== 64) {
-        this.errorMessage.push(ErrorMessage.GENERATION_HASH_ERROR);
-        return false;
-      }
-      if (this.filterList.length <= 0) {
-        this.errorMessage.push(ErrorMessage.FILTER_LIST_NULL);
-        return false;
-      }
-      return true;
-    },
-    checkAddress() {
-      const flag = this.filterList.every((item) => {
-        const filter = item.hexId;
-        if (!filter || filter.trim() === '') {
-          this.errorMessage.push(ErrorMessage.ADDRESS_NULL);
-          return false;
-        }
-        if (filter.length < 40) {
-          this.errorMessage.push(ErrorMessage.ADDRESS_ERROR);
-          return false;
-        }
-        return true;
-      });
-      return flag;
-    },
-    checkMosaic() {
-      const flag = this.filterList.every((item) => {
-        const filter = item.hexId;
-        if (!filter || filter.trim() === '') {
-          this.errorMessage.push(ErrorMessage.MOSAIC_NULL);
-          return false;
-        }
-        if (filter.length < 16) {
-          this.errorMessage.push(ErrorMessage.MOSAIC_ERROR);
-          return false;
-        }
-        return true;
-      });
-      return flag;
-    },
-    checkForm() {
-      this.errorMessage = [];
-      if (!this.checkCommon()) {
-        return false;
-      }
-      let flag = true;
-      switch (this.filterType) {
-      case FilterType.ADDRESS_FILTER:
-        flag = this.checkAddress();
-        break;
-      case FilterType.MOSAIC_FILTER:
-        flag = this.checkMosaic();
-        break;
-      default: flag = true;
-      }
-      return flag;
-    },
     showDialog() {
-      if (!this.checkForm()) {
+      this.errorMessage = filterValidator(this);
+      if (this.errorMessage.disabled) {
         this.isShowErrorMessage = true;
         return;
       }
-      if (this.filterType === FilterType.ADDRESS_FILTER) {
+      if (this.filterType === PropertyType.AllowAddress) {
         this.generateAddressTransaction();
-      } else if (this.filterType === FilterType.MOSAIC_FILTER) {
+      } else if (this.filterType === PropertyType.AllowMosaic) {
         this.generateMosaicTransaction();
-      } else if (this.filterType === FilterType.ENTITY_FILTER) {
+      } else if (this.filterType === PropertyType.AllowTransaction) {
         this.generateEntityTypeTransaction();
       }
       this.dialogDetails = [
@@ -496,11 +481,11 @@ export default {
       );
       this.transactions = [modifyEntity];
     },
+    hideErrorMessage() {
+      this.isShowErrorMessage = false;
+    },
     txSent(result) {
-      this.txSendResults.push({
-        txHash: result.txHash,
-        nodeURL: result.nodeURL,
-      });
+      this.txSendResults.push(result);
     },
     txError(error) {
       // eslint-disable-next-line no-console

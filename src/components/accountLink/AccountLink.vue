@@ -42,6 +42,7 @@
       </v-toolbar>
 
       <LinkConfigure />
+      <AccountLinkInfo />
     </v-card>
   </v-layout>
 </template>
@@ -49,17 +50,15 @@
 <script>
 import { mapState } from 'vuex';
 import LinkConfigure from './LinkConfigure.vue';
+import AccountLinkInfo from './AccountLinkInfo.vue';
 import Errors from '../Errors.vue';
 
 export default {
   name: 'AccountLink',
   components: {
+    AccountLinkInfo,
     LinkConfigure,
     Errors,
-  },
-  data() {
-    return {
-    };
   },
   computed: mapState([
     'wallet',
