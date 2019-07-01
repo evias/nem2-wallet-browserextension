@@ -220,7 +220,7 @@ export default {
         {
           icon: 'add',
           key: 'Namespace',
-          value: `${this.namespace}`,
+          value: this.chosenNamespace,
         },
       ];
       this.isDialogShow = true;
@@ -228,6 +228,7 @@ export default {
 
     aliasTransaction() {
       const namespace = this.currentNamespace || this.namespace;
+      this.chosenNamespace = namespace;
       this.transactions = [
         MosaicAliasTransaction.create(
           Deadline.create(),

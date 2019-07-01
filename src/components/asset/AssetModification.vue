@@ -67,17 +67,18 @@
           <v-btn
             :disabled="disabledSendTransaction"
             color="primary mx-0"
-            @click="showDialog"
+            @click="modifyAsset"
           >
             Send Transaction
           </v-btn>
         </v-card-actions>
       </v-card-text>
       <Confirmation
-        :is-show="isDialogShow"
+        v-model="isDialogShow"
         :transactions="transactions"
-        @transmitTransaction="modifyAsset"
-        @close="dialogClosed"
+        :generation-hash="application.generationHashes[application.activeNode]"
+        @sent="txSent"
+        @error="txError"
       >
         <v-list>
           <v-list-tile
@@ -107,7 +108,6 @@ import {
   MosaicSupplyChangeTransaction,
   MosaicSupplyType,
   NetworkType,
-  TransactionHttp,
   UInt64,
 } from 'nem2-sdk';
 import Confirmation from '../signature/Confirmation.vue';
@@ -199,10 +199,17 @@ export default {
         NetworkType.MIJIN_TEST,
       );
       this.transactions = [mosaicSupplyChangeTransaction];
+      this.showDialog();
     },
-    dialogClosed() {
-      this.isDialogShow = false;
-      this.dialogDetails = [];
+    txSent(result) {
+      this.txSendResults.push({
+        txHash: result.txHash,
+        nodeURL: result.nodeURL,
+      });
+    },
+    txError(error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
     },
   },
 };

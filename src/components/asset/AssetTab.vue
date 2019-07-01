@@ -31,57 +31,62 @@
       <v-list
         three-line
       >
-        <template v-for="(a, i) in assets">
+        <template v-for="(currentAsset, i) in assets">
           <v-layout
-            :key="a.id"
+            :key="currentAsset.id"
             column
           >
             <v-list-group
               :key="i"
-              :prepend-icon="a.action"
+              :prepend-icon="currentAsset.action"
               no-action
             >
               <template v-slot:activator>
                 <v-list-tile
                   ripple
-                  color="a.active?green:blue"
+                  color="currentAsset.active?green:blue"
                 >
                   <v-list-tile-content class="my-2">
                     <div class="asset-list-header asset-list-header-container">
                       <div class="asset-list-header asset-list-header-left">
                         <v-list-tile-title>
-                          {{ a.name ? `${a.name} (${a.id})` : a.id }}
+                          {{ currentAsset.name
+                            ? `${currentAsset.name} (${currentAsset.id})` : currentAsset.id }}
                         </v-list-tile-title>
                         <v-list-tile-sub-title
                           class="text--primary"
                         >
                           Balance:&nbsp;
-                          {{ parseInt(a.balance).toLocaleString() }}&nbsp;
-                          [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]
+                          {{ parseInt(currentAsset.balance).toLocaleString() }}&nbsp;
+                          [{{ (currentAsset.amount/Math.pow(10, currentAsset.divisibility))
+                            .toLocaleString() }}]
                         </v-list-tile-sub-title>
-                        <v-list-tile-sub-title>{{ a.expirationText }}</v-list-tile-sub-title>
+                        <v-list-tile-sub-title>
+                          {{ expirationText(currentAsset) }}
+                        </v-list-tile-sub-title>
                       </div>
                       <div class="asset-list-header asset-list-header-right">
                         <div v-if="ownedAssets">
                           <v-btn
                             small
                             color="primary"
-                            :disabled="wallet.activeWallet.isWatchOnly"
-                            @click.stop="
-                              activeAsset = { id: a.id, name: a.name };
-                              assetAlias = true"
+                            :disabled="!currentAsset.active || wallet.activeWallet.walletType
+                              === walletTypes.WATCH_ONLY_WALLET"
+                            @click.stop="wallet.activeWallet.isWatchOnly
+                              ? showPasswordInput = true
+                              : spawnAliasTransaction(currentAsset)"
                           >
-                            {{ a.name ? `${'unlink alias'}` : `${'add an alias'}` }}
+                            {{ currentAsset.name ? `${'unlink alias'}` : `${'add an alias'}` }}
                           </v-btn>
                           <v-btn
                             small
                             color="primary"
                             :disabled="
-                              !(a.active && a.supplyMutable)
-                                || wallet.activeWallet.isWatchOnly"
-                            @click.stop="
-                              activeAsset = { id: a.id, name: a.name };
-                              modifyAsset = true;"
+                              !(currentAsset.active && currentAsset.supplyMutable)
+                                || wallet.activeWallet.walletType === walletTypes.WATCH_ONLY_WALLET"
+                            @click.stop="wallet.activeWallet.isWatchOnly
+                              ? showPasswordInput = true
+                              : spawnAssetModification(currentAsset)"
                           >
                             Modify supply
                           </v-btn>
@@ -93,12 +98,13 @@
               </template>
               <v-list-tile-content>
                 <div class="asset-detail">
-                  <v-list-tile-title>Meta ID: {{ a.metaId }}</v-list-tile-title>
-                  <v-list-tile-sub-title>Owner: {{ a.owner }}</v-list-tile-sub-title>
+                  <v-list-tile-title>Meta ID: {{ currentAsset.metaId }}</v-list-tile-title>
+                  <v-list-tile-sub-title>Owner: {{ currentAsset.owner }}</v-list-tile-sub-title>
                   <v-list-tile-sub-title>
-                    supply: {{ a.supply.toLocaleString() }} |&nbsp;
-                    divisibility: {{ a.divisibility }} |&nbsp;
-                    supplyMutable: {{ a.supplyMutable }} | transferable: {{ a.transferable }}
+                    supply: {{ currentAsset.supply.toLocaleString() }} |&nbsp;
+                    divisibility: {{ currentAsset.divisibility }} |&nbsp;
+                    supplyMutable: {{ currentAsset.supplyMutable }} |&nbsp;
+                    transferable: {{ currentAsset.transferable }}
                   </v-list-tile-sub-title>
                 </div>
               </v-list-tile-content>
@@ -111,6 +117,12 @@
         </template>
       </v-list>
     </div>
+    <PasswordInput
+      :visible="showPasswordInput"
+      :wallet-name="wallet.activeWallet.name"
+      :wallet-type="wallet.activeWallet.walletType"
+      @close="showPasswordInput = false"
+    />
     <AssetModification
       :visible="modifyAsset"
       :active-asset="activeAsset"
@@ -126,19 +138,23 @@
 
 <script>
 import { mapState } from 'vuex';
+import { walletTypes } from '../../infrastructure/wallet/wallet-types';
+
 import AssetModification from './AssetModification.vue';
 import AssetAlias from './AssetAlias.vue';
+import PasswordInput from '../wallet/PasswordInput.vue';
 
 export default {
   name: 'AssetTab',
   components: {
     AssetModification,
     AssetAlias,
+    PasswordInput,
   },
   props: {
-    // eslint-disable-next-line vue/require-default-prop
     assets: {
       type: Array,
+      default() { return []; },
     },
     ownedAssets: {
       type: Boolean,
@@ -147,12 +163,35 @@ export default {
   },
   data() {
     return {
+      walletTypes,
       index: 0,
+      showPasswordInput: false,
       modifyAsset: false,
       assetAlias: false,
       activeAsset: { id: false, name: false },
     };
   },
-  computed: mapState(['wallet']),
+  computed: mapState(['wallet', 'application']),
+  methods: {
+    spawnAliasTransaction(mosaic) {
+      this.activeAsset = { id: mosaic.id, name: mosaic.name };
+      this.modifyAsset = true;
+    },
+
+    spawnAssetModification(mosaic) {
+      this.activeAsset = { id: mosaic.id, name: mosaic.name };
+      this.assetAlias = true;
+    },
+
+    expirationText(mosaic) {
+      const { blockNumber } = this.application;
+      const { endHeight } = mosaic;
+      if (endHeight === 0) return 'Unlimited duration mosaic';
+      if (!(blockNumber > 0)) return `Expires at height ${endHeight.toLocaleString()}`;
+      const expiresIn = endHeight - blockNumber;
+      if (expiresIn > 0) return `Expires in ${expiresIn.toLocaleString()} blocks.`;
+      return `Expired for ${(expiresIn * -1).toLocaleString()} blocks.`;
+    },
+  },
 };
 </script>

@@ -30,7 +30,7 @@
           && wallet.activeWallet
           && !application.error"
         style="height: auto;padding:0 !important"
-        class="card--flex-toolbar"
+        class="card--flex-toolbar mb-4"
       >
         <v-toolbar
           card
@@ -49,8 +49,9 @@
 
           <v-btn
             icon
-            :disabled="wallet.activeWallet.isWatchOnly"
-            @click.stop="createAsset = true"
+            :disabled="wallet.activeWallet.walletType === walletTypes.WATCH_ONLY_WALLET"
+            @click.stop="wallet.activeWallet.isWatchOnly
+              ? showPasswordInput = true : createAsset = true"
           >
             <v-icon>add_box</v-icon>
           </v-btn>
@@ -65,26 +66,47 @@
           <AssetList :default-tab="1" />
         </v-card-text>
       </v-card>
+      <Transactions
+        v-if="wallet.activeWallet
+          && transactions.transactions
+          && transactions.transactions[wallet.activeWallet.name]"
+        preset-filter="Mosaic"
+        title="Recent mosaic transactions"
+      />
     </v-flex>
+    <PasswordInput
+      :visible="showPasswordInput"
+      :wallet-name="wallet.activeWallet.name"
+      :wallet-type="wallet.activeWallet.walletType"
+      @close="showPasswordInput = false"
+    />
   </v-layout>
 </template>
 <script>
 import { mapState } from 'vuex';
 import store from '../../store/index';
+import { walletTypes } from '../../infrastructure/wallet/wallet-types';
+
 import Errors from '../Errors.vue';
+import PasswordInput from '../wallet/PasswordInput.vue';
 import AssetCreation from './AssetCreation.vue';
 import AssetList from './AssetList.vue';
+import Transactions from '../transactions/Transactions.vue';
 
 export default {
   name: 'Assets',
   store,
   components: {
     Errors,
+    PasswordInput,
     AssetCreation,
     AssetList,
+    Transactions,
   },
   data() {
     return {
+      walletTypes,
+      showPasswordInput: false,
       createAsset: false,
       reloadAssetNotifier: 0,
     };
@@ -93,6 +115,7 @@ export default {
     'wallet',
     'application',
     'assets',
+    'transactions',
   ]),
   methods: {
     reloadList(wallet) {
