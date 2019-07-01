@@ -173,7 +173,7 @@
 
                   <v-text-field
                     v-model="userPrivateKey"
-                    label="Private Key"
+                    :label="$t('Private-Key')"
                     class="mt-3 mb-3"
                     :counter="64"
                     required
@@ -233,16 +233,16 @@
 
 
               <Confirmation
-                      v-model="isDialogShow"
-                      :transactions="transactions"
-                      :generation-hash="generationHash"
-                      @sent="txSent"
-                      @error="txError"
+                v-model="isDialogShow"
+                :transactions="transactions"
+                :generation-hash="generationHash"
+                @sent="txSent"
+                @error="txError"
               >
                 <v-list>
                   <v-list-tile
-                          v-for="detail in dialogDetails"
-                          :key="detail.key"
+                    v-for="detail in dialogDetails"
+                    :key="detail.key"
                   >
                     <v-list-tile-action>
                       <v-icon>{{ detail.icon }}</v-icon>
@@ -261,8 +261,8 @@
                 width="500"
               >
                 <ErrorMessageComponent
-                        :errorMessage = 'errorMessage'
-                        @hideErrorMessage = 'hideErrorMessage'
+                  :error-message="errorMessage"
+                  @hideErrorMessage="hideErrorMessage"
                 />
               </v-dialog>
             </v-card-text>

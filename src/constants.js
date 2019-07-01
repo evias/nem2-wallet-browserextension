@@ -3,6 +3,7 @@ export const VERSION = 'v0.2.0alpha';
 export const PARAMS = {
   NAMESPACE_MAX_LENGTH: 64,
   NEMESIS_BLOCK_TIMESTAMP: 1459468800,
+  SUPPORTED_LOCALES: ['en', 'fr', 'zh'],
 };
 
 export const DOCS_LINKS = {

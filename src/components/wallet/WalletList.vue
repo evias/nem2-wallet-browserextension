@@ -44,13 +44,13 @@
             {{ wallet.publicAccount.address.pretty() }}
             <div class="clearfix">
               <div class="clearfix">
-                Default node: {{ wallet.node }}
+                {{ $t('Default-node') }}: {{ wallet.node }}
               </div>
               <div class="clearfix">
-                Type: {{ wallet.walletType }}
+                {{ $t('Type') }}: {{ wallet.walletType }}
               </div>
               <div class="clearfix">
-                Locked: {{ wallet.isWatchOnly }}
+                {{ $t('Locked') }}: {{ $t(wallet.isWatchOnly ? 'true' : 'false') }}
               </div>
             </div>
             <v-card-actions>

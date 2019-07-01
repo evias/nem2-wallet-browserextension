@@ -40,7 +40,7 @@
         <v-text-field
           v-model="node"
           class="ma-0 pa-0"
-          label="default node"
+          :label="$t('Default-node')"
           type="text"
           required
         />
@@ -49,7 +49,7 @@
           v-model="selectedOfficialNode"
           :items="application.officialNodes"
           class="ma-0 pa-0"
-          label="Pick a node from the official list"
+          :label="$t('Pick-a-node-from-the-official-list')"
           @input="afterselection"
         />
         <v-text-field

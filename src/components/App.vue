@@ -41,7 +41,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Home</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Home') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -51,7 +51,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Transactions</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Transactions') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -61,7 +61,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Namespaces</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Namespaces') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -71,7 +71,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Assets</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Assets') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -81,7 +81,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Multisig</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Multisig') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
@@ -95,7 +95,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>Developer mode</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('Developer-mode') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -106,7 +106,7 @@
                   </v-list-tile-action>
 
                   <v-list-tile-content>
-                    <v-list-tile-title>About</v-list-tile-title>
+                    <v-list-tile-title>{{ $t('About') }}</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
@@ -145,9 +145,8 @@
           class="red--text"
           pa-1
         >
-          Please be aware this is a Wallet for development proposes,&nbsp;
-          it has no security and the private keys are stored in plain text.
-          <strong>DO NOT USE IN MAIN NET or PRODUCTION PRIVATE NETWORKS</strong>
+          {{ $t('Please-be-aware-this-is-a-Wallet-for-development-purpose') }},&nbsp;
+          <strong>{{ $t('DO-NOT-USE-IN-MAIN-NET-or-PRODUCTION-PRIVATE-NETWORKS') }}</strong>
         </v-card-text>
 
         <v-divider />
@@ -176,6 +175,14 @@
             Slack
           </v-btn>
           <strong>NEM2 (Dragon) Wallet {{ VERSION }}</strong>
+          <v-select
+            v-model="activeLocale"
+            :items="PARAMS.SUPPORTED_LOCALES.map( x => x )"
+            style="
+              max-width: 80px;
+              float: right;
+              margin: -8px 20px 0 0;"
+          />
         </v-card-text>
       </v-card>
     </v-footer>
@@ -186,7 +193,7 @@
       :bottom="true"
       :timeout="8000"
       :vertical="false"
-      :color = "color"
+      :color="color"
     >
       {{ snackbarText }}
       <v-btn
@@ -201,7 +208,7 @@
 <script>
 import { mapState } from 'vuex';
 import store from '../store/index';
-import { LINKS, VERSION } from '../constants';
+import { LINKS, VERSION, PARAMS } from '../constants';
 import WalletSelector from './quickAccess/WalletSelector.vue';
 
 export default {
@@ -213,10 +220,12 @@ export default {
     return {
       LINKS,
       VERSION,
+      PARAMS,
       drawer: true,
       right: null,
       snackbar: false,
       snackbarText: '',
+      color: undefined,
     };
   },
   computed: {
@@ -224,16 +233,26 @@ export default {
       'wallet',
       'application',
     ]),
+    activeLocale: {
+      get() {
+        return this.$i18n.locale;
+      },
+
+      set(newLocale) {
+        this.$i18n.locale = newLocale;
+      },
+    },
   },
   created() {
     this.$store.dispatch('wallet/INIT_APPLICATION');
+    // eslint-disable-next-line prefer-destructuring
+    this.$i18n.locale = navigator.language.split(/[-_]/)[0];
   },
   mounted() {
     store.subscribeAction((action) => {
       if (action.type === 'application/SET_SNACKBAR_TEXT') {
         this.snackbarText = `${action.payload.text}`;
         this.snackbar = true;
-        console.log(action.payload.color)
         this.color = action.payload.color ? action.payload.color : undefined;
       }
     });

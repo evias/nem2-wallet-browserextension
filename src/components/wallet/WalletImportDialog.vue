@@ -44,7 +44,7 @@
           v-model="selectedOfficialNode"
           :items="application.officialNodes"
           class="ma-0 pa-0"
-          label="Pick a node from the official list"
+          :label="$t('Pick-a-node-from-the-official-list')"
           @input="afterselection"
         />
 
@@ -57,7 +57,7 @@
         <v-text-field
           v-model.lazy="privateKey"
           class="ma-0 pa-0"
-          label="Private Key (64 char)"
+          :label="$t('Private-Key')"
         />
 
         <v-text-field
@@ -89,7 +89,7 @@
             v-if="isValidAccount"
             :value="isValidAccount ? account.publicKey : ''"
             class="ma-0 pa-0 monospaced"
-            label="Public Key"
+            label="$t('Public-Key')"
             readonly
           />
         </div>

@@ -40,7 +40,7 @@
             flat
             @click.stop="showWalletCreationDialog = true"
           >
-            New Wallet
+            {{ $t('new-wallet') }}
           </v-btn>
           <v-spacer />
 
@@ -49,7 +49,7 @@
             flat
             @click.stop="showWoWalletCreationDialog = true"
           >
-            New Watch-Only Wallet
+            {{ $t('New-Watch-Only-Wallet') }}
           </v-btn>
           <v-spacer />
 
@@ -58,7 +58,7 @@
             flat
             @click.stop="showWalletImportDialog = true"
           >
-            Import Wallet
+            {{ $t('Import-Wallet') }}
           </v-btn>
           <v-spacer />
         </v-toolbar>
@@ -111,5 +111,3 @@ export default {
   computed: mapState(['wallet']),
 };
 </script>
-<style scoped>
-</style>

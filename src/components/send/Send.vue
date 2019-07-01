@@ -173,7 +173,7 @@
 
                   <v-text-field
                     v-model="userPrivateKey"
-                    label="Private Key"
+                    :label="$t('Private-Key')"
                     class="mt-3 mb-3"
                     :counter="64"
                     required
@@ -362,7 +362,7 @@ import {
   TransactionType,
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
-import ErrorMessage from '../../infrastructure/transactions/errorMessage';
+import ErrorMessage from '../errorMessage/ErrorMessage.vue';
 import store from '../../store/index';
 import { DOCS_LINKS } from '../../constants';
 

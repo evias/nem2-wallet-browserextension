@@ -27,7 +27,7 @@
         <v-form>
           <v-text-field
             v-model="publicKey"
-            label="Public Key"
+            :label="$t('Public-Key')"
           />
           <v-radio-group
             v-model="networkID"

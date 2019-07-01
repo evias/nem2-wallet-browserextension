@@ -1,0 +1,11 @@
+{
+  "Default-node": "默认节点",
+  "new-wallet": "新的钱包",
+  "Type": "类型",
+  "Address": "地址",
+  "Assets": "代币",
+  "Public-Key": "公钥",
+  "Private-Key": "私钥",
+  "Transactions": "交易",
+  "Assets-balance": "代笔余额表"
+}

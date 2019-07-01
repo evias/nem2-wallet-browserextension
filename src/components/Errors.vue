@@ -35,7 +35,7 @@
           to="/wallet"
           color="white"
         >
-          No wallets configured, create one now!
+          {{ $t('No-wallets-configured-create-one-now!') }}
         </v-btn>
       </v-alert>
     </div>
@@ -46,7 +46,7 @@
           :value="true"
           type="error"
         >
-          Please select a wallet
+          {{ $t('Please-select-a-wallet') }}
         </v-alert>
       </div>
 
@@ -72,7 +72,9 @@
             :value="true"
             type="error"
           >
-            This is a watch-only wallet, please unlock it to create and sign a transaction
+            {{
+              $t('This-is-a-watch-only-wallet-please-unlock-it-to-create-and-sign-a-transaction')
+            }}
           </v-alert>
         </div>
       </div>
@@ -106,6 +108,3 @@ export default {
   ]),
 };
 </script>
-
-<style scoped>
-</style>

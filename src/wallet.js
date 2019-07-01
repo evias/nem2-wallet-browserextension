@@ -20,6 +20,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
+
 import App from './components/App.vue';
 import Home from './components/Home.vue';
 import Handler from './components/uriHandler/Handler.vue';
@@ -27,12 +28,15 @@ import Transact from './components/transactions/Transact.vue';
 import Namespace from './components/namespace/Namespace.vue';
 import Asset from './components/asset/Asset.vue';
 import Wallet from './components/wallet/Wallet.vue';
+
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
 import About from './components/About.vue';
 import store from './store';
 import Filters from './components/filter/Filters.vue';
 import Multisig from './components/multisig/Multisig.vue';
 import AccountLink from './components/accountLink/AccountLink.vue';
+
+import i18n from './plugins/i18n';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -69,11 +73,12 @@ Vue.use(VueRouter);
 new Vue({
   el: '#app',
   store,
+  router,
+  i18n,
   components: {
     App,
   },
   render(h) {
     return h('app');
   },
-  router,
 });

@@ -18,43 +18,43 @@
 <template>
   <v-layout column>
     <h1 class="headline pt-3">
-      About nem2-wallet
+      {{ $t('About-nem2-wallet-browserextension') }}
     </h1>
 
     <h2 class="sub-headline pt-3">
-      For users
+      {{ $t('For-users') }}
     </h2>
     <p>
-      This wallet is under development, if you find any issue <a
+      {{ $t('This-wallet-is-under-development-if-you-find-any-issue') }} <a
         :href="LINKS.repoIssues"
         target="_new"
-      >please report them on Github</a>
+      >{{ $t('please-report-them-on-Github') }}</a>
     </p>
     <p>
-      The wallet <a
+      {{ $t('The-wallet') }} <a
         :href="LINKS.repoReleases"
         target="_new"
-      >is available as a Mozilla Firefox extension</a>
+      >{{ $t('is-available-as-a-Mozilla-Firefox-extension') }}</a>
     </p>
     <p>
-      It is also <a
+      {{ $t('It is also') }} <a
         :href="LINKS.webWallet"
         target="_new"
-      >deployed as a web version.</a>
-      Please note that URI transaction handling can only be done with the web extension
+      >{{ $t('deployed-as-a-web-version') }}.</a>
+      {{ $t('Please-note-that-URI-transaction-handling-can-only-be-done-with-the-web-extension') }}
     </p>
     <v-layout column>
       <v-flex>
         <h2 class="sub-headline pt-3">
-          For developers
+          {{ $t('For-developers') }}
         </h2>
 
         <v-layout class="align-center ml-0 mb-1">
-          <b>Source code repository:</b>
+          <b>{{ $t('Source-code-repository') }}: </b>
           <a
             :href="LINKS.repo"
             class="mx-1"
-          >{{ LINKS.repo }}</a> licenced under
+          >{{ LINKS.repo }}</a> {{ $t('licenced under') }}
           <img
             :src="LINKS.licenceImage"
             class="ml-1"
@@ -62,25 +62,26 @@
         </v-layout>
 
         <ul class="mt-3 faq">
-          <li>How can I contribute?</li>
+          <li>{{ $t('How-can-I-contribute?') }}</li>
         </ul>
         <p>
-          Please <a
+          {{ $t('Please') }} <a
             :href="LINKS.repo"
             class="mx-1"
-          >refer to the readme for guidance</a>, and make sure to join the <a
+          >{{ $t('refer-to-the-readme-for-guidance') }}</a>,
+          {{ $t('and-make-sure-to-join-the') }} <a
             :href="LINKS.nem2Slack"
             class="mx-1"
-          >#sig-client Slack channel</a> to get in touch with the devs!
+          >{{ $t('sig-client-Slack-channel') }}</a> {{ $t('to-get-in-touch-with-the-devs!') }}
         </p>
         <ul class="mt-3 faq">
-          <li>How can I integrate a web-application with this wallet?</li>
+          <li>{{ $t('How-can-I-integrate-a-web-application-with-this-wallet?') }}</li>
         </ul>
         <p>
-          There are no guides available yet. Feel free to <a
+          {{ $t('There-are-no-guides-available-yet.-Feel-free-to') }} <a
             :href="LINKS.nem2Slack"
             class="mx-1"
-          >ask questions in the #sig-client Slack channel!</a>
+          >{{ $t('ask-questions-in-the') }} {{ $t('sig-client-Slack-channel') }}!</a>
         </p>
       </v-flex>
     </v-layout>

@@ -47,7 +47,7 @@
           v-model="selectedOfficialNode"
           :items="application.officialNodes"
           class="ma-0 pa-0"
-          label="Pick a node from the official list"
+          :label="$t('Pick-a-node-from-the-official-list')"
           @input="afterselection"
         />
 

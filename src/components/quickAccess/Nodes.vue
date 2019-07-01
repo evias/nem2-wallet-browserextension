@@ -23,28 +23,28 @@
     <v-card>
       <v-card-title primary-title>
         <h3 class="headline mb-3">
-          Manage your connection endpoint
+          {{ $t('Manage-your-connection-endpoint') }}
         </h3>
       </v-card-title>
       <v-card-text>
         <v-text-field
           v-model="wallet.activeWallet.node"
           class="ma-0 pa-0"
-          label="Wallet default node"
+          :label="$t('Wallet-default-node')"
           type="text"
           disabled
         />
         <v-text-field
           v-model="application.activeNode"
           class="ma-0 pa-0"
-          label="Current node"
+          :label="$t('Current-node')"
           type="text"
           disabled
         />
         <v-text-field
           v-model="newActiveNode"
           class="mt-4 ma-0 pa-0"
-          label="New node"
+          :label="$t('New-node')"
           type="text"
         />
         <v-select
@@ -52,7 +52,7 @@
           v-model="selectedOfficialNode"
           :items="application.officialNodes"
           class="ma-0 pa-0"
-          label="Pick a node from the official list"
+          :label="$t('Pick-a-node-from-the-official-list')"
           @input="afterselection"
         />
       </v-card-text>
@@ -68,7 +68,7 @@
           flat
           @click.stop="setNewActiveNode"
         >
-          Change your current node
+          {{ $t('Change-your-current-node') }}
         </v-btn>
       </v-card-actions>
     </v-card>

@@ -86,7 +86,7 @@
                   :value="true"
                   type="info"
                 >
-                  This account does not own any namespace.
+                  {{ $t('This-account-does-not-own-any-namespace.') }}
                 </v-alert>
               </v-flex>
             </div>

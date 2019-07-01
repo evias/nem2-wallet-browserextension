@@ -21,7 +21,7 @@
       v-if="walletName"
       v-model="walletName"
       :items="wallets"
-      label="No Wallet Selected"
+      :label="$t('No-Wallet-Selected')"
       class="ws-select"
       solo
     />
@@ -30,7 +30,7 @@
       v-if="wallet.activeWallet.walletType !== walletTypes.WATCH_ONLY_WALLET
         && wallet.activeWallet && wallet.activeWallet.isWatchOnly"
       class="ws-icons ws-dark"
-      alt="unlock the wallet"
+      :alt="$t('unlock-the-wallet')"
       large
       @click.stop="showPasswordInput = true"
     >
@@ -80,7 +80,7 @@
             class="pointer"
             @click.stop="showWalletCreationDialog = true"
           >
-            New Wallet
+            {{ $t('New-Wallet') }}
           </v-list-tile-title>
         </v-list-tile>
         <v-list-tile>
@@ -91,7 +91,7 @@
             class="pointer"
             @click.stop="showWoWalletCreationDialog = true"
           >
-            New Watch-Only Wallet
+            {{ $t('New-Watch-Only-Wallet') }}
           </v-list-tile-title>
         </v-list-tile>
         <v-list-tile>
@@ -102,7 +102,7 @@
             class="pointer"
             @click.stop="showWalletImportDialog = true"
           >
-            Import From Private Key
+            {{ $t('Import-From-Private-Key') }}
           </v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -262,12 +262,12 @@ export default {
       set(newActiveWalletName) {
         this.$store.dispatch('wallet/SET_ACTIVE_WALLET', newActiveWalletName);
       },
-    }
+    },
   },
   methods: {
     goToWallet() {
       this.$router.push('/wallet');
-    }
+    },
   },
 };
 </script>

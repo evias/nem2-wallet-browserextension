@@ -79,7 +79,7 @@
                               :value="wallet.activeWallet
                                 .publicAccount.address.pretty()"
                               class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
-                              label="Address"
+                              :label="$t('Address')"
                               color="white"
                               readonly
                             />
@@ -88,7 +88,7 @@
                               :value="wallet.activeWallet
                                 .publicAccount.publicKey"
                               class="ma-0 pa-0 monospaced"
-                              label="Public Key"
+                              :label="$t('Public-Key')"
                               color="white"
                               readonly
                             />
@@ -99,7 +99,7 @@
                                 ? 'watch only'
                                 : wallet.activeWallet.account.privateKey"
                               class="ma-0 pa-0 monospaced"
-                              label="Private Key"
+                              :label="$t('Private-Key')"
                               color="white"
                               readonly
                             />
@@ -107,14 +107,14 @@
                             <v-text-field
                               :value="wallet.activeWallet.node"
                               class="ma-0 pa-0 monospaced"
-                              label="Default node"
+                              :label="$t('Default-node')"
                               color="white"
                               readonly
                             />
                             <v-text-field
                               :value="application.activeNode"
                               class="ma-0 pa-0 monospaced"
-                              label="Current node"
+                              :label="$t('Current-node')"
                               color="white"
                               readonly
                             />
@@ -125,7 +125,7 @@
                                 class="float:right !important"
                                 @click.stop="showPrivateKey = !showPrivateKey"
                               >
-                                {{ !showPrivateKey ? 'show private key' : 'hide private key' }}
+                                {{ $t(!showPrivateKey ? 'show-private-key' : 'hide-private-key') }}
                               </v-btn>
                             </div>
                           </v-card-text>
@@ -146,7 +146,7 @@
                       pa-0
                     >
                       <h3 style="margin:6px 0px 0px 12px;">
-                        Assets balance
+                        {{ $t('Assets-balance') }}
                       </h3>
                       <div
                         v-if="!ownedAssets"
@@ -159,7 +159,7 @@
                         />
                       </div>
                       <v-card-text v-if="ownedAssets==='none'">
-                        This account does not own any asset
+                        {{ $t('This-account-does-not-own-any-asset') }}
                       </v-card-text>
                       <div v-if="ownedAssets && ownedAssets!=='none'">
                         <div
@@ -188,7 +188,7 @@
                       pa-0
                     >
                       <h3 style="margin:6px 0px 0px 12px;">
-                        Owned namespaces
+                        {{ $t('Owned-namespaces') }}
                       </h3>
                       <div
                         v-if="!ownedNamespaces"
@@ -201,7 +201,7 @@
                         />
                       </div>
                       <v-card-text v-if="ownedNamespaces==='none'">
-                        This account does not own any namespace
+                        {{ $t('This-account-does-not-own-any-namespace') }}
                       </v-card-text>
                       <div v-if="ownedNamespaces && ownedNamespaces!=='none'">
                         <div
